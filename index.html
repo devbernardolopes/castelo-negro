@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point & Click Adventure Prototype</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #222;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            display: flex;
+            gap: 20px;
+        }
+        #game {
+            border: 2px solid #666;
+        }
+        #inventory {
+            background: #333;
+            border: 2px solid #666;
+            padding: 15px;
+            border-radius: 5px;
+            width: 200px;
+            color: #ddd;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        #inventory h3 {
+            margin: 0 0 10px 0;
+            color: #fff;
+            font-size: 16px;
+        }
+        .inventory-item {
+            background: #444;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 3px;
+            cursor: pointer;
+            border: 1px solid #555;
+            font-size: 12px;
+        }
+        .inventory-item:hover {
+            background: #555;
+            border-color: #777;
+        }
+        #debug-info {
+            color: #888;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="game"></div>
+        <div id="inventory">
+            <h3>Inventory</h3>
+            <div id="inventory-list"></div>
+            <div id="debug-info">Click on room to move<br>Click items to pick up</div>
+        </div>
+    </div>
+
+    <script>
+        // Game configuration
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game',
+            render: {
+                pixelArt: true,
+                antialias: false
+            },
+            scene: AdventureScene
+        };
+
+        class AdventureScene extends Phaser.Scene {
+            constructor() {
+                super('adventure');
+                this.inventory = [];
+                this.playerDirection = 'down';
+            }
+
+            preload() {
+                // Create simple sprite graphics since we don't have actual files
+                this.createPlayerSprites();
+                this.createItemSprites();
+                this.createBackgroundTile();
+            }
+
+            create() {
+                // Background
+                const bg = this.add.tileSprite(400, 300, 800, 600, 'floor-tile');
+                
+                // Add some simple scenery
+                this.add.rectangle(100, 150, 100, 150, 0x8B4513).setOrigin(0, 0);
+                this.add.text(100, 280, 'Chest', { fill: '#fff', fontSize: '12px' });
+                
+                this.add.rectangle(650, 200, 80, 120, 0x654321).setOrigin(0, 0);
+                this.add.text(650, 330, 'Door', { fill: '#fff', fontSize: '12px' });
+
+                // Player character
+                this.player = this.add.sprite(400, 400, 'player-down');
+                this.player.setScale(2);
+
+                // Items on the floor
+                this.items = this.add.group();
+                
+                const item1 = this.add.sprite(300, 200, 'item-key');
+                item1.setScale(2);
+                item1.setInteractive();
+                item1.on('pointerdown', () => this.pickupItem(item1, 'Rusty Key'));
+                this.items.add(item1);
+
+                const item2 = this.add.sprite(500, 300, 'item-scroll');
+                item2.setScale(2);
+                item2.setInteractive();
+                item2.on('pointerdown', () => this.pickupItem(item2, 'Old Scroll'));
+                this.items.add(item2);
+
+                const item3 = this.add.sprite(200, 450, 'item-coin');
+                item3.setScale(2);
+                item3.setInteractive();
+                item3.on('pointerdown', () => this.pickupItem(item3, 'Gold Coin'));
+                this.items.add(item3);
+
+                // Click to move handler
+                this.input.on('pointerdown', (pointer) => {
+                    // Check if clicking on an item (handled by item's own pointer)
+                    const clickedItem = this.items.children.entries.find(
+                        item => Phaser.Geom.Rectangle.Contains(
+                            item.getBounds(),
+                            pointer.x,
+                            pointer.y
+                        )
+                    );
+                    
+                    if (!clickedItem) {
+                        this.movePlayerTowards(pointer.x, pointer.y);
+                    }
+                });
+
+                // Simple animation setup
+                if (!this.anims.exists('walk-down')) {
+                    this.anims.create({
+                        key: 'walk-down',
+                        frames: [{ key: 'player-down' }],
+                        frameRate: 10,
+                        repeat: -1
+                    });
+                }
+            }
+
+            update() {
+                // Player movement towards target
+                if (this.targetX !== undefined && this.targetY !== undefined) {
+                    const distance = Phaser.Math.Distance.Between(
+                        this.player.x, this.player.y,
+                        this.targetX, this.targetY
+                    );
+
+                    if (distance > 5) {
+                        const angle = Phaser.Math.Angle.Between(
+                            this.player.x, this.player.y,
+                            this.targetX, this.targetY
+                        );
+                        
+                        this.updatePlayerDirection(angle);
+                        
+                        const vx = Math.cos(angle) * 100;
+                        const vy = Math.sin(angle) * 100;
+                        
+                        this.player.x += vx * 0.016;
+                        this.player.y += vy * 0.016;
+                    } else {
+                        this.targetX = undefined;
+                        this.targetY = undefined;
+                    }
+                }
+            }
+
+            movePlayerTowards(x, y) {
+                this.targetX = x;
+                this.targetY = y;
+            }
+
+            updatePlayerDirection(angle) {
+                // Convert angle to direction (0 = right, π/2 = down, etc)
+                const degrees = Phaser.Math.RadToDeg(angle);
+                const normalizedDegrees = (degrees + 360) % 360;
+
+                if (normalizedDegrees < 45 || normalizedDegrees >= 315) {
+                    this.setPlayerSprite('right');
+                } else if (normalizedDegrees < 135) {
+                    this.setPlayerSprite('down');
+                } else if (normalizedDegrees < 225) {
+                    this.setPlayerSprite('left');
+                } else {
+                    this.setPlayerSprite('up');
+                }
+            }
+
+            setPlayerSprite(direction) {
+                if (this.playerDirection !== direction) {
+                    this.playerDirection = direction;
+                    this.player.setTexture(`player-${direction}`);
+                }
+            }
+
+            pickupItem(sprite, itemName) {
+                this.inventory.push(itemName);
+                sprite.destroy();
+                this.updateInventoryUI();
+            }
+
+            updateInventoryUI() {
+                const inventoryList = document.getElementById('inventory-list');
+                inventoryList.innerHTML = '';
+                
+                if (this.inventory.length === 0) {
+                    inventoryList.innerHTML = '<div style="color: #888; font-size: 12px;">Empty</div>';
+                } else {
+                    this.inventory.forEach((item, index) => {
+                        const div = document.createElement('div');
+                        div.className = 'inventory-item';
+                        div.textContent = item;
+                        inventoryList.appendChild(div);
+                    });
+                }
+            }
+
+            // Simple sprite generation
+            createPlayerSprites() {
+                const directions = ['up', 'down', 'left', 'right'];
+                directions.forEach(dir => {
+                    const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+                    graphics.fillStyle(0x4169E1, 1);
+                    graphics.fillRect(4, 0, 8, 16);
+                    graphics.fillStyle(0xFFDBAC, 1);
+                    graphics.fillRect(2, 0, 12, 4);
+                    graphics.generateTexture(`player-${dir}`, 16, 16);
+                    graphics.destroy();
+                });
+            }
+
+            createItemSprites() {
+                // Key
+                const keyGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+                keyGraphics.fillStyle(0xFFD700, 1);
+                keyGraphics.fillRect(2, 6, 8, 4);
+                keyGraphics.fillRect(10, 4, 2, 8);
+                keyGraphics.fillStyle(0xFFA500, 1);
+                keyGraphics.fillCircle(11, 4, 2);
+                keyGraphics.generateTexture('item-key', 16, 16);
+                keyGraphics.destroy();
+
+                // Scroll
+                const scrollGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+                scrollGraphics.fillStyle(0xF5DEB3, 1);
+                scrollGraphics.fillRect(3, 2, 10, 12);
+                scrollGraphics.fillStyle(0x8B4513, 1);
+                scrollGraphics.fillRect(4, 4, 8, 8);
+                scrollGraphics.generateTexture('item-scroll', 16, 16);
+                scrollGraphics.destroy();
+
+                // Coin
+                const coinGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+                coinGraphics.fillStyle(0xFFD700, 1);
+                coinGraphics.fillCircle(8, 8, 6);
+                coinGraphics.fillStyle(0xFFA500, 1);
+                coinGraphics.fillCircle(8, 8, 4);
+                coinGraphics.generateTexture('item-coin', 16, 16);
+                coinGraphics.destroy();
+            }
+
+            createBackgroundTile() {
+                const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+                graphics.fillStyle(0x2d5016, 1);
+                graphics.fillRect(0, 0, 64, 64);
+                graphics.fillStyle(0x3a6b1f, 1);
+                graphics.fillRect(32, 0, 32, 32);
+                graphics.fillRect(0, 32, 32, 32);
+                graphics.generateTexture('floor-tile', 64, 64);
+                graphics.destroy();
+            }
+        }
+
+        // Create the game
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>
