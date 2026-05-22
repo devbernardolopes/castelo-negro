@@ -1,0 +1,158 @@
+metadata:
+  title: Castelo Negro
+  version: 1.0
+  languages: [en, pt-br]
+  default_language: en
+
+variables:
+  game_turn:
+    type: int
+    value: 0
+  inventory:
+    type: list of items
+    value: null
+    max_capacity: 4
+  newborn_daughter_health:
+    type: int
+    value: 3
+    min_value: 0
+    max_value: 3
+  cottage_door_open:
+    type: bool
+    value: false
+  current_player_actor:
+    type: actor
+    value: protagonist
+
+items:
+  cottage_key:
+    name:
+      en: "Cottage Key"
+      pt-br: "Chave do Chalé"
+    takeable: true
+    consumable: false
+    description:
+      en: "A tarnished brass key."
+      pt-br: "Uma chave de latão oxidada."
+  husband_corpse:
+    name:
+      en: "Husband Corpse"
+      pt-br: "Cadáver do Esposo"
+    takeable: false
+    consumable: false
+    description:
+      en: "A recently deceased corpse."
+      pt-br: "Um cadáver recém-falecido."
+  newborn_daughter:
+    name:
+      en: "Newborn Daughter"
+      pt-br: "Filha Recém-Nascida"
+    takeable: true
+    consumable: false
+    description:
+      en: "An alive female newborn baby."
+      pt-br: "Uma bebê recém-nascida viva."
+  moldy_loaf_of_bread:
+    name:
+      en: "Moldy Loaf of Bread"
+      pt-br: "Pão Mofado"
+    takeable: true
+    consumable: true
+    description:
+      en: "A small loaf of modly bread."
+      pt-br: "Um pequeno pedaço de pão mofado."
+
+locations:
+  cottage_living_room:
+    name:
+      en: "Cottage - Living Room"
+      pt-br: "Chalé - Sala de Estar"
+    description:
+      en: "You're in the cottage living room."
+      pt-br: "Você está na sala de seu chalé."
+      
+      - if: !inventory.has(newborn_daughter)
+          en: "You can hear your baby crying."
+          pt-br: "Você pode ouvir seu bebê chorando."
+      
+      - if: cottage_door_open
+            en: "The front door is opened."
+            pt-br: "A porta da frente está aberta."
+    exits:
+      north: cottage_kitchen
+      west: cottage_porch
+    images:
+      ![](tti-2026-05-21T21-51-48-934644704.png)
+  cottage_kitchen:
+    name:
+      en: "Cottage - Kitchen"
+      pt-br: "Chalé - Cozinha"
+    exits:
+      south: cottage_living_room
+    images:
+      ![](tti-2026-05-21T22-20-09-116212.png)
+  cottage_porch:
+    name:
+      en: "Cottage - Porch"
+      pt-br: "Chalé - Varanda"
+    exits:
+      north: path_to_crop_fields
+      east: cottage_living_room
+    images:
+      ![](tti-2026-05-21T21-50-11-148199714.png)
+  path_to_crop_fields:
+    name:
+      en: "Path to Crop Fields"
+      pt-br: "Caminho para os Campos de Cultivo"
+    exits:
+      north: crop_fields
+      south: cottage_porch
+    images:
+      ![](tti-2026-05-21T21-42-06-488414966.png)
+  crop_fields:
+    name:
+      en: "Crop Fields"
+      pt-br: "Campos de Cultivo"
+    exits:
+      south: path_to_crop_fields
+    images:
+      ![](tti-2026-05-21T21-40-35-613533080.png)
+  black_castle_ensuite:
+    name:
+      en: "Black Castle - Ensuite"
+      pt-br: "Castelo Negro - Banheiro Privativo"
+    images:
+      ![](tti-2026-05-21T23-57-11-633718448.png)
+
+actors:
+  protagonist:
+    name:
+      en: "You"
+      pt-br: "Você"
+    playable: true
+    starting_location: cottage_living_room
+  old_hag:
+    name:
+      en: "Old Hag"
+      pt-br: "Velha Bruxa"
+    playable: false
+    starting_location: black_castle_ensuite
+
+strings:
+  intro:
+    en: |
+      You wake up.
+      
+      You're in the living room of your cottage.
+      
+      Next to you is the deceased corpse of your husband.
+      
+      You can hear your infant daughter crying on the floor.
+    pt-br: |
+      Você acorda.
+      
+      Você está na sala de seu chalé.
+      
+      Ao seu lado jaz o cadáver de seu falecido marido.
+      
+      Você pode ouvir sua bebê chorando no chão.
