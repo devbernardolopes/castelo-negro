@@ -1,90 +1,190 @@
-// Castelo Negro - Main game script
+// Text Adventure Engine - Main game script
 
-const ADVENTURE_FILE = 'adventures/castelo-negro/castelo-negro.yaml';
-let currentLocation = 'cottage_living_room';
-let gameData = {};
+let currentLocation = null;
+let gameData = null;
+let adventureSource = null; // { kind: 'url'|'file', label, baseDir, fileName }
 
-// Helper to read file
-async function readFile(path) {
-  const response = await fetch(path);
-  if (!response.ok) throw new Error('Failed to load adventure file');
+function setText(elId, text) {
+  const el = document.getElementById(elId);
+  if (el) el.textContent = text || '';
+}
+
+function clearEl(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  while (el.firstChild) el.removeChild(el.firstChild);
+}
+
+function setMenuButtonsEnabled(isGameLoaded) {
+  const ids = [
+    'menu-btn-reset-game',
+    'menu-btn-load-game',
+    'menu-btn-save-game',
+    'menu-btn-change-language'
+  ];
+  for (const id of ids) {
+    const btn = document.getElementById(id);
+    if (btn) btn.disabled = !isGameLoaded;
+  }
+}
+
+function setAdventureTitle(title) {
+  setText('adventure-title-row', title || '');
+}
+
+async function fetchText(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Failed to load: ${url}`);
   return await response.text();
 }
 
-// Parse YAML with proper nesting support
-function parseYaml(text) {
-  const result = {};
-  const lines = text.split('\n');
-  const stack = [{ obj: result, indent: -1 }];
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-
-    const indent = line.length - line.indexOf(trimmed[0]);
-    const kvMatch = trimmed.match(/^(\w+):\s*(.*)$/);
-    if (!kvMatch) continue;
-
-    // Pop stack until we find parent level
-    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
-      stack.pop();
-    }
-
-    const key = kvMatch[1];
-    const value = kvMatch[2].trim();
-    const current = stack[stack.length - 1].obj;
-
-    // Check if next line is indented (nested) or it's a simple value
-    const nextLine = lines[i + 1];
-    const nextTrimmed = nextLine?.trim();
-    const nextIndent = nextLine ? nextLine.length - nextLine.indexOf(nextTrimmed?.[0] || ' ') : -1;
-
-    if (value === '') {
-      // Nested object or array
-      current[key] = {};
-      stack.push({ obj: current[key], indent });
-    } else if (value.startsWith('-')) {
-      // Array inline
-      current[key] = [value.slice(1).trim()];
-    } else {
-      // Simple value
-      const cleanValue = value.replace(/^"|"$/g, '');
-      current[key] = cleanValue;
-    }
+function parseScalar(raw) {
+  const v = raw.trim();
+  if (v === '') return '';
+  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+    return v.slice(1, -1);
   }
-  return result;
+  if (v === 'null' || v === 'Null' || v === 'NULL' || v === '~') return null;
+  if (v === 'true' || v === 'True' || v === 'TRUE') return true;
+  if (v === 'false' || v === 'False' || v === 'FALSE') return false;
+  if (/^-?\d+(\.\d+)?$/.test(v)) return Number(v);
+  if (v.startsWith('[') && v.endsWith(']')) {
+    const inner = v.slice(1, -1).trim();
+    if (!inner) return [];
+    return inner.split(',').map(s => parseScalar(s.trim()));
+  }
+  return v;
 }
 
-// Get nested value from object using dot notation
-function get(obj, path, defaultVal) {
-  const keys = path.split('.');
-  let result = obj;
-  for (const key of keys) {
-    if (result?.[key] === undefined) return defaultVal;
-    result = result[key];
+function countIndent(line) {
+  let i = 0;
+  while (i < line.length && line[i] === ' ') i++;
+  return i;
+}
+
+function stripComments(line) {
+  let out = '';
+  let inSingle = false;
+  let inDouble = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === "'" && !inDouble) inSingle = !inSingle;
+    if (ch === '"' && !inSingle) inDouble = !inDouble;
+    if (ch === '#' && !inSingle && !inDouble) break;
+    out += ch;
   }
-  return result;
+  return out;
+}
+
+// Minimal YAML subset parser: mappings + sequences by indentation.
+// Supports scalars, inline arrays, nested objects/arrays, and "- key: value" objects.
+function parseYaml(text) {
+  const lines = text.replace(/\r\n/g, '\n').split('\n');
+  const root = {};
+  const stack = [{ indent: -1, container: root, type: 'object' }];
+
+  function currentFrame() {
+    return stack[stack.length - 1];
+  }
+
+  function ensureContainer(parent, key, type) {
+    if (type === 'array') {
+      if (!Array.isArray(parent[key])) parent[key] = [];
+      return parent[key];
+    }
+    if (typeof parent[key] !== 'object' || parent[key] === null || Array.isArray(parent[key])) parent[key] = {};
+    return parent[key];
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = stripComments(lines[i]);
+    if (!rawLine.trim()) continue;
+
+    const indent = countIndent(rawLine);
+    const line = rawLine.trim();
+
+    while (stack.length > 1 && currentFrame().indent >= indent) stack.pop();
+    const frame = currentFrame();
+
+    const isSeqItem = line.startsWith('- ');
+    if (isSeqItem) {
+      if (frame.type !== 'array') {
+        // If we encounter a sequence item but current container isn't an array,
+        // coerce only when the container is a property placeholder created earlier.
+        // This parser expects YAML authors to use sequences under keys.
+        throw new Error(`YAML parse error near line ${i + 1}: unexpected sequence item`);
+      }
+
+      const itemText = line.slice(2).trim();
+      if (!itemText) {
+        const obj = {};
+        frame.container.push(obj);
+        stack.push({ indent, container: obj, type: 'object' });
+        continue;
+      }
+
+      const kv = itemText.match(/^([^:]+):\s*(.*)$/);
+      if (kv) {
+        const obj = {};
+        obj[kv[1].trim()] = kv[2] === '' ? {} : parseScalar(kv[2]);
+        frame.container.push(obj);
+        if (kv[2] === '') {
+          stack.push({ indent, container: obj[kv[1].trim()], type: 'object' });
+        }
+      } else {
+        frame.container.push(parseScalar(itemText));
+      }
+      continue;
+    }
+
+    const match = line.match(/^([^:]+):\s*(.*)$/);
+    if (!match) continue;
+    const key = match[1].trim();
+    const rest = match[2];
+
+    if (frame.type !== 'object') {
+      throw new Error(`YAML parse error near line ${i + 1}: mapping inside sequence not supported here`);
+    }
+
+    if (rest === '') {
+      // Decide if this should be an array or object by peeking next non-empty line.
+      let j = i + 1;
+      let nextNonEmpty = null;
+      while (j < lines.length) {
+        const peek = stripComments(lines[j]);
+        if (peek.trim()) {
+          nextNonEmpty = peek;
+          break;
+        }
+        j++;
+      }
+
+      const nextIsArray = nextNonEmpty && nextNonEmpty.trim().startsWith('- ') && countIndent(nextNonEmpty) > indent;
+      frame.container[key] = nextIsArray ? [] : {};
+      stack.push({ indent, container: frame.container[key], type: nextIsArray ? 'array' : 'object' });
+    } else {
+      frame.container[key] = parseScalar(rest);
+    }
+  }
+
+  return root;
 }
 
 // Display image for location
 function displayLocationImage(locationKey) {
-  const location = gameData.locations?.[locationKey];
+  const location = gameData?.locations?.[locationKey];
   if (!location) return;
 
   const images = location.images || [];
   const imgEl = document.getElementById('room-img');
 
   if (images.length > 0) {
-    const imgPath = `adventures/assets/${images[0]}`;
-    console.log('Loading image:', imgPath);
+    const imgPath = resolveAssetUrl(images[0]);
     imgEl.src = imgPath;
     imgEl.onload = () => {
       imgEl.style.display = 'block';
-      console.log('Image loaded:', imgPath);
     };
     imgEl.onerror = () => {
-      console.warn('Image not found:', imgPath);
       imgEl.style.display = 'none';
     };
   } else {
@@ -95,7 +195,7 @@ function displayLocationImage(locationKey) {
 
 // Display location description
 function displayLocationDescription(locationKey) {
-  const location = gameData.locations?.[locationKey];
+  const location = gameData?.locations?.[locationKey];
   if (!location) return;
 
   const desc = location.description?.base || '';
@@ -120,6 +220,7 @@ const DIRECTION_MAP = {
 
 // Movement handler
 function moveDirection(direction) {
+  if (!gameData || !currentLocation) return;
   const mappedDir = DIRECTION_MAP[direction];
   const location = gameData.locations?.[currentLocation];
   const exit = location?.exits?.[mappedDir];
@@ -130,39 +231,135 @@ function moveDirection(direction) {
   }
 }
 
-// Main initialization
-async function initGame() {
-  try {
-    const yamlText = await readFile(ADVENTURE_FILE);
-    gameData = parseYaml(yamlText);
+function resolveAssetUrl(relOrUrl) {
+  const raw = String(relOrUrl || '').trim();
+  if (!raw) return '';
+  if (/^https?:\/\//i.test(raw) || raw.startsWith('data:') || raw.startsWith('blob:')) return raw;
+  const baseDir = adventureSource?.baseDir || '';
+  if (!baseDir) return raw;
+  if (raw.startsWith('/')) return raw;
+  return `${baseDir}${raw}`;
+}
 
-    // Set starting location
-    currentLocation = gameData.actors?.protagonist?.starting_location || 'cottage_living_room';
-    loadLocation(currentLocation);
+function normalizeInventory(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value.value)) return value.value;
+  return [];
+}
 
-    // Set initial inventory
-    const inventory = gameData.variables?.inventory?.value || [];
-    const inventoryList = document.getElementById('inventory-list');
-    inventory.forEach(itemName => {
-      const li = document.createElement('li');
-      li.textContent = itemName;
-      inventoryList.appendChild(li);
-    });
-
-    window.gameData = gameData;
-    console.log('Game initialized');
-  } catch (error) {
-    console.error('Failed to initialize game:', error);
-    document.getElementById('text-display').textContent = 'Failed to load adventure file.';
+function resetUiForNewGame() {
+  clearEl('inventory-list');
+  setText('text-display', '');
+  const imgEl = document.getElementById('room-img');
+  if (imgEl) {
+    imgEl.style.display = 'none';
+    imgEl.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
   }
 }
 
-// Event handlers
-document.addEventListener('DOMContentLoaded', initGame);
+function startGameFromData(data) {
+  gameData = data;
+  currentLocation = null;
+  resetUiForNewGame();
 
+  const title = data?.metadata?.title || adventureSource?.label || adventureSource?.fileName || '';
+  setAdventureTitle(title);
+  setMenuButtonsEnabled(true);
+
+  currentLocation = data?.actors?.protagonist?.starting_location || data?.starting_location || null;
+  if (!currentLocation && data?.locations && typeof data.locations === 'object') {
+    const keys = Object.keys(data.locations);
+    currentLocation = keys.length ? keys[0] : null;
+  }
+  if (currentLocation) loadLocation(currentLocation);
+
+  const inventory = normalizeInventory(data?.variables?.inventory);
+  const inventoryList = document.getElementById('inventory-list');
+  for (const itemName of inventory) {
+    const li = document.createElement('li');
+    li.textContent = String(itemName);
+    inventoryList.appendChild(li);
+  }
+
+  window.gameData = gameData;
+}
+
+function unloadGame() {
+  gameData = null;
+  currentLocation = null;
+  adventureSource = null;
+  setAdventureTitle('');
+  setMenuButtonsEnabled(false);
+  resetUiForNewGame();
+  setText('text-display', 'Load an adventure to begin.');
+}
+
+async function loadAdventureFromUrl(url) {
+  const yamlText = await fetchText(url);
+  const parsed = parseYaml(yamlText);
+  const baseDir = url.includes('/') ? url.slice(0, url.lastIndexOf('/') + 1) : '';
+  adventureSource = { kind: 'url', label: url, baseDir, fileName: url.split('/').pop() };
+  startGameFromData(parsed);
+}
+
+async function loadAdventureFromFile(file) {
+  const yamlText = await file.text();
+  const parsed = parseYaml(yamlText);
+  adventureSource = { kind: 'file', label: file.name, baseDir: '', fileName: file.name };
+  startGameFromData(parsed);
+}
+
+// Event handlers
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('direction-btn')) {
     const direction = e.target.getAttribute('data-direction');
     moveDirection(direction);
   }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  setMenuButtonsEnabled(false);
+  setAdventureTitle('');
+  setText('text-display', 'Load an adventure to begin.');
+
+  // Hidden file input for YAML loading.
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = '.yaml,.yml,text/yaml';
+  fileInput.style.display = 'none';
+  document.body.appendChild(fileInput);
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = '';
+    if (!file) return;
+    try {
+      await loadAdventureFromFile(file);
+    } catch (err) {
+      console.error(err);
+      unloadGame();
+      setText('text-display', 'Failed to load adventure file.');
+    }
+  });
+
+  document.getElementById('menu-btn-load-adventure')?.addEventListener('click', async () => {
+    const url = prompt('Adventure YAML URL/path (leave blank to pick a local file):', '');
+    try {
+      if (url && url.trim()) {
+        await loadAdventureFromUrl(url.trim());
+      } else {
+        fileInput.click();
+      }
+    } catch (err) {
+      console.error(err);
+      unloadGame();
+      setText('text-display', 'Failed to load adventure file.');
+    }
+  });
+
+  document.getElementById('menu-btn-reset-game')?.addEventListener('click', () => {
+    if (!gameData) return;
+    startGameFromData(gameData);
+  });
 });

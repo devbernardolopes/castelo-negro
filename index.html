@@ -9,12 +9,13 @@
 <body>
   <div id="game">
     <div id="menu-row">
-      <button class="menu-btn" data-action="load-adventure" title="Load Adventure">Adventure</button>
-      <button class="menu-btn" data-action="reset-game" title="Reset Game">Reset</button>
-      <button class="menu-btn" data-action="load-game" title="Load Game">Load</button>
-      <button class="menu-btn" data-action="save-game" title="Save Game">Save</button>
-      <button class="menu-btn" data-action="change-language" title="Change Language">Language</button>
+      <button id="menu-btn-load-adventure" class="menu-btn" data-action="load-adventure" title="Load Adventure">Adventure</button>
+      <button id="menu-btn-reset-game" class="menu-btn" data-action="reset-game" title="Reset Game">Reset</button>
+      <button id="menu-btn-load-game" class="menu-btn" data-action="load-game" title="Load Game">Load</button>
+      <button id="menu-btn-save-game" class="menu-btn" data-action="save-game" title="Save Game">Save</button>
+      <button id="menu-btn-change-language" class="menu-btn" data-action="change-language" title="Change Language">Language</button>
     </div>
+    <div id="adventure-title-row" aria-live="polite"></div>
     <div id="top-row">
       <div id="room-image"><img id="room-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Room Image" style="max-width:100%;max-height:100%;display:none;"/></div>
       <div id="inventory">

@@ -33,6 +33,24 @@ body {
   flex-shrink: 0;
 }
 
+#adventure-title-row {
+  flex-shrink: 0;
+  min-height: 28px;
+  border: 1px solid #333;
+  background: #141414;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: #bbb;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.5px;
+}
+
+.menu-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .menu-btn {
   flex: 1;
   padding: 6px 0;
