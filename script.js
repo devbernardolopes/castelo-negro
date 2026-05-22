@@ -323,16 +323,61 @@ document.addEventListener('DOMContentLoaded', () => {
   setAdventureTitle('');
   setText('text-display', 'Load an adventure to begin.');
 
-  // Hidden file input for YAML loading.
+  // File picker helpers (prefers File System Access API when available).
+  const DB_NAME = 'text-adventure-engine';
+  const DB_STORE = 'handles';
+  const DB_KEY_LAST_ADVENTURE = 'lastAdventureFileHandle';
+
+  function openDb() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(DB_STORE)) db.createObjectStore(DB_STORE);
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function idbGet(key) {
+    const db = await openDb();
+    try {
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction(DB_STORE, 'readonly');
+        const store = tx.objectStore(DB_STORE);
+        const req = store.get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    } finally {
+      db.close();
+    }
+  }
+
+  async function idbSet(key, value) {
+    const db = await openDb();
+    try {
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction(DB_STORE, 'readwrite');
+        const store = tx.objectStore(DB_STORE);
+        const req = store.put(value, key);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    } finally {
+      db.close();
+    }
+  }
+
+  // Fallback hidden file input (session-level "remembers last folder" behavior is browser-managed).
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.accept = '.yaml,.yml,text/yaml';
   fileInput.style.display = 'none';
   document.body.appendChild(fileInput);
 
-  fileInput.addEventListener('change', async () => {
-    const file = fileInput.files?.[0];
-    fileInput.value = '';
+  async function handlePickedFile(file) {
     if (!file) return;
     try {
       await loadAdventureFromFile(file);
@@ -341,17 +386,67 @@ document.addEventListener('DOMContentLoaded', () => {
       unloadGame();
       setText('text-display', 'Failed to load adventure file.');
     }
+  }
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = '';
+    await handlePickedFile(file);
   });
 
-  document.getElementById('menu-btn-load-adventure')?.addEventListener('click', async () => {
-    const url = prompt('Adventure YAML URL/path (leave blank to pick a local file):', '');
+  async function pickAdventureFile() {
+    if (typeof window.showOpenFilePicker !== 'function') {
+      fileInput.click();
+      return;
+    }
+
+    let startIn = undefined;
     try {
-      if (url && url.trim()) {
-        await loadAdventureFromUrl(url.trim());
-      } else {
-        fileInput.click();
+      const lastHandle = await idbGet(DB_KEY_LAST_ADVENTURE);
+      if (lastHandle) {
+        try {
+          const perm = await lastHandle.queryPermission?.({ mode: 'read' });
+          if (perm === 'granted') startIn = lastHandle;
+        } catch {
+          // ignore
+        }
       }
+    } catch {
+      // ignore
+    }
+
+    const [handle] = await window.showOpenFilePicker({
+      multiple: false,
+      startIn,
+      types: [
+        {
+          description: 'YAML adventures',
+          accept: {
+            'text/yaml': ['.yaml', '.yml'],
+            'application/x-yaml': ['.yaml', '.yml']
+          }
+        }
+      ],
+      excludeAcceptAllOption: true
+    });
+
+    if (!handle) return;
+    try {
+      await idbSet(DB_KEY_LAST_ADVENTURE, handle);
+    } catch {
+      // ignore
+    }
+
+    const file = await handle.getFile();
+    await handlePickedFile(file);
+  }
+
+  document.getElementById('menu-btn-load-adventure')?.addEventListener('click', async () => {
+    try {
+      await pickAdventureFile();
     } catch (err) {
+      // User cancelled is fine; anything else should show error.
+      if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) return;
       console.error(err);
       unloadGame();
       setText('text-display', 'Failed to load adventure file.');
