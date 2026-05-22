@@ -1,0 +1,260 @@
+metadata:
+  title: Castelo Negro
+  version: 1.2
+  languages: [en, pt-br]
+  default_language: en
+  assets_path: "assets/"
+
+variables:
+  game_turn:
+    type: int
+    value: 0
+    description: "Increments every player action"
+
+  inventory:
+    type: list
+    value: []
+    max_capacity: 4
+
+  newborn_daughter_health:
+    type: int
+    value: 3
+    min_value: 0
+    max_value: 3
+
+  cottage_door_open:
+    type: bool
+    value: false
+
+  player_health:
+    type: int
+    value: 10
+    min_value: 0
+    max_value: 10
+
+  sanity:
+    type: int
+    value: 8
+    min_value: 0
+    max_value: 10
+
+  has_met_hag:
+    type: bool
+    value: false
+
+  time_of_day:
+    type: string
+    value: "night"
+    possible_values: ["night", "dawn", "morning", "afternoon", "evening"]
+
+  # Story flags
+  fed_baby: 
+    type: bool
+    value: false
+
+  entered_castle:
+    type: bool
+    value: false
+
+items:
+  cottage_key:
+    name: en: "Cottage Key", pt-br: "Chave do Chalé" }
+    takeable: true
+    description: { en: "A tarnished brass key.", pt-br: "Uma chave de latão oxidada." }
+    verbs:
+      use:
+        conditions:
+          - if: "current_location in ['cottage_living_room', 'cottage_porch']"
+            effect: "cottage_door_open = true"
+            message: { en: "You unlock the front door.", pt-br: "Você destranca a porta da frente." }
+
+  husband_corpse:
+    name: { en: "Husband's Corpse", pt-br: "Cadáver do Esposo" }
+    takeable: false
+    description: { en: "The body of your husband, cold and still.", pt-br: "O corpo do seu marido, frio e imóvel." }
+
+  newborn_daughter:
+    name: { en: "Newborn Daughter", pt-br: "Filha Recém-Nascida" }
+    takeable: true
+    description: { en: "Your tiny, crying daughter.", pt-br: "Sua pequena filha chorando." }
+    on_drop:
+      effect: "newborn_daughter_health -= 1"
+      message: { en: "You gently place her down.", pt-br: "Você a coloca no chão com cuidado." }
+
+  moldy_loaf_of_bread:
+    name: { en: "Moldy Loaf of Bread", pt-br: "Pão Mofado" }
+    takeable: true
+    consumable: true
+    description: { en: "A small, mold-covered loaf.", pt-br: "Um pequeno pedaço de pão mofado." }
+    on_consume:
+      effect: |
+        player_health += 1
+        newborn_daughter_health += 1 if inventory.has(newborn_daughter) else 0
+        fed_baby = true
+      message: { en: "The bread tastes awful, but it gives you some strength.", pt-br: "O pão tem um gosto horrível, mas lhe dá um pouco de força." }
+
+locations:
+  cottage_living_room:
+    name: { en: "Cottage - Living Room", pt-br: "Chalé - Sala de Estar" }
+    description:
+      base: { en: "You're in the living room of your modest cottage.", pt-br: "Você está na sala de estar do seu modesto chalé." }
+      conditions:
+        - if: "!inventory.has(newborn_daughter)"
+          text: { en: "You can hear your baby crying desperately on the floor.", pt-br: "Você pode ouvir sua bebê chorando desesperadamente no chão." }
+        - if: "cottage_door_open"
+          text: { en: "The front door stands wide open, letting cold air in.", pt-br: "A porta da frente está escancarada, deixando o ar frio entrar." }
+    contents: [husband_corpse, newborn_daughter]
+    exits:
+      north: cottage_kitchen
+      west: cottage_porch
+    images: ["tti-2026-05-21T21-51-48-934644704.png"]
+
+  cottage_kitchen:
+    name: { en: "Cottage - Kitchen", pt-br: "Chalé - Cozinha" }
+    description:
+      base: { en: "A simple kitchen with a stone hearth.", pt-br: "Uma cozinha simples com uma lareira de pedra." }
+    contents: []
+    exits:
+      south: cottage_living_room
+    images: ["tti-2026-05-21T22-20-09-116212.png"]
+
+  cottage_porch:
+    name: { en: "Cottage - Porch", pt-br: "Chalé - Varanda" }
+    description:
+      base: { en: "The wooden porch creaks under your feet.", pt-br: "A varanda de madeira range sob seus pés." }
+    exits:
+      north: path_to_crop_fields
+      east: cottage_living_room
+    images: ["tti-2026-05-21T21-50-11-148199714.png"]
+
+  path_to_crop_fields:
+    name: { en: "Path to Crop Fields", pt-br: "Caminho para os Campos de Cultivo" }
+    description:
+      base: { en: "A dirt path leads toward the fields.", pt-br: "Um caminho de terra leva aos campos." }
+    exits:
+      north: crop_fields
+      south: cottage_porch
+    images: ["tti-2026-05-21T21-42-06-488414966.png"]
+
+  crop_fields:
+    name: { en: "Crop Fields", pt-br: "Campos de Cultivo" }
+    description:
+      base: { en: "Wilted crops sway in the cold wind.", pt-br: "Culturas murchas balançam ao vento frio." }
+    exits:
+      south: path_to_crop_fields
+    images: ["tti-2026-05-21T21-40-35-613533080.png"]
+
+  black_castle_ensuite:
+    name: { en: "Black Castle - Ensuite", pt-br: "Castelo Negro - Banheiro Privativo" }
+    description:
+      base: { en: "A dark, opulent bathroom inside the Black Castle.", pt-br: "Um banheiro escuro e opulento dentro do Castelo Negro." }
+    contents: [old_hag]
+    exits: {}
+    images: ["tti-2026-05-21T23-57-11-633718448.png"]
+
+actors:
+  protagonist:
+    name: { en: "You", pt-br: "Você" }
+    playable: true
+    starting_location: cottage_living_room
+
+  old_hag:
+    name: { en: "Old Hag", pt-br: "Velha Bruxa" }
+    playable: false
+    starting_location: black_castle_ensuite
+    dialogue:
+      default:
+        en: "Hehehe... what a delicious little family you have..."
+        pt-br: "Hehehe... que família deliciosa você tem..."
+
+events:
+  - id: baby_cries
+    type: recurring
+    interval: 3
+    conditions:
+      - "newborn_daughter_health > 0"
+      - "!inventory.has(newborn_daughter)"
+    effect:
+      - "sanity -= 1"
+    message:
+      en: "Your daughter's cries echo painfully in your mind."
+      pt-br: "Os choros da sua filha ecoam dolorosamente em sua mente."
+
+  - id: baby_health_decay
+    type: recurring
+    interval: 5
+    conditions: ["newborn_daughter_health > 0"]
+    effect: "newborn_daughter_health -= 1"
+    message:
+      en: "Your daughter is getting weaker..."
+      pt-br: "Sua filha está enfraquecendo..."
+
+  - id: night_to_dawn
+    type: time_based
+    trigger_when: "game_turn >= 8"
+    effect: "time_of_day = 'dawn'"
+    message:
+      en: "The sky begins to lighten in the east."
+      pt-br: "O céu começa a clarear no leste."
+
+  - id: hag_encounter
+    type: location_enter
+    location: "black_castle_ensuite"
+    conditions: ["!has_met_hag"]
+    effect: "has_met_hag = true"
+    message:
+      en: "An old hag emerges from the shadows, grinning with rotten teeth."
+      pt-br: "Uma velha bruxa surge das sombras, sorrindo com dentes podres."
+
+end_conditions:
+  lose:
+    - id: baby_dead
+      condition: "newborn_daughter_health <= 0"
+      message:
+        en: "Your daughter has died in your arms. Overwhelmed by grief, you lose all will to continue..."
+        pt-br: "Sua filha morreu em seus braços. Dominado pela dor, você perde toda a vontade de continuar..."
+      final_image: "death_baby.png"
+
+    - id: player_dead
+      condition: "player_health <= 0 or sanity <= 0"
+      message:
+        en: "Darkness takes you. You collapse, never to wake again."
+        pt-br: "A escuridão te toma. Você desaba, sem nunca mais acordar."
+      final_image: "death_player.png"
+
+    - id: starvation
+      condition: "game_turn >= 30 and player_health <= 3"
+      message:
+        en: "Hunger and despair finally consume you."
+        pt-br: "Fome e desespero finalmente te consomem."
+
+  win:
+    - id: reach_sanctuary
+      condition: "current_location == 'black_castle_ensuite' and newborn_daughter_health >= 2 and has_met_hag"
+      message:
+        en: "The hag reveals a hidden ritual that saves your daughter... at a terrible cost."
+        pt-br: "A bruxa revela um ritual oculto que salva sua filha... a um custo terrível."
+      final_image: "ending_true.png"
+
+    - id: escape_with_baby
+      condition: "current_location == 'crop_fields' and inventory.has(newborn_daughter) and newborn_daughter_health >= 1"
+      message:
+        en: "You flee into the night with your daughter. Survival is uncertain, but you are free."
+        pt-br: "Você foge noite adentro com sua filha. A sobrevivência é incerta, mas vocês estão livres."
+
+strings:
+  intro:
+    en: |
+      You wake up.
+      You're in the living room of your cottage.
+      Next to you is the deceased corpse of your husband.
+      You can hear your infant daughter crying on the floor.
+    pt-br: |
+      Você acorda.
+      Você está na sala de seu chalé.
+      Ao seu lado jaz o cadáver de seu falecido marido.
+      Você pode ouvir sua bebê chorando no chão.
+
+  death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
+  
+  death_player: { en: "You collapse from exhaustion and despair.", pt-br: "Você desaba de exaustão e desespero." }
