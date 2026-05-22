@@ -1,6 +1,6 @@
 // Castelo Negro - Main game script
 
-const ADVENTURE_FILE = 'adventures/castelo-negro.yaml';
+const ADVENTURE_FILE = 'adventures/castelo-negro/castelo-negro.yaml';
 let currentLocation = 'cottage_living_room';
 let gameData = {};
 

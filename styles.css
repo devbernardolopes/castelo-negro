@@ -27,6 +27,31 @@ body {
   background: #111;
 }
 
+#menu-row {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.menu-btn {
+  flex: 1;
+  padding: 6px 0;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.menu-btn:hover {
+  border-color: #555;
+}
+
 #top-row {
   display: flex;
   gap: 8px;
