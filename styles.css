@@ -208,7 +208,7 @@ body {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 #sidebar-tabs[data-enabled="false"] {
@@ -263,13 +263,16 @@ body {
 #sidebar-tabs .tabs-body {
   display: flex;
   flex-direction: column;
+  flex: 1;
   min-height: 0;
 }
 
 #sidebar-tabs .tab-panel {
   display: flex;
   flex-direction: column;
+  flex: 1;
   min-height: 0;
+  overflow-y: auto;
 }
 
 #mind-panel {
@@ -512,4 +515,17 @@ body {
 
 .log-entry.player-prompt {
   color: #341db6;
+}
+
+#sidebar-tabs .tab-panel::-webkit-scrollbar,
+#text-display::-webkit-scrollbar,
+#user-input::-webkit-scrollbar {
+  display: none;
+}
+
+#sidebar-tabs .tab-panel,
+#text-display,
+#user-input {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
