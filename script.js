@@ -354,6 +354,8 @@ function validateDefinition(def) {
   // Inventory variable is strongly recommended in v1.2
   if (!def.variables.inventory) console.warn('[engine] `variables.inventory` missing; inventory features will be limited.');
   if (!def.strings || typeof def.strings !== 'object') console.warn('[engine] `strings` missing; intro/death messages may not render.');
+  if (def.verbs && typeof def.verbs !== 'object') console.warn('[engine] `verbs` should be an object map.');
+  if (def.actions && typeof def.actions !== 'object') console.warn('[engine] `actions` should be an object map.');
 }
 
 // ---------------------------
@@ -422,6 +424,7 @@ class GameEngine {
 
     this.gameState = this._createInitialState();
     this.inventory = new InventorySystem(this);
+    this._verbsIndex = this._buildVerbsIndex();
 
     // A small helper object exposed to condition/effect evaluation.
     this._evalContext = {
@@ -429,6 +432,30 @@ class GameEngine {
         has: (itemId) => this.inventory.has(String(itemId))
       }
     };
+  }
+ 
+  _buildVerbsIndex() {
+    const index = new Map();
+    const verbs = this.definition.verbs && typeof this.definition.verbs === 'object' ? this.definition.verbs : {};
+    for (const [canonical, def] of Object.entries(verbs)) {
+      index.set(String(canonical).toLowerCase(), String(canonical).toLowerCase());
+      const syn = def?.synonyms;
+      if (syn && typeof syn === 'object') {
+        for (const list of Object.values(syn)) {
+          if (!Array.isArray(list)) continue;
+          for (const w of list) {
+            index.set(String(w).toLowerCase(), String(canonical).toLowerCase());
+          }
+        }
+      }
+    }
+    return index;
+  }
+
+  _canonicalVerb(word) {
+    const w = String(word || '').trim().toLowerCase();
+    if (!w) return '';
+    return this._verbsIndex.get(w) || w;
   }
 
   _createInitialState() {
@@ -551,11 +578,24 @@ class GameEngine {
   _buildEvalContext() {
     const vars = {};
     for (const [k, v] of Object.entries(this.gameState.variables)) vars[k] = v.value;
+    const currentLoc = this.getFullLocationData(this.gameState.current_location);
+    const locationHas = (itemId) => {
+      const contents = Array.isArray(currentLoc?.contents) ? currentLoc.contents : [];
+      return contents.includes(String(itemId));
+    };
     return {
       ...vars,
       current_location: this.gameState.current_location,
       game_turn: this.gameState.game_turn,
-      inventory: this._evalContext.inventory
+      inventory: {
+        ...this._evalContext.inventory,
+        add: (itemId) => this.inventory.add(String(itemId)),
+        remove: (itemId) => this.inventory.remove(String(itemId))
+      },
+      current_player_location: { has: locationHas },
+      items: this.definition.items || {},
+      locations: this.definition.locations || {},
+      actors: this.definition.actors || {}
     };
   }
 
@@ -583,6 +623,15 @@ class GameEngine {
     for (const raw of lines) {
       const line = String(raw).trim();
       if (!line) continue;
+ 
+      // Support simple engine-affecting calls used by v1.3 actions.
+      const call = line.match(/^(inventory)\.(add|remove)\(\s*(['"])(.+?)\3\s*\)\s*$/);
+      if (call) {
+        const [, , method, , arg] = call;
+        if (method === 'add') this.inventory.add(String(arg));
+        if (method === 'remove') this.inventory.remove(String(arg));
+        continue;
+      }
 
       const condMatch = line.match(/^([A-Za-z_]\w*)\s*([+\-*/]?=)\s*(.+)\s+if\s+(.+)\s+else\s+(.+)$/);
       if (condMatch) {
@@ -848,6 +897,10 @@ class GameEngine {
       if (dirs.includes(d)) return this.go(/** @type {any} */ (d));
     }
 
+    // Action system (v1.3+): try declarative action matches first.
+    if (this._tryActions(cmd)) return true;
+
+    // Legacy fallback commands (still supported).
     const take = cmd.match(/^(take|get)\s+(.+)$/);
     if (take) return this._takeItemByName(take[2]);
     const drop = cmd.match(/^drop\s+(.+)$/);
@@ -859,6 +912,124 @@ class GameEngine {
 
     this.hooks.onOutput?.("Command not understood (parser not implemented yet).");
     this._afterTurn({ kind: 'noop' });
+  }
+ 
+  _tryActions(cmd) {
+    const actions = this.definition.actions && typeof this.definition.actions === 'object' ? this.definition.actions : null;
+    if (!actions) return false;
+
+    const parsed = this._parseCommandForActions(cmd);
+    if (!parsed) return false;
+
+    for (const [actionId, actionDef] of Object.entries(actions)) {
+      const match = this._matchAction(actionDef, parsed);
+      if (!match) continue;
+
+      const ok = this._checkActionConditions(actionDef, match);
+      if (!ok) continue;
+
+      if (actionDef.effect) this._applyActionEffects(actionDef.effect, match);
+      const msg = this._pickLang(actionDef.message);
+      if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+      this._afterTurn({ kind: 'action', id: actionId });
+      return true;
+    }
+    return false;
+  }
+
+  _parseCommandForActions(cmd) {
+    const tokens = cmd.split(/\s+/).filter(Boolean);
+    if (!tokens.length) return null;
+
+    // Find the longest synonym match at the front (max 3 words).
+    let verbRaw = tokens[0];
+    let verbLen = 1;
+    for (let len = Math.min(3, tokens.length); len >= 2; len--) {
+      const candidate = tokens.slice(0, len).join(' ');
+      if (this._verbsIndex.has(candidate)) {
+        verbRaw = candidate;
+        verbLen = len;
+        break;
+      }
+    }
+    const verb = this._canonicalVerb(verbRaw);
+    const rest = tokens.slice(verbLen).join(' ').trim();
+
+    // Very small grammar: "<verb> <object> [to <target>]"
+    let objectText = rest;
+    let targetText = '';
+    const toIdx = rest.indexOf(' to ');
+    if (toIdx !== -1) {
+      objectText = rest.slice(0, toIdx).trim();
+      targetText = rest.slice(toIdx + 4).trim();
+    }
+    return { verb, objectText, targetText };
+  }
+
+  _matchAction(actionDef, parsed) {
+    const pat = actionDef?.pattern;
+    if (!pat || typeof pat !== 'object') return null;
+
+    const verbList = Array.isArray(pat.verb) ? pat.verb.map(v => String(v)) : [];
+    if (verbList.length && !verbList.map(v => this._canonicalVerb(v)).includes(parsed.verb)) return null;
+
+    const objectId = this._resolveEntityId(parsed.objectText, 'item');
+    const targetId = this._resolveEntityId(parsed.targetText, 'item');
+
+    if (!this._matchPatternSlot(pat.object, objectId)) return null;
+    if (!this._matchPatternSlot(pat.target, targetId)) return null;
+
+    const objectName = objectId ? (this._pickLang(this.definition.items?.[objectId]?.name) || objectId) : parsed.objectText;
+    const targetName = targetId ? (this._pickLang(this.definition.items?.[targetId]?.name) || targetId) : parsed.targetText;
+
+    return {
+      verb: parsed.verb,
+      object: objectId,
+      target: targetId,
+      object_name: objectName,
+      target_name: targetName
+    };
+  }
+
+  _matchPatternSlot(slot, id) {
+    if (slot === undefined) return true;
+    if (slot === '*') return Boolean(id);
+    if (Array.isArray(slot)) {
+      if (slot.includes('*')) return Boolean(id);
+      return id ? slot.map(String).includes(id) : false;
+    }
+    return true;
+  }
+
+  _resolveEntityId(text, kind) {
+    const t = String(text || '').trim();
+    if (!t) return null;
+    if (kind === 'item') return this._findItemIdByName(t);
+    return t;
+  }
+
+  _expandTemplate(str, match) {
+    return String(str).replace(/\{(\w+)\}/g, (_m, key) => {
+      const v = match?.[key];
+      return v == null ? '' : String(v);
+    });
+  }
+
+  _checkActionConditions(actionDef, match) {
+    const conds = Array.isArray(actionDef.conditions) ? actionDef.conditions : [];
+    for (const c of conds) {
+      const expanded = this._expandTemplate(String(c), match);
+      if (!this.evaluateCondition(expanded)) return false;
+    }
+    return true;
+  }
+
+  _applyActionEffects(effect, match) {
+    if (Array.isArray(effect)) {
+      for (const e of effect) this.applyEffect(this._expandTemplate(String(e), match));
+      return;
+    }
+    this.applyEffect(this._expandTemplate(String(effect), match));
   }
 
   _findItemIdByName(query) {
