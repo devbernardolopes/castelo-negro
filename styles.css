@@ -309,6 +309,7 @@ body {
 .memory-token-controls {
   display: inline-flex;
   gap: 4px;
+  display: none;
 }
 
 .memory-token-btn {

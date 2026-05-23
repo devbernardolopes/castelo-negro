@@ -201,6 +201,17 @@ function addWordToCommand(rawWord) {
   renderCommandBuilder();
 }
 
+let pendingWordClickTimer = null;
+let suppressPromptAddUntilTs = 0;
+
+function scheduleAddWordToCommand(rawWord) {
+  if (pendingWordClickTimer) clearTimeout(pendingWordClickTimer);
+  pendingWordClickTimer = setTimeout(() => {
+    pendingWordClickTimer = null;
+    addWordToCommand(rawWord);
+  }, 250);
+}
+
 function setModalVisible(visible) {
   const el = document.getElementById('adventure-modal-backdrop');
   if (!el) return;
@@ -1015,6 +1026,7 @@ class GameEngine {
       token.className = 'memory-token';
       token.setAttribute('role', 'listitem');
       token.setAttribute('data-index', String(i));
+      token.setAttribute('draggable', words.length > 1 ? 'true' : 'false');
 
       const handle = document.createElement('div');
       handle.className = 'word-token-handle';
@@ -1561,7 +1573,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!target) return;
 
     if (target.classList.contains('click-word')) {
-      addWordToCommand(target.getAttribute('data-word') || target.textContent || '');
+      if (Date.now() < suppressPromptAddUntilTs) return;
+      scheduleAddWordToCommand(target.getAttribute('data-word') || target.textContent || '');
       return;
     }
 
@@ -1583,6 +1596,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (memAction === 'mem-remove') engine.removeMemoryWord(index);
       if (memAction === 'mem-up') engine.moveMemoryWord(index, -1);
       if (memAction === 'mem-down') engine.moveMemoryWord(index, 1);
+      return;
+    }
+
+    // Click a memory token (not buttons) -> add word to prompt (memory remains unchanged).
+    const memToken = target.closest('.memory-token');
+    if (memToken && !target.closest('button')) {
+      if (!engine) return;
+      const word = memToken.querySelector('.word-token-text')?.textContent || '';
+      if (!word) return;
+      addWordToCommand(word);
     }
   });
 
@@ -1595,8 +1618,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('dblclick', (ev) => {
     const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
     if (!target) return;
-    if (target.classList.contains('click-word')) return tryAddMemoryFromElement(target);
-    if (target.classList.contains('word-token-text') && target.closest('#user-input')) return tryAddMemoryFromElement(target);
+    if (pendingWordClickTimer) clearTimeout(pendingWordClickTimer);
+    pendingWordClickTimer = null;
+    suppressPromptAddUntilTs = Date.now() + 400;
+
+    if (target.classList.contains('click-word')) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      return tryAddMemoryFromElement(target);
+    }
+    if (target.classList.contains('word-token-text') && target.closest('#user-input')) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      return tryAddMemoryFromElement(target);
+    }
   });
 
   // Mobile equivalent for double-click: long-press on a word (~450ms).
@@ -1619,6 +1654,7 @@ document.addEventListener('DOMContentLoaded', () => {
     longPressTarget = target;
     longPressTimer = setTimeout(() => {
       tryAddMemoryFromElement(longPressTarget);
+      suppressPromptAddUntilTs = Date.now() + 700;
       clearLongPress();
     }, LONG_PRESS_MS);
   });
@@ -1681,6 +1717,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const [moved] = selectedWords.splice(dragIndex, 1);
     selectedWords.splice(dropIndex, 0, moved);
     renderCommandBuilder();
+  });
+
+  // Memory list reorder (vertical only), armed by handle.
+  const memoryList = document.getElementById('memory-list');
+  let memDragIndex = null;
+
+  memoryList?.addEventListener('pointerdown', (ev) => {
+    const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    if (!target) return;
+    if (!target.classList.contains('word-token-handle')) return;
+    const token = target.closest('.memory-token');
+    if (!token) return;
+    token.setAttribute('data-drag-armed', 'true');
+  });
+
+  memoryList?.addEventListener('dragstart', (ev) => {
+    const token = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    if (!token || !token.classList.contains('memory-token')) return;
+    if (token.getAttribute('draggable') !== 'true') {
+      ev.preventDefault();
+      return;
+    }
+    if (token.getAttribute('data-drag-armed') !== 'true') {
+      ev.preventDefault();
+      return;
+    }
+    memDragIndex = Number(token.getAttribute('data-index'));
+    token.classList.add('dragging');
+    ev.dataTransfer?.setData('text/plain', String(memDragIndex));
+    ev.dataTransfer && (ev.dataTransfer.effectAllowed = 'move');
+  });
+
+  memoryList?.addEventListener('dragend', (ev) => {
+    const token = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    if (token?.classList.contains('memory-token')) {
+      token.classList.remove('dragging');
+      token.removeAttribute('data-drag-armed');
+    }
+    memDragIndex = null;
+  });
+
+  memoryList?.addEventListener('dragover', (ev) => {
+    if (memDragIndex === null) return;
+    ev.preventDefault();
+    ev.dataTransfer && (ev.dataTransfer.dropEffect = 'move');
+  });
+
+  memoryList?.addEventListener('drop', (ev) => {
+    if (memDragIndex === null) return;
+    ev.preventDefault();
+    if (!engine) return;
+    const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    const token = target?.closest('.memory-token');
+    const dropIndex = Number(token?.getAttribute('data-index'));
+    if (!Number.isFinite(dropIndex) || dropIndex < 0) return;
+    if (dropIndex === memDragIndex) return;
+    engine.moveMemoryWord(memDragIndex, dropIndex - memDragIndex);
   });
 
   const sendBtn = document.getElementById('input-btn-send'); 
