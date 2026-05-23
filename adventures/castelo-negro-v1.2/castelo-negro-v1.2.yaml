@@ -1,6 +1,6 @@
 metadata:
   title: Castelo Negro
-  version: 1.2
+  version: 1.3
   languages: [en, pt-br]
   default_language: en
   assets_path: "assets/images/"
@@ -10,6 +10,14 @@ variables:
     type: int
     value: 0
     description: "Increments every player action"
+
+  current_player_actor:
+    type: object
+    value: [protagonist]
+
+  current_player_location:
+    type: object
+    value: []
 
   inventory:
     type: list
@@ -47,7 +55,6 @@ variables:
     value: "night"
     possible_values: ["night", "dawn", "morning", "afternoon", "evening"]
 
-  # Story flags
   fed_baby: 
     type: bool
     value: false
@@ -58,7 +65,7 @@ variables:
 
 items:
   cottage_key:
-    name: en: "Cottage Key", pt-br: "Chave do Chalé" }
+    name: { en: "Cottage Key", pt-br: "Chave do Chalé" }
     takeable: true
     description: { en: "A tarnished brass key.", pt-br: "Uma chave de latão oxidada." }
     verbs:
@@ -258,3 +265,32 @@ strings:
   death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
   
   death_player: { en: "You collapse from exhaustion and despair.", pt-br: "Você desaba de exaustão e desespero." }
+
+verbs:
+  take:
+    synonyms: { en: ["take", "pick up", "grab"], pt-br: ["pegar", "apanhar"] }
+  give:
+    synonyms: { en: ["give", "feed", "hand"], pt-br: ["dar", "alimentar"] }
+  examine:
+    synonyms: { en: ["examine", "look at"], pt-br: ["examinar", "olhar"] }
+  drop:
+    synonyms: { en: ["drop", "put down"], pt-br: ["soltar", "colocar"] }
+  use:
+    synonyms: { en: ["use", "unlock", "open"], pt-br: ["usar", "destrancar", "abrir"] }
+
+actions:
+  feed_baby:
+    - pattern:
+        verb: "give"
+        object: "moldy_loaf_of_bread"
+        target: "newborn_daughter"
+      conditions:
+        - "inventory.has('moldy_loaf_of_bread')"
+        - "inventory.has('newborn_daughter') or current_player_location.has('newborn_daughter')"
+      effect: "items.moldy_loaf_of_bread.on_consume.effect"
+      message:
+        en: "You break off a piece and feed your daughter."
+        pt-br: "Você quebra um pedaço e alimenta sua filha."
+      side_effects:
+        - "fed_baby = true"
+        - "newborn_daughter_health += 2"
