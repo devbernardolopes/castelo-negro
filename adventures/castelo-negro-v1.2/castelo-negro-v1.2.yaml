@@ -3,7 +3,7 @@ metadata:
   version: 1.2
   languages: [en, pt-br]
   default_language: en
-  assets_path: "assets/"
+  assets_path: "assets/images/"
 
 variables:
   game_turn:
