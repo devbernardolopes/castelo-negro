@@ -70,6 +70,116 @@ body {
   border-color: #555;
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 540px;
+  max-width: 92vw;
+  background: #111;
+  border: 1px solid #333;
+  padding: 12px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #333;
+}
+
+.modal-title {
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ddd;
+}
+
+.modal-close {
+  background: transparent;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  border-color: #555;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mode-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.mode-option {
+  font-size: 13px;
+  color: #ddd;
+}
+
+.mode-pane {
+  border: 1px solid #333;
+  background: #141414;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-label {
+  min-width: 88px;
+  font-size: 13px;
+  color: #bbb;
+}
+
+.form-control {
+  flex: 1;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  padding: 8px;
+}
+
+.actions-row {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.hint {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.4;
+}
+
 #top-row {
   display: flex;
   gap: 8px;

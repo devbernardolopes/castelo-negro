@@ -49,6 +49,12 @@ function appendOutput(text) {
   el.scrollTop = el.scrollHeight;
 }
 
+function setModalVisible(visible) {
+  const el = document.getElementById('adventure-modal-backdrop');
+  if (!el) return;
+  el.style.display = visible ? 'flex' : 'none';
+}
+
 // ---------------------------
 // YAML parsing (tolerant subset)
 // ---------------------------
@@ -970,6 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const DB_STORE = 'handles';
   const DB_KEY_LAST_ADVENTURE = 'lastAdventureFileHandle';
   const DB_KEY_LAST_ADVENTURE_DIR = 'lastAdventureDirectoryHandle';
+  const LS_KEY_LAST_MODE = 'adventureLoadMode';
 
   function openDb() {
     return new Promise((resolve, reject) => {
@@ -1108,6 +1115,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  async function loadAdventureFromUrl(yamlUrl) {
+    const res = await fetch(yamlUrl);
+    if (!res.ok) throw new Error(`Failed to load adventure YAML: ${yamlUrl}`);
+    const yamlText = await res.text();
+    const parsed = parseYaml(yamlText);
+
+    const yamlBaseUrl = new URL('./', yamlUrl).toString();
+    const assetsBaseUrl = new URL(String(parsed?.metadata?.assets_path || 'assets/'), yamlBaseUrl).toString();
+    const assetsResolver = async (relativePath) => new URL(String(relativePath || ''), assetsBaseUrl).toString();
+
+    engine = new GameEngine(parsed, {
+      assetsBase: '',
+      assetsResolver,
+      onOutput: appendOutput
+    });
+    setAdventureTitle(parsed?.metadata?.title || yamlUrl);
+    setMenuButtonsEnabled(true);
+    resetUiForNewGame();
+    setText('text-display', '');
+    const intro = engine.getText('intro');
+    if (intro) appendOutput(intro);
+    engine.renderCurrentLocation();
+  }
+
+  async function loadManifest() {
+    const res = await fetch('adventures/manifest.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('Web adventures unavailable; try Disk mode.');
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('Invalid adventures manifest.');
+    return data;
+  }
+
   fileInput.addEventListener('change', async () => {
     const file = fileInput.files?.[0];
     fileInput.value = '';
@@ -1152,21 +1191,105 @@ document.addEventListener('DOMContentLoaded', () => {
       excludeAcceptAllOption: true
     });
     if (!handle) return;
-    const dirHandle = await ensureAdventureDirectoryHandle(startIn || handle);
+    let dirHandle = null;
+    try {
+      dirHandle = await ensureAdventureDirectoryHandle(startIn || handle);
+    } catch (err) {
+      // User can cancel directory picking; proceed without images.
+      console.warn('[engine] Adventure folder not selected; images may not load.', err);
+    }
     const file = await handle.getFile();
     await loadAdventureFromFile(file, handle, dirHandle);
   }
 
-  document.getElementById('menu-btn-load-adventure')?.addEventListener('click', async () => {
+  // Modal UI wiring
+  const closeBtn = document.getElementById('adventure-modal-close');
+  closeBtn?.addEventListener('click', () => setModalVisible(false));
+  document.getElementById('adventure-modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target?.id === 'adventure-modal-backdrop') setModalVisible(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setModalVisible(false);
+  });
+
+  const webPane = document.getElementById('adventure-web-pane');
+  const diskPane = document.getElementById('adventure-disk-pane');
+  const webSelect = document.getElementById('adventure-web-select');
+  const webHint = document.getElementById('adventure-web-hint');
+  const diskHint = document.getElementById('adventure-disk-hint');
+  const webLoadBtn = document.getElementById('adventure-web-load');
+  const diskLoadBtn = document.getElementById('adventure-disk-load');
+
+  function setMode(mode) {
+    localStorage.setItem(LS_KEY_LAST_MODE, mode);
+    const webRadio = document.querySelector('input[name="adventure-load-mode"][value="web"]');
+    const diskRadio = document.querySelector('input[name="adventure-load-mode"][value="disk"]');
+    if (webRadio) webRadio.checked = mode === 'web';
+    if (diskRadio) diskRadio.checked = mode === 'disk';
+    if (webPane) webPane.style.display = mode === 'web' ? 'flex' : 'none';
+    if (diskPane) diskPane.style.display = mode === 'disk' ? 'flex' : 'none';
+  }
+
+  document.querySelectorAll('input[name="adventure-load-mode"]').forEach((el) => {
+    el.addEventListener('change', () => setMode(el.value));
+  });
+
+  async function populateManifestUi() {
+    if (!webSelect) return;
+    webSelect.innerHTML = '';
+    if (webHint) webHint.textContent = 'Loading…';
     try {
+      const manifest = await loadManifest();
+      for (const entry of manifest) {
+        const opt = document.createElement('option');
+        opt.value = entry.yaml;
+        opt.textContent = entry.title || entry.id || entry.yaml;
+        webSelect.appendChild(opt);
+      }
+      if (webHint) webHint.textContent = '';
+    } catch (err) {
+      if (webHint) webHint.textContent = String(err?.message || err);
+      console.error(err);
+    }
+  }
+
+  webLoadBtn?.addEventListener('click', async () => {
+    const yamlUrl = webSelect?.value;
+    if (!yamlUrl) return;
+    try {
+      await loadAdventureFromUrl(yamlUrl);
+      setModalVisible(false);
+    } catch (err) {
+      console.error(err);
+      if (webHint) webHint.textContent = 'Failed to load web adventure.';
+    }
+  });
+
+  diskLoadBtn?.addEventListener('click', async () => {
+    try {
+      if (typeof window.showOpenFilePicker !== 'function') {
+        if (diskHint) diskHint.textContent = "Disk mode can’t load images in this browser; use Web mode or a Chromium-based browser.";
+        fileInput.click();
+        return;
+      }
       await pickAdventureFile();
+      setModalVisible(false);
     } catch (err) {
       if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) return;
       console.error(err);
-      engine = null;
-      setMenuButtonsEnabled(false);
-      setAdventureTitle('');
-      setText('text-display', 'Failed to load adventure file.');
+      if (diskHint) diskHint.textContent = 'Failed to load disk adventure.';
+    }
+  });
+
+  document.getElementById('menu-btn-load-adventure')?.addEventListener('click', async () => {
+    const lastMode = localStorage.getItem(LS_KEY_LAST_MODE) || 'web';
+    setMode(lastMode);
+    setModalVisible(true);
+    if (lastMode === 'web') await populateManifestUi();
+    if (lastMode === 'disk' && typeof window.showOpenFilePicker !== 'function') {
+      if (diskHint) diskHint.textContent = "Disk mode can’t load images in this browser; use Web mode or a Chromium-based browser.";
+    } else if (diskHint) {
+      diskHint.textContent = '';
     }
   });
 

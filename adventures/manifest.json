@@ -1,0 +1,13 @@
+[
+  {
+    "id": "castelo-negro-v1.2",
+    "title": "Castelo Negro (v1.2)",
+    "yaml": "adventures/castelo-negro-v1.2/castelo-negro-v1.2.yaml"
+  },
+  {
+    "id": "castelo-negro",
+    "title": "Castelo Negro (legacy)",
+    "yaml": "adventures/castelo-negro/castelo-negro.yaml"
+  }
+]
+

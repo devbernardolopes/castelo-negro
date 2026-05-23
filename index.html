@@ -16,6 +16,39 @@
       <button id="menu-btn-change-language" class="menu-btn" data-action="change-language" title="Change Language">Language</button>
     </div>
     <div id="adventure-title-row" aria-live="polite"></div>
+    <div id="adventure-modal-backdrop" class="modal-backdrop" style="display:none;">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="adventure-modal-title">
+        <div class="modal-header">
+          <div id="adventure-modal-title" class="modal-title">Load Adventure</div>
+          <button id="adventure-modal-close" class="modal-close" title="Close" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="mode-row">
+            <label class="mode-option"><input type="radio" name="adventure-load-mode" value="web"> Web</label>
+            <label class="mode-option"><input type="radio" name="adventure-load-mode" value="disk"> Disk</label>
+          </div>
+
+          <div id="adventure-web-pane" class="mode-pane">
+            <div class="form-row">
+              <label class="form-label" for="adventure-web-select">Adventure</label>
+              <select id="adventure-web-select" class="form-control"></select>
+            </div>
+            <div class="hint" id="adventure-web-hint"></div>
+            <div class="actions-row">
+              <button id="adventure-web-load" class="menu-btn" type="button">Load</button>
+            </div>
+          </div>
+
+          <div id="adventure-disk-pane" class="mode-pane" style="display:none;">
+            <div class="hint">Select a YAML file. For images, you may be asked to pick the adventure folder.</div>
+            <div class="actions-row">
+              <button id="adventure-disk-load" class="menu-btn" type="button">Choose YAML…</button>
+            </div>
+            <div class="hint" id="adventure-disk-hint"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="top-row">
       <div id="room-image"><img id="room-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Room Image" style="max-width:100%;max-height:100%;display:none;"/></div>
       <div id="inventory">
