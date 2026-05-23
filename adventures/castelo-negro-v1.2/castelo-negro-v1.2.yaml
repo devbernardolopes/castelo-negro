@@ -113,7 +113,7 @@ locations:
     name: { en: "Cottage - Kitchen", pt-br: "Chalé - Cozinha" }
     description:
       base: { en: "A simple kitchen with a stone hearth.", pt-br: "Uma cozinha simples com uma lareira de pedra." }
-    contents: []
+    contents: [moldy_loaf_of_bread]
     exits:
       south: cottage_living_room
     images: ["tti-2026-05-21T22-20-09-116212.png"]
