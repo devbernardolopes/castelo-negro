@@ -384,10 +384,89 @@ body {
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
   padding: 10px;
-  resize: none;
   outline: none;
+  min-height: 88px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+  overflow-y: auto;
 }
 
 #user-input:focus {
   border-color: #555;
+}
+
+#user-input[aria-disabled="true"] {
+  opacity: 0.6;
+}
+
+.click-word {
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px dotted rgba(224, 224, 224, 0.25);
+}
+
+.click-word:hover {
+  border-bottom-color: rgba(224, 224, 224, 0.65);
+}
+
+.word-token {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #141414;
+  border: 1px solid #333;
+  border-radius: 6px;
+  min-height: 34px;
+}
+
+.word-token.dragging {
+  opacity: 0.65;
+  border-color: #666;
+}
+
+.word-token-handle {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  cursor: grab;
+  user-select: none;
+  line-height: 1;
+  font-size: 14px;
+}
+
+.word-token-handle:active {
+  cursor: grabbing;
+}
+
+.word-token-text {
+  white-space: nowrap;
+}
+
+.word-token-remove {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-family: 'Courier New', Courier, monospace;
+  line-height: 1;
+}
+
+.word-token-remove:hover {
+  border-color: #555;
+}
+
+.log-entry.player-prompt {
+  color: #341db6;
 }

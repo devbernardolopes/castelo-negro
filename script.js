@@ -4,6 +4,7 @@
 /** @typedef {'en'|'pt-br'|string} LanguageCode */
 
 let engine = null;
+let selectedWords = [];
 
 function setText(elId, text) {
   const el = document.getElementById(elId);
@@ -26,10 +27,9 @@ function setMenuButtonsEnabled(isGameLoaded) {
 
 function setGameControlsEnabled(isGameLoaded) {
   const input = document.getElementById('user-input');
-  if (input) input.disabled = !isGameLoaded;
+  if (input) input.setAttribute('aria-disabled', isGameLoaded ? 'false' : 'true');
 
-  const sendBtn = document.getElementById('input-btn-send');
-  if (sendBtn) sendBtn.disabled = !isGameLoaded;
+  syncSendButtonEnabled();
 
   document.querySelectorAll('#directional-buttons-row .direction-btn').forEach((btn) => {
     btn.disabled = !isGameLoaded;
@@ -51,6 +51,8 @@ function setAdventureTitle(title) {
 function resetUiForNewGame() {
   clearEl('inventory-list');
   setText('mind-panel', ''); 
+  selectedWords = [];
+  renderCommandBuilder();
   const imgEl = document.getElementById('room-img');
   if (imgEl) {
     imgEl.style.display = 'none';
@@ -89,11 +91,114 @@ function appendOutput(text) {
   const entry = document.createElement('div');
   entry.className = 'log-entry';
   entry.innerHTML = textToHtmlWithBoldBrackets(text);
+  makeWordsClickable(entry);
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
   el.appendChild(entry);
   el.scrollTop = el.scrollHeight;
 } 
+
+function appendPlayerPrompt(promptText) {
+  const el = document.getElementById('text-display');
+  if (!el) return;
+  const entry = document.createElement('div');
+  entry.className = 'log-entry player-prompt';
+  entry.textContent = `> ${promptText}`;
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+}
+
+function stripWordPunctuation(rawWord) {
+  return String(rawWord || '').replace(/^[\s"'“”‘’\(\[\{<]+|[\s"'“”‘’\)\]\}>.,!?:;]+$/g, '');
+}
+
+function makeWordsClickable(rootEl) {
+  if (!rootEl) return;
+  const walker = document.createTreeWalker(rootEl, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      const parent = node.parentElement;
+      if (!parent) return NodeFilter.FILTER_REJECT;
+      if (parent.closest('.click-word')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+  for (const node of textNodes) {
+    const text = node.nodeValue || '';
+    const parts = text.split(/(\s+)/);
+    const frag = document.createDocumentFragment();
+    for (const part of parts) {
+      if (!part) continue;
+      if (/^\s+$/.test(part)) {
+        frag.appendChild(document.createTextNode(part));
+        continue;
+      }
+      const span = document.createElement('span');
+      span.className = 'click-word';
+      span.setAttribute('data-word', part);
+      span.textContent = part;
+      frag.appendChild(span);
+    }
+    node.parentNode?.replaceChild(frag, node);
+  }
+}
+
+function renderCommandBuilder() {
+  const container = document.getElementById('user-input');
+  if (!container) return;
+  container.innerHTML = '';
+
+  for (let i = 0; i < selectedWords.length; i++) {
+    const word = selectedWords[i];
+    const token = document.createElement('div');
+    token.className = 'word-token';
+    token.setAttribute('role', 'listitem');
+    token.setAttribute('draggable', 'true');
+    token.setAttribute('data-index', String(i));
+
+    const handle = document.createElement('div');
+    handle.className = 'word-token-handle';
+    handle.setAttribute('aria-label', 'Drag to reorder');
+    handle.textContent = '≡';
+
+    const text = document.createElement('div');
+    text.className = 'word-token-text';
+    text.textContent = word;
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'word-token-remove';
+    remove.setAttribute('aria-label', 'Remove word');
+    remove.textContent = 'X';
+
+    token.appendChild(handle);
+    token.appendChild(text);
+    token.appendChild(remove);
+    container.appendChild(token);
+  }
+
+  syncSendButtonEnabled();
+}
+
+function syncSendButtonEnabled() {
+  const sendBtn = document.getElementById('input-btn-send');
+  if (!sendBtn) return;
+  sendBtn.disabled = !engine || selectedWords.length === 0;
+}
+
+function addWordToCommand(rawWord) {
+  if (!engine) return;
+  const word = stripWordPunctuation(rawWord);
+  if (!word) return;
+  selectedWords.push(word);
+  renderCommandBuilder();
+}
 
 function setModalVisible(visible) {
   const el = document.getElementById('adventure-modal-backdrop');
@@ -792,6 +897,7 @@ class GameEngine {
       const item = this.definition.items?.[itemId];
       const li = document.createElement('li');
       li.textContent = item ? this._pickLang(item.name) : itemId;
+      makeWordsClickable(li);
       inventoryList.appendChild(li);
     }
     this.hooks.onInventoryRender?.(); 
@@ -1215,28 +1321,92 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => setSidebarTab(btn.getAttribute('data-tab'))); 
   }); 
   setSidebarTab('mind'); 
- 
-  // Bind user input -> command processing (basic stub). 
-  const userInput = document.getElementById('user-input'); 
-  userInput?.addEventListener('keydown', (ev) => { 
-    if (ev.key === 'Enter' && !ev.shiftKey) { 
-      ev.preventDefault(); 
-      const value = userInput.value; 
-      userInput.value = ''; 
-      if (!engine) return; 
-      appendOutput(`> ${value.trim()}`); 
-      engine.processPlayerCommand(value); 
-    } 
-  }); 
- 
+  
+  renderCommandBuilder();
+
+  document.addEventListener('click', (ev) => {
+    const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    if (!target) return;
+
+    if (target.classList.contains('click-word')) {
+      addWordToCommand(target.getAttribute('data-word') || target.textContent || '');
+      return;
+    }
+
+    if (target.classList.contains('word-token-remove')) {
+      const token = target.closest('.word-token');
+      const index = Number(token?.getAttribute('data-index'));
+      if (Number.isFinite(index) && index >= 0) {
+        selectedWords.splice(index, 1);
+        renderCommandBuilder();
+      }
+    }
+  });
+
+  const commandBuilder = document.getElementById('user-input');
+  let dragIndex = null;
+
+  commandBuilder?.addEventListener('pointerdown', (ev) => {
+    const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    if (!target) return;
+    if (!target.classList.contains('word-token-handle')) return;
+    const token = target.closest('.word-token');
+    if (!token) return;
+    token.setAttribute('data-drag-armed', 'true');
+  });
+
+  commandBuilder?.addEventListener('dragstart', (ev) => {
+    const token = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    if (!token || !token.classList.contains('word-token')) return;
+    if (token.getAttribute('data-drag-armed') !== 'true') {
+      ev.preventDefault();
+      return;
+    }
+    dragIndex = Number(token.getAttribute('data-index'));
+    token.classList.add('dragging');
+    ev.dataTransfer?.setData('text/plain', String(dragIndex));
+    ev.dataTransfer && (ev.dataTransfer.effectAllowed = 'move');
+  });
+
+  commandBuilder?.addEventListener('dragend', (ev) => {
+    const token = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    if (token?.classList.contains('word-token')) {
+      token.classList.remove('dragging');
+      token.removeAttribute('data-drag-armed');
+    }
+    dragIndex = null;
+  });
+
+  commandBuilder?.addEventListener('dragover', (ev) => {
+    if (dragIndex === null) return;
+    ev.preventDefault();
+    ev.dataTransfer && (ev.dataTransfer.dropEffect = 'move');
+  });
+
+  commandBuilder?.addEventListener('drop', (ev) => {
+    if (dragIndex === null) return;
+    ev.preventDefault();
+    const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    const token = target?.closest('.word-token');
+    const dropIndex = Number(token?.getAttribute('data-index'));
+    if (!Number.isFinite(dropIndex) || dropIndex < 0) return;
+    if (dropIndex === dragIndex) return;
+
+    const [moved] = selectedWords.splice(dragIndex, 1);
+    selectedWords.splice(dropIndex, 0, moved);
+    renderCommandBuilder();
+  });
+
   const sendBtn = document.getElementById('input-btn-send'); 
   sendBtn?.addEventListener('click', () => { 
-    if (!engine || !userInput) return; 
-    const value = userInput.value; 
-    userInput.value = ''; 
-    if (!value.trim()) return; 
-    appendOutput(`> ${value.trim()}`); 
-    engine.processPlayerCommand(value); 
+    if (!engine) return;
+    if (selectedWords.length === 0) return;
+    const prompt = selectedWords.join(' ').trim();
+    if (!prompt) return;
+    appendPlayerPrompt(prompt);
+    selectedWords = [];
+    renderCommandBuilder();
+    engine.processPlayerCommand(prompt); 
   }); 
  
   // File picker helpers (prefers File System Access API when available). 
