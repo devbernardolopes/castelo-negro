@@ -71,7 +71,7 @@ items:
     verbs:
       use:
         conditions:
-          - if: "current_location in ['cottage_living_room', 'cottage_porch']"
+          - if: "current_location in [cottage_living_room, cottage_porch]"
             effect: "cottage_door_open = true"
             message: { en: "You unlock the front door.", pt-br: "Você destranca a porta da frente." }
 
@@ -93,12 +93,6 @@ items:
     takeable: true
     consumable: true
     description: { en: "A small, mold-covered loaf.", pt-br: "Um pequeno pedaço de pão mofado." }
-    on_consume:
-      effect: |
-        player_health += 1
-        newborn_daughter_health += 1 if inventory.has(newborn_daughter) else 0
-        fed_baby = true
-      message: { en: "The bread tastes awful, but it gives you some strength.", pt-br: "O pão tem um gosto horrível, mas lhe dá um pouco de força." }
 
 locations:
   cottage_living_room:
@@ -279,18 +273,29 @@ verbs:
     synonyms: { en: ["use", "unlock", "open"], pt-br: ["usar", "destrancar", "abrir"] }
 
 actions:
-  feed_baby:
-    - pattern:
-        verb: "give"
-        object: "moldy_loaf_of_bread"
-        target: "newborn_daughter"
-      conditions:
-        - "inventory.has('moldy_loaf_of_bread')"
-        - "inventory.has('newborn_daughter') or current_player_location.has('newborn_daughter')"
-      effect: "items.moldy_loaf_of_bread.on_consume.effect"
-      message:
-        en: "You break off a piece and feed your daughter."
-        pt-br: "Você quebra um pedaço e alimenta sua filha."
-      side_effects:
-        - "fed_baby = true"
-        - "newborn_daughter_health += 2"
+  feed_newborn_daughter:
+    pattern:
+      verb: [give]
+      object: [moldy_loaf_of_bread]
+      target: [newborn_daughter]
+    conditions:
+      - "inventory.has(moldy_loaf_of_bread)"
+      - "inventory.has(newborn_daughter) or current_player_location.has(newborn_daughter)"
+    effect:
+      - "fed_baby = true"
+      - "newborn_daughter_health += 2"
+    message:
+      en: "You break off a piece and feed your daughter."
+      pt-br: "Você quebra um pedaço e alimenta sua filha."
+
+  take_item:
+    pattern:
+      verb: [take]
+      object: "*"
+    conditions:
+      - "items.{object}.takeable"
+      - "current_player_location.has({object})"
+    effect: "inventory.add('{object}')"
+    message:
+        en: "You take the {object_name}."
+        pt-br: "Você pega o {object_name}."
