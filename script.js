@@ -706,6 +706,7 @@ class GameEngine {
   }
 
   _buildEvalContext() {
+    const engine = this;
     const vars = {};
     for (const [k, v] of Object.entries(this.gameState.variables)) vars[k] = v.value;
     const currentLoc = this.getFullLocationData(this.gameState.current_location);
@@ -713,17 +714,28 @@ class GameEngine {
       const contents = Array.isArray(currentLoc?.contents) ? currentLoc.contents : [];
       return contents.includes(String(itemId));
     };
+    const maxCap = Number(this.gameState.variables.inventory?.max_capacity ?? this.definition.variables?.inventory?.max_capacity ?? 9999);
+    const inventoryObj = {
+      ...this._evalContext.inventory,
+      add: (itemId) => this.inventory.add(String(itemId)),
+      remove: (itemId) => this.inventory.remove(String(itemId)),
+      get length() {
+        return Array.isArray(engine.gameState.inventory) ? engine.gameState.inventory.length : 0;
+      },
+      get max_capacity() {
+        return maxCap;
+      }
+    };
     return {
       ...vars,
       current_location: this.gameState.current_location,
       game_turn: this.gameState.game_turn,
-      inventory: {
-        ...this._evalContext.inventory,
-        add: (itemId) => this.inventory.add(String(itemId)),
-        remove: (itemId) => this.inventory.remove(String(itemId))
+      inventory: inventoryObj,
+      here: { has: locationHas },
+      items: {
+        ...this.definition.items,
+        takeable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.takeable)
       },
-      current_player_location: { has: locationHas },
-      items: this.definition.items || {},
       locations: this.definition.locations || {},
       actors: this.definition.actors || {}
     };
@@ -736,8 +748,8 @@ class GameEngine {
     out = out.replace(/([A-Za-z_]\w*)\s+in\s+(\[[^\]]*\])/g, (_m, lhs, rhs) => `(${rhs}).includes(${lhs})`);
     // Allow "inventory.has(newborn_daughter)" (unquoted) for convenience -> quote bare identifiers.
     out = out.replace(/inventory\.has\(\s*([A-Za-z_]\w*)\s*\)/g, (_m, id) => `inventory.has('${id}')`);
-    // Allow "current_player_location.has(newborn_daughter)" (unquoted) for convenience -> quote bare identifiers.
-    out = out.replace(/current_player_location\.has\(\s*([A-Za-z_]\w*)\s*\)/g, (_m, id) => `current_player_location.has('${id}')`);
+    // Allow "here.has(newborn_daughter)" (unquoted) for convenience -> quote bare identifiers.
+    out = out.replace(/here\.has\(\s*([A-Za-z_]\w*)\s*\)/g, (_m, id) => `here.has('${id}')`);
     return out;
   }
 
@@ -1068,7 +1080,7 @@ class GameEngine {
 
   _matchAction(actionDef, cmd) {
     const pat = actionDef?.pattern;
-    if (!pat || typeof pat !== 'object') return null;
+    if (!pat || !Array.isArray(pat)) return null;
     const match = this._matchPatternAgainstPrompt(pat, cmd);
     if (!match) return null;
     return match;
@@ -1083,7 +1095,6 @@ class GameEngine {
     if (!tokens.length) return null;
 
     const stopwords = this._getParserStopwords();
-    const slots = Object.keys(pattern);
 
     /** @type {any} */
     const out = {};
@@ -1093,10 +1104,14 @@ class GameEngine {
       while (i < tokens.length && stopwords.has(tokens[i])) i++;
     };
 
-    for (const slotName of slots) {
+    for (const slotEntry of pattern) {
       skipStops();
       if (i >= tokens.length) return null;
-      const slotDef = pattern[slotName];
+      if (!slotEntry || typeof slotEntry !== 'object') return null;
+      const entries = Object.entries(slotEntry);
+      if (entries.length !== 1) return null;
+      const slotName = entries[0][0];
+      const slotDef = entries[0][1];
 
       if (slotName === 'verb') {
         const verbIds = Array.isArray(slotDef) ? slotDef.map(v => String(v).toLowerCase()) : [];
@@ -1130,17 +1145,16 @@ class GameEngine {
   }
 
   _matchVerbAt(tokens, idx, verbIds) {
+    const wantsAny = verbIds.includes('*');
     const maxLen = Math.min(3, tokens.length - idx);
     for (let len = maxLen; len >= 1; len--) {
       const phrase = tokens.slice(idx, idx + len).join(' ');
       const canonical = this._canonicalVerb(phrase);
       if (!canonical) continue;
-      if (verbIds.length === 0 || verbIds.map(v => this._canonicalVerb(v)).includes(canonical)) {
-        // Ensure phrase is known (either canonical or synonym) when verbIds is specified.
-        if (verbIds.length === 0 || this._verbsIndex.has(phrase) || verbIds.includes(canonical)) {
-          return { canonical, len };
-        }
-      }
+      const allowedCanonicals = verbIds.filter(v => v !== '*').map(v => this._canonicalVerb(v));
+      const isKnownVerbPhrase = this._verbsIndex.has(phrase) || this._verbsIndex.has(canonical);
+      if (!isKnownVerbPhrase) continue;
+      if (verbIds.length === 0 || wantsAny || allowedCanonicals.includes(canonical)) return { canonical, len };
     }
     return null;
   }
