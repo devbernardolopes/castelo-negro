@@ -48,27 +48,52 @@ function setAdventureTitle(title) {
   setText('adventure-title-row', title || '');
 }
 
-function resetUiForNewGame() { 
-  clearEl('inventory-list'); 
+function resetUiForNewGame() {
+  clearEl('inventory-list');
   setText('mind-panel', ''); 
-  const imgEl = document.getElementById('room-img'); 
-  if (imgEl) { 
-    imgEl.style.display = 'none'; 
-    imgEl.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='; 
-  } 
-} 
-
-/**
- * Append text output to the game log.
- * @param {string} text
- */
-function appendOutput(text) {
-  const el = document.getElementById('text-display');
-  if (!el) return;
-  const normalized = String(text ?? '').replace(/\r\n/g, '\n');
-  el.textContent = (el.textContent ? `${el.textContent}\n\n${normalized}` : normalized);
-  el.scrollTop = el.scrollHeight;
+  const imgEl = document.getElementById('room-img');
+  if (imgEl) {
+    imgEl.style.display = 'none';
+    imgEl.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+  }
 }
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatBracketBoldToHtml(text) {
+  // Convert [text] -> <strong>text</strong>, without rendering the brackets.
+  // Works on already-escaped HTML.
+  return String(text).replace(/\[([^\]]+)\]/g, (_m, inner) => `<strong>${inner}</strong>`);
+}
+
+function textToHtmlWithBoldBrackets(text) {
+  const escaped = escapeHtml(String(text ?? '').replace(/\r\n/g, '\n'));
+  const bolded = formatBracketBoldToHtml(escaped);
+  return bolded.replace(/\n/g, '<br>');
+}
+
+/** 
+ * Append text output to the game log. 
+ * @param {string} text 
+ */ 
+function appendOutput(text) { 
+  const el = document.getElementById('text-display'); 
+  if (!el) return; 
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = textToHtmlWithBoldBrackets(text);
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+} 
 
 function setModalVisible(visible) {
   const el = document.getElementById('adventure-modal-backdrop');
@@ -1346,7 +1371,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);
     resetUiForNewGame();
-    setText('text-display', '');
+    const textDisplay = document.getElementById('text-display');
+    if (textDisplay) textDisplay.innerHTML = '';
     const intro = engine.getText('intro');
     if (intro) appendOutput(intro);
     engine.renderCurrentLocation();
@@ -1381,7 +1407,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);
     resetUiForNewGame();
-    setText('text-display', '');
+    const textDisplay = document.getElementById('text-display');
+    if (textDisplay) textDisplay.innerHTML = '';
     const intro = engine.getText('intro');
     if (intro) appendOutput(intro);
     engine.renderCurrentLocation();
@@ -1554,7 +1581,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const def = engine.definition; 
     engine = new GameEngine(def, { assetsBase: engine.assetsBase, onOutput: appendOutput }); 
     resetUiForNewGame(); 
-    setText('text-display', ''); 
+    const textDisplay = document.getElementById('text-display');
+    if (textDisplay) textDisplay.innerHTML = '';
     const intro = engine.getText('intro'); 
     if (intro) appendOutput(intro); 
     engine.renderCurrentLocation(); 

@@ -297,8 +297,12 @@ body {
   overflow-y: auto;
   font-size: 20px;
   line-height: 1.6;
-  white-space: pre-wrap;
+  white-space: normal;
   min-height: 0;
+}
+
+.log-entry {
+  white-space: normal;
 }
 
 #input-row {

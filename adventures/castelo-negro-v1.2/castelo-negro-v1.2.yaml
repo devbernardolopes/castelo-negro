@@ -1,6 +1,6 @@
 metadata:
   title: Castelo Negro
-  version: 1.3
+  version: 1.4
   languages: [en, pt-br]
   default_language: en
   assets_path: "assets/images/"
@@ -101,9 +101,11 @@ locations:
       base: { en: "You're in the living room of your modest cottage.", pt-br: "Você está na sala de estar do seu modesto chalé." }
       conditions:
         - if: "!inventory.has(newborn_daughter)"
-          text: { en: "You can hear your baby crying desperately on the floor.", pt-br: "Você pode ouvir sua bebê chorando desesperadamente no chão." }
+          text: { en: "You can hear your [baby] crying desperately on the floor.", pt-br: "Você pode ouvir sua [bebê] chorando desesperadamente no chão." }
         - if: "cottage_door_open"
-          text: { en: "The front door stands wide open, letting cold air in.", pt-br: "A porta da frente está escancarada, deixando o ar frio entrar." }
+          text: { en: "The [front door] stands wide open, letting cold air in.", pt-br: "A [porta da frente] está escancarada, deixando o ar frio entrar." }
+        - if: "!cottage_door_open"
+          text: { en: "The [front door] stands closed.", pt-br: "A [porta da frente] está fechada." }
     contents: [husband_corpse, newborn_daughter]
     exits:
       north: cottage_kitchen
@@ -249,12 +251,12 @@ strings:
       You wake up.
       You're in the living room of your cottage.
       Next to you is the deceased corpse of your husband.
-      You can hear your infant daughter crying on the floor.
+      You can hear your [infant daughter] crying on the floor.
     pt-br: |
       Você acorda.
       Você está na sala de seu chalé.
       Ao seu lado jaz o cadáver de seu falecido marido.
-      Você pode ouvir sua bebê chorando no chão.
+      Você pode ouvir sua [bebê] chorando no chão.
 
   death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
   
