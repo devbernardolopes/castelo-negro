@@ -324,6 +324,30 @@ body {
   justify-content: center;
 }
 
+.input-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.input-btn {
+  flex: 1;
+  padding: 6px 0;
+  background: #341db6;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.input-btn:hover {
+  border-color: #555;
+}
+
 .direction-btn {
   width: 44px;
   height: 44px;
