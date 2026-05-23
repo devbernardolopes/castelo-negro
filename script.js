@@ -1116,12 +1116,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadAdventureFromUrl(yamlUrl) {
-    const res = await fetch(yamlUrl);
+    const absoluteYamlUrl = new URL(String(yamlUrl || ''), window.location.href).toString();
+    const res = await fetch(absoluteYamlUrl);
     if (!res.ok) throw new Error(`Failed to load adventure YAML: ${yamlUrl}`);
     const yamlText = await res.text();
     const parsed = parseYaml(yamlText);
 
-    const yamlBaseUrl = new URL('./', yamlUrl).toString();
+    const yamlBaseUrl = new URL('./', absoluteYamlUrl).toString();
     const assetsBaseUrl = new URL(String(parsed?.metadata?.assets_path || 'assets/'), yamlBaseUrl).toString();
     const assetsResolver = async (relativePath) => new URL(String(relativePath || ''), assetsBaseUrl).toString();
 
