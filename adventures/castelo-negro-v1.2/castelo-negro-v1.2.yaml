@@ -299,8 +299,8 @@ actions:
       object: [moldy_loaf_of_bread]
       target: [newborn_daughter]
     conditions:
-      - "inventory.has(moldy_loaf_of_bread)"
-      - "inventory.has(newborn_daughter) or current_player_location.has(newborn_daughter)"
+      - "inventory.has('moldy_loaf_of_bread')"
+      - "inventory.has('newborn_daughter') or current_player_location.has('newborn_daughter')"
     effect:
       - "fed_baby = true"
       - "newborn_daughter_health += 2"
@@ -314,9 +314,9 @@ actions:
       object: "*"
     conditions:
       - "items.{object}.takeable"
-      - "current_player_location.has({object})"
+      - "current_player_location.has('{object}')"
       - "inventory.length < inventory.max_capacity"
-      - "!inventory.has({object})"
+      - "!inventory.has('{object}')"
     effect: "inventory.add('{object}')"
     message:
         en: "You take the {object_name}."
