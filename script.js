@@ -736,6 +736,8 @@ class GameEngine {
     out = out.replace(/([A-Za-z_]\w*)\s+in\s+(\[[^\]]*\])/g, (_m, lhs, rhs) => `(${rhs}).includes(${lhs})`);
     // Allow "inventory.has(newborn_daughter)" (unquoted) for convenience -> quote bare identifiers.
     out = out.replace(/inventory\.has\(\s*([A-Za-z_]\w*)\s*\)/g, (_m, id) => `inventory.has('${id}')`);
+    // Allow "current_player_location.has(newborn_daughter)" (unquoted) for convenience -> quote bare identifiers.
+    out = out.replace(/current_player_location\.has\(\s*([A-Za-z_]\w*)\s*\)/g, (_m, id) => `current_player_location.has('${id}')`);
     return out;
   }
 
