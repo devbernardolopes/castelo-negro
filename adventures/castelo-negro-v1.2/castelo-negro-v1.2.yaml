@@ -1,6 +1,6 @@
 metadata:
   title: Castelo Negro
-  version: 1.4
+  version: 1.5
   languages: [en, pt-br]
   default_language: en
   assets_path: "assets/images/"
@@ -82,6 +82,7 @@ items:
 
   newborn_daughter:
     name: { en: "Newborn Daughter", pt-br: "Filha Recém-Nascida" }
+    synonyms: { en: ["baby", "daughter", "infant"], pt-br: ["bebê", "filha"] }
     takeable: true
     description: { en: "Your tiny, crying daughter.", pt-br: "Sua pequena filha chorando." }
     on_drop:
@@ -248,16 +249,33 @@ end_conditions:
 strings:
   intro:
     en: |
-      You wake up.
-      You're in the living room of your cottage.
-      Next to you is the deceased corpse of your husband.
-      You can hear your [infant daughter] crying on the floor.
-    pt-br: |
-      Você acorda.
-      Você está na sala de seu chalé.
-      Ao seu lado jaz o cadáver de seu falecido marido.
-      Você pode ouvir sua [bebê] chorando no chão.
+      Too weak... starving...
+      	
+      You can't [take] it anymore. Your body starts to [give] out.
 
+      You [drop] to your knees, clutching your crying daughter.
+      
+      You collapse.
+      
+      ...
+      
+      You wake up.
+      
+      Not dead. Not yet.
+    pt-br: |
+      Muito fraca... morrendo de fome...
+
+      Você não aguenta mais. Seu corpo começa a falhar.
+
+      Você [pega] sua filha chorando e se agarra a ela.
+      
+      Você desaba.
+      
+      ...
+      
+      Você acorda.
+
+      Não morta. Ainda não.
   death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
   
   death_player: { en: "You collapse from exhaustion and despair.", pt-br: "Você desaba de exaustão e desespero." }
@@ -297,6 +315,8 @@ actions:
     conditions:
       - "items.{object}.takeable"
       - "current_player_location.has({object})"
+      - "inventory.length < inventory.max_capacity"
+      - "!inventory.has({object})"
     effect: "inventory.add('{object}')"
     message:
         en: "You take the {object_name}."
