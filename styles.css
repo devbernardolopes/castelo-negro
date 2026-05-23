@@ -289,6 +289,46 @@ body {
   color: #ccc;
 }
 
+#memory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.memory-token {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #141414;
+  border: 1px solid #333;
+  border-radius: 6px;
+  min-height: 34px;
+}
+
+.memory-token-controls {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.memory-token-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-family: 'Courier New', Courier, monospace;
+  line-height: 1;
+}
+
+.memory-token-btn:hover {
+  border-color: #555;
+}
+
 #text-display {
   flex: 2;
   border: 1px solid #333;

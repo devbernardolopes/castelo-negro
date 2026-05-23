@@ -55,6 +55,7 @@
         <div class="tabs-header" role="tablist" aria-label="Sidebar">
           <button class="tab-btn" type="button" role="tab" aria-selected="true" aria-controls="tab-panel-mind" id="tab-mind" data-tab="mind">Mind</button>
           <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-inventory" id="tab-inventory" data-tab="inventory">Inventory</button>
+          <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-memory" id="tab-memory" data-tab="memory">Memory</button>
         </div>
         <div class="tabs-body">
           <div class="tab-panel" role="tabpanel" id="tab-panel-mind" aria-labelledby="tab-mind">
@@ -67,7 +68,7 @@
           </div>
           <div class="tab-panel" role="tabpanel" id="tab-panel-memory" aria-labelledby="tab-memory" style="display:none;">
             <h2>Memory</h2>
-            <ul id="memory-list"></ul>
+            <div id="memory-list" role="list" aria-label="Memory words"></div>
           </div>
         </div>
       </div>

@@ -20,6 +20,15 @@ variables:
     value: []
     max_capacity: 4
 
+  protagonist_memory:
+    type: list
+    value: []
+
+  protagonist_memory_max_capacity:
+    type: int
+    value: 10
+    min_value: 0
+
   newborn_daughter_health:
     type: int
     value: 3
@@ -157,6 +166,9 @@ actors:
     name: { en: "You", pt-br: "Você" }
     playable: true
     starting_location: cottage_living_room
+    memory:
+      words_variable: protagonist_memory
+      max_capacity_variable: protagonist_memory_max_capacity
 
   old_hag:
     name: { en: "Old Hag", pt-br: "Velha Bruxa" }

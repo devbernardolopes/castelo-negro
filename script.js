@@ -556,6 +556,7 @@ class GameEngine {
     this.gameState = this._createInitialState();
     this.inventory = new InventorySystem(this);
     this._verbsIndex = this._buildVerbsIndex();
+    this._memoryConfig = this._getPlayerMemoryConfig();
 
     // A small helper object exposed to condition/effect evaluation.
     this._evalContext = {
@@ -563,6 +564,76 @@ class GameEngine {
         has: (itemId) => this.inventory.has(String(itemId))
       }
     };
+  }
+
+  _getPlayerActorId() {
+    const list = this.gameState.variables.current_player_actor?.value;
+    if (Array.isArray(list) && list.length) return String(list[0]);
+    return 'protagonist';
+  }
+
+  _getPlayerMemoryConfig() {
+    const actorId = this._getPlayerActorId();
+    const actor = this.definition.actors?.[actorId];
+    const mem = actor?.memory;
+    const wordsVar = String(mem?.words_variable || '').trim();
+    const maxVar = String(mem?.max_capacity_variable || '').trim();
+    if (!wordsVar || !maxVar) return null;
+    return { actorId, wordsVar, maxVar };
+  }
+
+  _getMemoryWords() {
+    const cfg = this._memoryConfig;
+    if (!cfg) return [];
+    const v = this.gameState.variables?.[cfg.wordsVar]?.value;
+    return Array.isArray(v) ? v.map(String) : [];
+  }
+
+  _getMemoryMaxCapacity() {
+    const cfg = this._memoryConfig;
+    if (!cfg) return 0;
+    const v = this.gameState.variables?.[cfg.maxVar]?.value;
+    return Number(v ?? 0);
+  }
+
+  addWordToMemory(rawWord) {
+    const cfg = this._memoryConfig;
+    if (!cfg) return false;
+    const word = stripWordPunctuation(rawWord).toLowerCase();
+    if (!word) return false;
+    const words = this._getMemoryWords();
+    if (words.includes(word)) return false;
+    const cap = this._getMemoryMaxCapacity();
+    if (cap >= 0 && words.length >= cap) return false;
+    const next = [...words, word];
+    this.gameState.variables[cfg.wordsVar].value = next;
+    this._renderMemory();
+    return true;
+  }
+
+  removeMemoryWord(index) {
+    const cfg = this._memoryConfig;
+    if (!cfg) return false;
+    const words = this._getMemoryWords();
+    if (!Number.isFinite(index) || index < 0 || index >= words.length) return false;
+    words.splice(index, 1);
+    this.gameState.variables[cfg.wordsVar].value = words;
+    this._renderMemory();
+    return true;
+  }
+
+  moveMemoryWord(index, delta) {
+    const cfg = this._memoryConfig;
+    if (!cfg) return false;
+    const words = this._getMemoryWords();
+    const to = index + delta;
+    if (!Number.isFinite(index) || index < 0 || index >= words.length) return false;
+    if (to < 0 || to >= words.length) return false;
+    const [w] = words.splice(index, 1);
+    words.splice(to, 0, w);
+    this.gameState.variables[cfg.wordsVar].value = words;
+    this._renderMemory();
+    return true;
   }
  
   _buildVerbsIndex() {
@@ -933,10 +1004,61 @@ class GameEngine {
   }
 
   _renderMemory() {
-    const memory = this.gameState.variables.memory?.value;
-    const el = document.getElementById('memory-panel');
+    const el = document.getElementById('memory-list');
     if (!el) return;
-    setText('memory-panel', memory ? String(memory) : '');
+    while (el.firstChild) el.removeChild(el.firstChild);
+
+    const words = this._getMemoryWords();
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      const token = document.createElement('div');
+      token.className = 'memory-token';
+      token.setAttribute('role', 'listitem');
+      token.setAttribute('data-index', String(i));
+
+      const handle = document.createElement('div');
+      handle.className = 'word-token-handle';
+      handle.setAttribute('aria-hidden', 'true');
+      handle.textContent = '≡';
+
+      const text = document.createElement('div');
+      text.className = 'word-token-text';
+      text.textContent = word;
+
+      const controls = document.createElement('div');
+      controls.className = 'memory-token-controls';
+
+      const up = document.createElement('button');
+      up.type = 'button';
+      up.className = 'memory-token-btn';
+      up.setAttribute('data-action', 'mem-up');
+      up.setAttribute('aria-label', 'Move up');
+      up.textContent = '↑';
+      up.disabled = i === 0;
+
+      const down = document.createElement('button');
+      down.type = 'button';
+      down.className = 'memory-token-btn';
+      down.setAttribute('data-action', 'mem-down');
+      down.setAttribute('aria-label', 'Move down');
+      down.textContent = '↓';
+      down.disabled = i === words.length - 1;
+
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'word-token-remove';
+      remove.setAttribute('data-action', 'mem-remove');
+      remove.setAttribute('aria-label', 'Remove word');
+      remove.textContent = 'X';
+
+      controls.appendChild(up);
+      controls.appendChild(down);
+      token.appendChild(handle);
+      token.appendChild(text);
+      token.appendChild(controls);
+      token.appendChild(remove);
+      el.appendChild(token);
+    }
   }
 
   /** @param {'north'|'south'|'east'|'west'} direction */
@@ -1451,6 +1573,60 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCommandBuilder();
       }
     }
+
+    const memAction = target.getAttribute('data-action');
+    if (memAction === 'mem-remove' || memAction === 'mem-up' || memAction === 'mem-down') {
+      if (!engine) return;
+      const token = target.closest('.memory-token');
+      const index = Number(token?.getAttribute('data-index'));
+      if (!Number.isFinite(index) || index < 0) return;
+      if (memAction === 'mem-remove') engine.removeMemoryWord(index);
+      if (memAction === 'mem-up') engine.moveMemoryWord(index, -1);
+      if (memAction === 'mem-down') engine.moveMemoryWord(index, 1);
+    }
+  });
+
+  function tryAddMemoryFromElement(el) {
+    if (!engine || !el) return;
+    const raw = el.getAttribute('data-word') || el.textContent || '';
+    engine.addWordToMemory(raw);
+  }
+
+  document.addEventListener('dblclick', (ev) => {
+    const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    if (!target) return;
+    if (target.classList.contains('click-word')) return tryAddMemoryFromElement(target);
+    if (target.classList.contains('word-token-text') && target.closest('#user-input')) return tryAddMemoryFromElement(target);
+  });
+
+  // Mobile equivalent for double-click: long-press on a word (~450ms).
+  let longPressTimer = null;
+  let longPressTarget = null;
+  const LONG_PRESS_MS = 450;
+
+  const clearLongPress = () => {
+    if (longPressTimer) clearTimeout(longPressTimer);
+    longPressTimer = null;
+    longPressTarget = null;
+  };
+
+  document.addEventListener('pointerdown', (ev) => {
+    const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
+    if (!target) return;
+    const isClickWord = target.classList.contains('click-word');
+    const isPromptWord = target.classList.contains('word-token-text') && Boolean(target.closest('#user-input'));
+    if (!isClickWord && !isPromptWord) return;
+    longPressTarget = target;
+    longPressTimer = setTimeout(() => {
+      tryAddMemoryFromElement(longPressTarget);
+      clearLongPress();
+    }, LONG_PRESS_MS);
+  });
+  document.addEventListener('pointerup', clearLongPress);
+  document.addEventListener('pointercancel', clearLongPress);
+  document.addEventListener('pointermove', (ev) => {
+    if (!longPressTarget) return;
+    if (Math.abs(ev.movementX) + Math.abs(ev.movementY) > 6) clearLongPress();
   });
 
   const commandBuilder = document.getElementById('user-input');
