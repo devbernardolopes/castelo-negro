@@ -24,6 +24,26 @@ function setMenuButtonsEnabled(isGameLoaded) {
   }
 }
 
+function setGameControlsEnabled(isGameLoaded) {
+  const input = document.getElementById('user-input');
+  if (input) input.disabled = !isGameLoaded;
+
+  const sendBtn = document.getElementById('input-btn-send');
+  if (sendBtn) sendBtn.disabled = !isGameLoaded;
+
+  document.querySelectorAll('#directional-buttons-row .direction-btn').forEach((btn) => {
+    btn.disabled = !isGameLoaded;
+  });
+}
+
+function setSidebarTabsEnabled(isGameLoaded) {
+  const sidebar = document.getElementById('sidebar-tabs');
+  if (sidebar) sidebar.setAttribute('data-enabled', isGameLoaded ? 'true' : 'false');
+  document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
+    btn.disabled = !isGameLoaded;
+  });
+}
+
 function setAdventureTitle(title) {
   setText('adventure-title-row', title || '');
 }
@@ -969,6 +989,8 @@ document.addEventListener('click', (e) => {
 
 document.addEventListener('DOMContentLoaded', () => { 
   setMenuButtonsEnabled(false); 
+  setGameControlsEnabled(false); 
+  setSidebarTabsEnabled(false); 
   setAdventureTitle(''); 
   resetUiForNewGame(); 
   setText('text-display', 'Load an adventure to begin.'); 
@@ -1000,18 +1022,28 @@ document.addEventListener('DOMContentLoaded', () => {
  
   // Bind user input -> command processing (basic stub). 
   const userInput = document.getElementById('user-input'); 
-  userInput?.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Enter' && !ev.shiftKey) {
-      ev.preventDefault();
-      const value = userInput.value;
-      userInput.value = '';
-      if (!engine) return;
-      appendOutput(`> ${value.trim()}`);
-      engine.processPlayerCommand(value);
-    }
-  });
-
-  // File picker helpers (prefers File System Access API when available).
+  userInput?.addEventListener('keydown', (ev) => { 
+    if (ev.key === 'Enter' && !ev.shiftKey) { 
+      ev.preventDefault(); 
+      const value = userInput.value; 
+      userInput.value = ''; 
+      if (!engine) return; 
+      appendOutput(`> ${value.trim()}`); 
+      engine.processPlayerCommand(value); 
+    } 
+  }); 
+ 
+  const sendBtn = document.getElementById('input-btn-send'); 
+  sendBtn?.addEventListener('click', () => { 
+    if (!engine || !userInput) return; 
+    const value = userInput.value; 
+    userInput.value = ''; 
+    if (!value.trim()) return; 
+    appendOutput(`> ${value.trim()}`); 
+    engine.processPlayerCommand(value); 
+  }); 
+ 
+  // File picker helpers (prefers File System Access API when available). 
   const DB_NAME = 'text-adventure-engine';
   const DB_STORE = 'handles';
   const DB_KEY_LAST_ADVENTURE = 'lastAdventureFileHandle';
@@ -1140,6 +1172,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     setAdventureTitle(parsed?.metadata?.title || file.name);
     setMenuButtonsEnabled(true);
+    setGameControlsEnabled(true);
+    setSidebarTabsEnabled(true);
     resetUiForNewGame();
     setText('text-display', '');
     const intro = engine.getText('intro');
@@ -1173,6 +1207,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     setAdventureTitle(parsed?.metadata?.title || yamlUrl);
     setMenuButtonsEnabled(true);
+    setGameControlsEnabled(true);
+    setSidebarTabsEnabled(true);
     resetUiForNewGame();
     setText('text-display', '');
     const intro = engine.getText('intro');
@@ -1188,20 +1224,22 @@ document.addEventListener('DOMContentLoaded', () => {
     return data;
   }
 
-  fileInput.addEventListener('change', async () => {
+  fileInput.addEventListener('change', async () => { 
     const file = fileInput.files?.[0];
     fileInput.value = '';
     if (!file) return;
     try {
       await loadAdventureFromFile(file, null, null);
-    } catch (err) {
-      console.error(err);
-      engine = null;
-      setMenuButtonsEnabled(false);
-      setAdventureTitle('');
-      setText('text-display', 'Failed to load adventure file.');
-    }
-  });
+    } catch (err) { 
+      console.error(err); 
+      engine = null; 
+      setMenuButtonsEnabled(false); 
+      setGameControlsEnabled(false); 
+      setSidebarTabsEnabled(false); 
+      setAdventureTitle(''); 
+      setText('text-display', 'Failed to load adventure file.'); 
+    } 
+  }); 
 
   async function pickAdventureFile() {
     if (typeof window.showOpenFilePicker !== 'function') {
@@ -1294,19 +1332,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  webLoadBtn?.addEventListener('click', async () => {
+  webLoadBtn?.addEventListener('click', async () => { 
     const yamlUrl = webSelect?.value;
     if (!yamlUrl) return;
     try {
       await loadAdventureFromUrl(yamlUrl);
       setModalVisible(false);
-    } catch (err) {
-      console.error(err);
-      if (webHint) webHint.textContent = 'Failed to load web adventure.';
-    }
-  });
+    } catch (err) { 
+      console.error(err); 
+      setMenuButtonsEnabled(false); 
+      setGameControlsEnabled(false); 
+      setSidebarTabsEnabled(false); 
+      if (webHint) webHint.textContent = 'Failed to load web adventure.'; 
+    } 
+  }); 
 
-  diskLoadBtn?.addEventListener('click', async () => {
+  diskLoadBtn?.addEventListener('click', async () => { 
     try {
       if (typeof window.showOpenFilePicker !== 'function') {
         if (diskHint) diskHint.textContent = "Disk mode can’t load images in this browser; use Web mode or a Chromium-based browser.";
@@ -1315,12 +1356,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       await pickAdventureFile();
       setModalVisible(false);
-    } catch (err) {
-      if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) return;
-      console.error(err);
-      if (diskHint) diskHint.textContent = 'Failed to load disk adventure.';
-    }
-  });
+    } catch (err) { 
+      if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) return; 
+      console.error(err); 
+      setMenuButtonsEnabled(false); 
+      setGameControlsEnabled(false); 
+      setSidebarTabsEnabled(false); 
+      if (diskHint) diskHint.textContent = 'Failed to load disk adventure.'; 
+    } 
+  }); 
 
   document.getElementById('menu-btn-load-adventure')?.addEventListener('click', async () => {
     const lastMode = localStorage.getItem(LS_KEY_LAST_MODE) || 'web';
@@ -1334,14 +1378,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('menu-btn-reset-game')?.addEventListener('click', () => {
-    if (!engine) return;
-    const def = engine.definition;
-    engine = new GameEngine(def, { assetsBase: engine.assetsBase, onOutput: appendOutput });
-    resetUiForNewGame();
-    setText('text-display', '');
-    const intro = engine.getText('intro');
-    if (intro) appendOutput(intro);
-    engine.renderCurrentLocation();
-  });
-});
+  document.getElementById('menu-btn-reset-game')?.addEventListener('click', () => { 
+    if (!engine) return; 
+    const def = engine.definition; 
+    engine = new GameEngine(def, { assetsBase: engine.assetsBase, onOutput: appendOutput }); 
+    resetUiForNewGame(); 
+    setText('text-display', ''); 
+    const intro = engine.getText('intro'); 
+    if (intro) appendOutput(intro); 
+    engine.renderCurrentLocation(); 
+    setMenuButtonsEnabled(true); 
+    setGameControlsEnabled(true); 
+    setSidebarTabsEnabled(true); 
+  }); 
+}); 
