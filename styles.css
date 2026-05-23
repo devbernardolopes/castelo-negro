@@ -201,7 +201,7 @@ body {
   min-height: 256px;
 }
 
-#inventory {
+#sidebar-tabs {
   flex: 1;
   border: 1px solid #333;
   background: #1a1a1a;
@@ -211,7 +211,7 @@ body {
   overflow-y: auto;
 }
 
-#inventory h2 {
+#sidebar-tabs h2 {
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -219,6 +219,55 @@ body {
   border-bottom: 1px solid #333;
   padding-bottom: 6px;
   margin-bottom: 8px;
+}
+
+#sidebar-tabs .tabs-header {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+#sidebar-tabs .tab-btn {
+  flex: 1;
+  padding: 8px 0;
+  background: #151515;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  min-height: 36px;
+}
+
+#sidebar-tabs .tab-btn:hover {
+  border-color: #555;
+}
+
+#sidebar-tabs .tab-btn[aria-selected="true"] {
+  background: #202020;
+  border-color: #666;
+}
+
+#sidebar-tabs .tabs-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#sidebar-tabs .tab-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#mind-panel {
+  font-size: 13px;
+  color: #ccc;
+  line-height: 1.5;
+  white-space: pre-wrap;
 }
 
 #inventory-list {

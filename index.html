@@ -51,9 +51,21 @@
     </div>
     <div id="top-row">
       <div id="room-image"><img id="room-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Room Image" style="max-width:100%;max-height:100%;display:none;"/></div>
-      <div id="inventory">
-        <h2>Inventory</h2>
-        <ul id="inventory-list"></ul>
+      <div id="sidebar-tabs">
+        <div class="tabs-header" role="tablist" aria-label="Sidebar">
+          <button class="tab-btn" type="button" role="tab" aria-selected="true" aria-controls="tab-panel-mind" id="tab-mind" data-tab="mind">Mind</button>
+          <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-inventory" id="tab-inventory" data-tab="inventory">Inventory</button>
+        </div>
+        <div class="tabs-body">
+          <div class="tab-panel" role="tabpanel" id="tab-panel-mind" aria-labelledby="tab-mind">
+            <h2>Mind</h2>
+            <div id="mind-panel"></div>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="tab-panel-inventory" aria-labelledby="tab-inventory" style="display:none;">
+            <h2>Inventory</h2>
+            <ul id="inventory-list"></ul>
+          </div>
+        </div>
       </div>
     </div>
     <div id="text-display"></div>
