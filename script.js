@@ -51,6 +51,7 @@ function setAdventureTitle(title) {
 function resetUiForNewGame() {
   clearEl('inventory-list');
   setText('mind-panel', ''); 
+  clearEl('memory-list');
   selectedWords = [];
   renderCommandBuilder();
   const imgEl = document.getElementById('room-img');
@@ -868,7 +869,7 @@ class GameEngine {
     return parts.filter(Boolean).join('\n');
   }
 
-  renderCurrentLocation() { 
+  renderCurrentLocation() {
     const locationId = this.gameState.current_location;
     const loc = this.getFullLocationData(locationId);
     if (!loc) return;
@@ -895,14 +896,15 @@ class GameEngine {
       }
     }
 
-    const desc = this.getLocationDescription(locationId); 
-    this.hooks.onOutput?.(desc); 
-    this._renderInventory(); 
-    this._renderMind(); 
-    this.hooks.onLocationRender?.(locationId); 
-  } 
+    const desc = this.getLocationDescription(locationId);
+    this.hooks.onOutput?.(desc);
+    this._renderInventory();
+    this._renderMind();
+    this._renderMemory();
+    this.hooks.onLocationRender?.(locationId);
+  }
 
-  _renderInventory() { 
+  _renderInventory() {
     const inventoryList = document.getElementById('inventory-list');
     if (!inventoryList) return;
     while (inventoryList.firstChild) inventoryList.removeChild(inventoryList.firstChild);
@@ -914,21 +916,28 @@ class GameEngine {
       makeWordsClickable(li);
       inventoryList.appendChild(li);
     }
-    this.hooks.onInventoryRender?.(); 
-  } 
+    this.hooks.onInventoryRender?.();
+  }
  
-  _renderMind() { 
-    const lines = []; 
-    const health = this.gameState.variables.player_health?.value; 
-    const sanity = this.gameState.variables.sanity?.value; 
-    const timeOfDay = this.gameState.variables.time_of_day?.value; 
-    const turn = this.gameState.game_turn; 
-    if (health !== undefined) lines.push(`Health: ${health}`); 
-    if (sanity !== undefined) lines.push(`Sanity: ${sanity}`); 
-    if (timeOfDay !== undefined) lines.push(`Time: ${timeOfDay}`); 
-    lines.push(`Turn: ${turn}`); 
-    setText('mind-panel', lines.join('\n')); 
-  } 
+  _renderMind() {
+    const lines = [];
+    const health = this.gameState.variables.player_health?.value;
+    const sanity = this.gameState.variables.sanity?.value;
+    const timeOfDay = this.gameState.variables.time_of_day?.value;
+    const turn = this.gameState.game_turn;
+    if (health !== undefined) lines.push(`Health: ${health}`);
+    if (sanity !== undefined) lines.push(`Sanity: ${sanity}`);
+    if (timeOfDay !== undefined) lines.push(`Time: ${timeOfDay}`);
+    lines.push(`Turn: ${turn}`);
+    setText('mind-panel', lines.join('\n'));
+  }
+
+  _renderMemory() {
+    const memory = this.gameState.variables.memory?.value;
+    const el = document.getElementById('memory-panel');
+    if (!el) return;
+    setText('memory-panel', memory ? String(memory) : '');
+  }
 
   /** @param {'north'|'south'|'east'|'west'} direction */
   go(direction) {
@@ -1392,34 +1401,36 @@ document.addEventListener('DOMContentLoaded', () => {
   setMenuButtonsEnabled(false); 
   setGameControlsEnabled(false); 
   setSidebarTabsEnabled(false); 
-  setAdventureTitle(''); 
+  setAdventureTitle('');
   resetUiForNewGame(); 
-  setText('text-display', 'Load an adventure to begin.'); 
+  setText('text-display', 'Load an adventure to begin.');
  
-  // Sidebar tabs wiring (Mind / Inventory) 
-  function setSidebarTab(tabName) { 
-    const panels = { 
-      mind: document.getElementById('tab-panel-mind'), 
-      inventory: document.getElementById('tab-panel-inventory') 
+  // Sidebar tabs wiring (Mind / Inventory / Memory / etc).
+  function setSidebarTab(tabName) {
+    const panels = {
+      mind: document.getElementById('tab-panel-mind'),
+      inventory: document.getElementById('tab-panel-inventory'),
+      memory: document.getElementById('tab-panel-memory')
+    };
+    const buttons = {
+      mind: document.getElementById('tab-mind'),
+      inventory: document.getElementById('tab-inventory'),
+      memory: document.getElementById('tab-memory')
     }; 
-    const buttons = { 
-      mind: document.getElementById('tab-mind'), 
-      inventory: document.getElementById('tab-inventory') 
-    }; 
-    for (const [name, panel] of Object.entries(panels)) { 
-      if (panel) panel.style.display = name === tabName ? 'flex' : 'none'; 
-    } 
-    for (const [name, btn] of Object.entries(buttons)) { 
-      if (!btn) continue; 
-      btn.setAttribute('aria-selected', name === tabName ? 'true' : 'false'); 
-      btn.tabIndex = name === tabName ? 0 : -1; 
-    } 
-  } 
+    for (const [name, panel] of Object.entries(panels)) {
+      if (panel) panel.style.display = name === tabName ? 'flex' : 'none';
+    }
+    for (const [name, btn] of Object.entries(buttons)) {
+      if (!btn) continue;
+      btn.setAttribute('aria-selected', name === tabName ? 'true' : 'false');
+      btn.tabIndex = name === tabName ? 0 : -1;
+    }
+  }
  
-  document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => { 
+  document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => setSidebarTab(btn.getAttribute('data-tab'))); 
-  }); 
-  setSidebarTab('mind'); 
+  });
+  setSidebarTab('mind');
   
   renderCommandBuilder();
 
