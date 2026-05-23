@@ -1041,19 +1041,15 @@ class GameEngine {
     const consume = cmd.match(/^(consume|eat|drink)\s+(.+)$/);
     if (consume) return this._consumeItemByName(consume[2]);
 
-    this.hooks.onOutput?.("Command not understood (parser not implemented yet).");
-    this._afterTurn({ kind: 'noop' });
+    // No-op when no action matches (behavior TBD).
   }
  
   _tryActions(cmd) {
     const actions = this.definition.actions && typeof this.definition.actions === 'object' ? this.definition.actions : null;
     if (!actions) return false;
 
-    const parsed = this._parseCommandForActions(cmd);
-    if (!parsed) return false;
-
     for (const [actionId, actionDef] of Object.entries(actions)) {
-      const match = this._matchAction(actionDef, parsed);
+      const match = this._matchAction(actionDef, cmd);
       if (!match) continue;
 
       const ok = this._checkActionConditions(actionDef, match);
@@ -1068,75 +1064,137 @@ class GameEngine {
     return false;
   }
 
-  _parseCommandForActions(cmd) {
-    const tokens = cmd.split(/\s+/).filter(Boolean);
-    if (!tokens.length) return null;
-
-    // Find the longest synonym match at the front (max 3 words).
-    let verbRaw = tokens[0];
-    let verbLen = 1;
-    for (let len = Math.min(3, tokens.length); len >= 2; len--) {
-      const candidate = tokens.slice(0, len).join(' ');
-      if (this._verbsIndex.has(candidate)) {
-        verbRaw = candidate;
-        verbLen = len;
-        break;
-      }
-    }
-    const verb = this._canonicalVerb(verbRaw);
-    const rest = tokens.slice(verbLen).join(' ').trim();
-
-    // Very small grammar: "<verb> <object> [to <target>]"
-    let objectText = rest;
-    let targetText = '';
-    const toIdx = rest.indexOf(' to ');
-    if (toIdx !== -1) {
-      objectText = rest.slice(0, toIdx).trim();
-      targetText = rest.slice(toIdx + 4).trim();
-    }
-    return { verb, objectText, targetText };
-  }
-
-  _matchAction(actionDef, parsed) {
+  _matchAction(actionDef, cmd) {
     const pat = actionDef?.pattern;
     if (!pat || typeof pat !== 'object') return null;
+    const match = this._matchPatternAgainstPrompt(pat, cmd);
+    if (!match) return null;
+    return match;
+  }
 
-    const verbList = Array.isArray(pat.verb) ? pat.verb.map(v => String(v)) : [];
-    if (verbList.length && !verbList.map(v => this._canonicalVerb(v)).includes(parsed.verb)) return null;
+  _matchPatternAgainstPrompt(pattern, cmd) {
+    const tokens = String(cmd || '')
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (!tokens.length) return null;
 
-    const objectId = this._resolveEntityId(parsed.objectText, 'item');
-    const targetId = this._resolveEntityId(parsed.targetText, 'item');
+    const stopwords = this._getParserStopwords();
+    const slots = Object.keys(pattern);
 
-    if (!this._matchPatternSlot(pat.object, objectId)) return null;
-    if (!this._matchPatternSlot(pat.target, targetId)) return null;
+    /** @type {any} */
+    const out = {};
+    let i = 0;
 
-    const objectName = objectId ? (this._pickLang(this.definition.items?.[objectId]?.name) || objectId) : parsed.objectText;
-    const targetName = targetId ? (this._pickLang(this.definition.items?.[targetId]?.name) || targetId) : parsed.targetText;
-
-    return {
-      verb: parsed.verb,
-      object: objectId,
-      target: targetId,
-      object_name: objectName,
-      target_name: targetName
+    const skipStops = () => {
+      while (i < tokens.length && stopwords.has(tokens[i])) i++;
     };
-  }
 
-  _matchPatternSlot(slot, id) {
-    if (slot === undefined) return true;
-    if (slot === '*') return Boolean(id);
-    if (Array.isArray(slot)) {
-      if (slot.includes('*')) return Boolean(id);
-      return id ? slot.map(String).includes(id) : false;
+    for (const slotName of slots) {
+      skipStops();
+      if (i >= tokens.length) return null;
+      const slotDef = pattern[slotName];
+
+      if (slotName === 'verb') {
+        const verbIds = Array.isArray(slotDef) ? slotDef.map(v => String(v).toLowerCase()) : [];
+        const verbMatch = this._matchVerbAt(tokens, i, verbIds);
+        if (!verbMatch) return null;
+        out.verb = verbMatch.canonical;
+        i += verbMatch.len;
+        continue;
+      }
+
+      if (slotName === 'object' || slotName === 'target') {
+        const itemMatch = this._matchItemSlotAt(tokens, i, slotDef);
+        if (!itemMatch) return null;
+        out[slotName] = itemMatch.itemId;
+        out[`${slotName}_name`] = this._pickLang(this.definition.items?.[itemMatch.itemId]?.name) || itemMatch.itemId;
+        i += itemMatch.len;
+        continue;
+      }
+
+      // Unknown slot types not supported in v1.
+      return null;
     }
-    return true;
+
+    return out;
   }
 
-  _resolveEntityId(text, kind) {
-    const t = String(text || '').trim();
-    if (!t) return null;
-    if (kind === 'item') return this._findItemIdByName(t);
-    return t;
+  _getParserStopwords() {
+    const base = ['the', 'a', 'an', 'to', 'at', 'on', 'in', 'into', 'from', 'with', 'of'];
+    const pt = ['o', 'a', 'os', 'as', 'um', 'uma', 'para', 'pro', 'pra', 'no', 'na', 'nos', 'nas', 'em', 'de', 'do', 'da', 'dos', 'das', 'com'];
+    return new Set([...base, ...pt]);
+  }
+
+  _matchVerbAt(tokens, idx, verbIds) {
+    const maxLen = Math.min(3, tokens.length - idx);
+    for (let len = maxLen; len >= 1; len--) {
+      const phrase = tokens.slice(idx, idx + len).join(' ');
+      const canonical = this._canonicalVerb(phrase);
+      if (!canonical) continue;
+      if (verbIds.length === 0 || verbIds.map(v => this._canonicalVerb(v)).includes(canonical)) {
+        // Ensure phrase is known (either canonical or synonym) when verbIds is specified.
+        if (verbIds.length === 0 || this._verbsIndex.has(phrase) || verbIds.includes(canonical)) {
+          return { canonical, len };
+        }
+      }
+    }
+    return null;
+  }
+
+  _matchItemSlotAt(tokens, idx, slotDef) {
+    if (slotDef === '*') return this._matchAnyItemAt(tokens, idx);
+    if (Array.isArray(slotDef)) {
+      const list = slotDef.map(String);
+      if (list.includes('*')) return this._matchAnyItemAt(tokens, idx);
+      return this._matchSpecificItemAt(tokens, idx, list);
+    }
+    return null;
+  }
+
+  _matchAnyItemAt(tokens, idx) {
+    const items = this.definition.items && typeof this.definition.items === 'object' ? this.definition.items : {};
+    for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
+      const phrase = tokens.slice(idx, idx + len).join(' ');
+      const itemId = this._findItemIdByNameOrSynonym(phrase);
+      if (itemId) return { itemId, len };
+    }
+    return null;
+  }
+
+  _matchSpecificItemAt(tokens, idx, itemIds) {
+    const canonicalIds = itemIds.map((id) => String(id));
+    for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
+      const phrase = tokens.slice(idx, idx + len).join(' ');
+      for (const itemId of canonicalIds) {
+        if (this._phraseMatchesItemId(phrase, itemId)) return { itemId, len };
+      }
+    }
+    return null;
+  }
+
+  _phraseMatchesItemId(phrase, itemId) {
+    const p = String(phrase || '').trim().toLowerCase();
+    const id = String(itemId || '').trim();
+    if (!p || !id) return false;
+    if (p === id.toLowerCase()) return true;
+    if (p === id.replace(/_/g, ' ').toLowerCase()) return true;
+
+    const item = this.definition.items?.[id];
+    const name = this._pickLang(item?.name);
+    if (name && p === String(name).trim().toLowerCase()) return true;
+
+    const syn = item?.synonyms;
+    if (syn && typeof syn === 'object') {
+      const langList = syn?.[this.language];
+      if (Array.isArray(langList)) {
+        for (const s of langList) {
+          if (p === String(s).trim().toLowerCase()) return true;
+        }
+      }
+    }
+    return false;
   }
 
   _expandTemplate(str, match) {
@@ -1171,6 +1229,31 @@ class GameEngine {
     for (const [id, item] of Object.entries(this.definition.items || {})) {
       const n = this._pickLang(item?.name).toLowerCase();
       if (n === q) return id;
+    }
+    return null;
+  }
+
+  _findItemIdByNameOrSynonym(query) {
+    const q = String(query || '').trim().toLowerCase();
+    if (!q) return null;
+    // Allow direct id / id-as-phrase
+    if (this.definition.items?.[q]) return q;
+    const asId = q.replace(/\s+/g, '_');
+    if (this.definition.items?.[asId]) return asId;
+
+    for (const [id, item] of Object.entries(this.definition.items || {})) {
+      const n = this._pickLang(item?.name);
+      if (n && String(n).trim().toLowerCase() === q) return id;
+
+      const syn = item?.synonyms;
+      if (syn && typeof syn === 'object') {
+        const langList = syn?.[this.language];
+        if (Array.isArray(langList)) {
+          for (const s of langList) {
+            if (String(s).trim().toLowerCase() === q) return id;
+          }
+        }
+      }
     }
     return null;
   }
