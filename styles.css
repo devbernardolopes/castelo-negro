@@ -387,7 +387,7 @@ body {
   outline: none;
   min-height: 88px;
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   align-content: flex-start;
   gap: 8px;
   overflow-y: auto;
