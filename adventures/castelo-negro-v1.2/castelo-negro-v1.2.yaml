@@ -26,7 +26,7 @@ variables:
 
   protagonist_memory_max_capacity:
     type: int
-    value: 10
+    value: 22
     min_value: 0
 
   newborn_daughter_health:
@@ -38,6 +38,12 @@ variables:
   cottage_door_open:
     type: bool
     value: false
+    description: "If true, the front door of the cottage is open, otherwise it is closed. This variable does not determine whether the door is locked or unlocked, only whether it is currently open or closed."
+
+  cottage_door_locked:
+    type: bool
+    value: true
+    description: "If true, the front door of the cottage is locked and by extension closed."
 
   player_health:
     type: int
@@ -71,18 +77,20 @@ variables:
 items:
   cottage_key:
     name: { en: "Cottage Key", pt-br: "Chave do Chalé" }
+    synonyms: { en: ["brass key"], pt-br: ["chave de latão"] }
     takeable: true
     description: { en: "A tarnished brass key.", pt-br: "Uma chave de latão oxidada." }
-    verbs:
-      use:
-        conditions:
-          - if: "current_location in [cottage_living_room, cottage_porch]"
-            effect: "cottage_door_open = true"
-            message: { en: "You unlock the front door.", pt-br: "Você destranca a porta da frente." }
+
+  hand_sickle:
+    name: { en: "Hand Sickle", pt-br: "Foice de Mão" }
+    synonyms: { en: ["sickle", "reap hook", "reaping hook"], pt-br: ["foice"] }
+    takeable: true
+    description: { en: "A worn, curved sickle.", pt-br: "Uma foice desgastada e curvada." }
 
   husband_corpse:
     name: { en: "Husband's Corpse", pt-br: "Cadáver do Esposo" }
     takeable: false
+    contents: [cottage_key]
     description: { en: "The body of your husband, cold and still.", pt-br: "O corpo do seu marido, frio e imóvel." }
 
   newborn_daughter:
@@ -90,15 +98,22 @@ items:
     synonyms: { en: ["baby", "daughter", "infant"], pt-br: ["bebê", "filha"] }
     takeable: true
     description: { en: "Your tiny, crying daughter.", pt-br: "Sua pequena filha chorando." }
-    on_drop:
-      effect: "newborn_daughter_health -= 1"
-      message: { en: "You gently place her down.", pt-br: "Você a coloca no chão com cuidado." }
+    # on_drop:
+    #   effect: "newborn_daughter_health -= 1"
+    #   message: { en: "You gently place her down.", pt-br: "Você a coloca no chão com cuidado." }
 
   moldy_loaf_of_bread:
     name: { en: "Moldy Loaf of Bread", pt-br: "Pão Mofado" }
+    synonyms: { en: ["bread", "loaf of bread", "moldy bread", "moldy loaf", "loaf of moldy bread"], pt-br: ["pão", "pão mofado", "pedaço de pão mofado", "pedaço de pão"] }
     takeable: true
     consumable: true
     description: { en: "A small, mold-covered loaf.", pt-br: "Um pequeno pedaço de pão mofado." }
+
+  cottage_front_door:
+    name: { en: "Cottage Front Door", pt-br: "Porta da Frente do Chalé" }
+    synonyms: { en: ["front door", "door"], pt-br: ["porta da frente", "porta"] }
+    takeable: false
+    description: { en: "The sturdy front door of your cottage.", pt-br: "A porta da frente do seu chalé." }
 
 locations:
   cottage_living_room:
@@ -112,10 +127,20 @@ locations:
           text: { en: "The [front door] stands wide open, letting cold air in.", pt-br: "A [porta da frente] está escancarada, deixando o ar frio entrar." }
         - if: "!cottage_door_open"
           text: { en: "The [front door] stands closed.", pt-br: "A [porta da frente] está fechada." }
-    contents: [husband_corpse, newborn_daughter]
+    contents: [husband_corpse, newborn_daughter, cottage_front_door]
     exits:
       north: cottage_kitchen
-      west: cottage_porch
+      west:
+        location: cottage_porch
+        conditions:
+          - if: "cottage_door_locked"
+            allow: false
+            message: { en: "The front door is locked. You can't go outside.", pt-br: "A porta da frente está trancada. Você não pode sair." }
+          - if: "!cottage_door_locked and !cottage_door_open"
+            allow: false
+            message: { en: "The front door is closed. You need to open it first.", pt-br: "A porta da frente está fechada. Você precisa abri-la primeiro." }
+          - if: "!cottage_door_locked and cottage_door_open"
+            allow: true
     images: ["tti-2026-05-21T21-51-48-934644704.png"]
 
   cottage_kitchen:
@@ -298,9 +323,47 @@ verbs:
   drop:
     synonyms: { en: ["drop", "put down"], pt-br: ["soltar", "colocar"] }
   use:
-    synonyms: { en: ["use", "unlock", "open"], pt-br: ["usar", "destrancar", "abrir"] }
+    synonyms: { en: ["use"], pt-br: ["usar"] }
+  unlock:
+    synonyms: { en: ["unlock"], pt-br: ["destrancar"] }
+  lock:
+    synonyms: { en: ["lock"], pt-br: ["trancar"] }
+  open:
+    synonyms: { en: ["open"], pt-br: ["abrir"] }
+  close:
+    synonyms: { en: ["close"], pt-br: ["fechar"] }
 
 actions:
+  unlock_cottage_front_door:
+    pattern:
+      - verb: ["unlock"]
+      - object: ["cottage_key"]
+      - target: ["cottage_front_door"]
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "cottage_door_locked"
+      - "inventory.has('cottage_key')"
+    effect:
+      - "cottage_door_locked = false"
+    message:
+      en: "You unlock the front door."
+      pt-br: "Você destranca a porta da frente."
+
+  lock_cottage_front_door:
+    pattern:
+      - verb: ["lock"]
+      - object: ["cottage_key"]
+      - target: ["cottage_front_door"]
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "!cottage_door_open"
+      - "inventory.has('cottage_key')"
+    effect:
+      - "cottage_door_locked = true"
+    message:
+      en: "You lock the front door."
+      pt-br: "Você tranca a porta da frente."
+
   feed_newborn_daughter:
     pattern:
       - verb: ["give"]
@@ -329,3 +392,11 @@ actions:
     message:
       en: "You take the {object_name}."
       pt-br: "Você pega o {object_name}."
+
+
+    # verbs:
+    #   use:
+    #     conditions:
+    #       - if: "current_location in [cottage_living_room, cottage_porch]"
+    #         effect: "cottage_door_open = true"
+    #         message: { en: "You unlock the front door.", pt-br: "Você destranca a porta da frente." }
