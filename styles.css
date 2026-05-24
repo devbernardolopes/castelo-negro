@@ -206,7 +206,7 @@ body {
 #top-row {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -222,7 +222,7 @@ body {
   color: #555;
   overflow: hidden;
   width: 100%;
-  height: 180px;
+  height: 100px;
   flex-shrink: 0;
   border-radius: 2px;
 }
@@ -231,11 +231,11 @@ body {
   flex: 1;
   border: 1px solid #333;
   background: #1a1a1a;
-  padding: 10px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-height: 120px;
+  min-height: 80px;
   border-radius: 2px;
 }
 
@@ -260,23 +260,23 @@ body {
 
 #sidebar-tabs .tabs-header {
   display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 4px;
+  margin-bottom: 6px;
   flex-shrink: 0;
 }
 
 #sidebar-tabs .tab-btn {
   flex: 1;
-  padding: 8px 0;
+  padding: 6px 0;
   background: #151515;
   border: 1px solid #333;
   color: #e0e0e0;
   font-family: 'Courier New', Courier, monospace;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  min-height: 36px;
+  letter-spacing: 0.5px;
+  min-height: 32px;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -374,10 +374,10 @@ body {
   flex: 1;
   border: 1px solid #333;
   background: #1a1a1a;
-  padding: 12px;
+  padding: 10px;
   overflow-y: auto;
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.5;
   white-space: normal;
   min-height: 0;
   border-radius: 2px;
@@ -385,14 +385,14 @@ body {
 
 .log-entry {
   white-space: normal;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 #input-row {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   min-height: 0;
 }
 
@@ -400,13 +400,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   order: 2;
+  flex-shrink: 0;
 }
 
 .button-row {
   display: flex;
-  gap: 4px;
+  gap: 3px;
 }
 
 .button-row:first-child {
@@ -420,16 +421,16 @@ body {
 
 .input-btn {
   width: 100%;
-  padding: 10px 0;
+  padding: 8px 0;
   background: #341db6;
   border: 1px solid #333;
   color: #e0e0e0;
   font-family: 'Courier New', Courier, monospace;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 1px;
-  min-height: 44px;
+  min-height: 40px;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
   order: 1;
@@ -440,15 +441,16 @@ body {
 }
 
 .direction-btn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   background: #1a1a1a;
   border: 1px solid #333;
   color: #e0e0e0;
   font-family: 'Courier New', Courier, monospace;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
 }
 
 .direction-btn:active {
@@ -462,18 +464,19 @@ body {
   border: 1px solid #333;
   color: #e0e0e0;
   font-family: 'Courier New', Courier, monospace;
-  font-size: 14px;
-  padding: 10px;
+  font-size: 12px;
+  padding: 8px;
   outline: none;
-  min-height: 80px;
-  max-height: 120px;
+  min-height: 70px;
+  max-height: 100px;
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  gap: 8px;
+  gap: 6px;
   overflow-y: auto;
-  flex-shrink: 0;
+  flex-shrink: 1;
   border-radius: 2px;
+  order: 3;
 }
 
 #user-input:focus {
@@ -497,13 +500,13 @@ body {
 .word-token {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
+  gap: 4px;
+  padding: 4px 6px;
   background: #141414;
   border: 1px solid #333;
   border-radius: 6px;
-  min-height: 32px;
-  font-size: 12px;
+  min-height: 28px;
+  font-size: 11px;
 }
 
 .word-token.dragging {
@@ -512,8 +515,8 @@ body {
 }
 
 .word-token-handle {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -522,7 +525,7 @@ body {
   cursor: grab;
   user-select: none;
   line-height: 1;
-  font-size: 12px;
+  font-size: 10px;
   flex-shrink: 0;
 }
 
@@ -532,12 +535,12 @@ body {
 
 .word-token-text {
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .word-token-remove {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -547,6 +550,7 @@ body {
   cursor: pointer;
   font-family: 'Courier New', Courier, monospace;
   line-height: 1;
+  font-size: 10px;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 }
@@ -588,23 +592,42 @@ body {
   #top-row {
     flex-direction: row;
     flex: 3;
+    gap: 8px;
   }
 
   #room-image {
     flex: 3;
     min-width: 384px;
-    min-height: 256px;
     height: auto;
+    min-height: 256px;
   }
 
   #sidebar-tabs {
     flex: 1;
     min-height: auto;
+    padding: 10px;
+  }
+
+  #sidebar-tabs .tabs-header {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  #sidebar-tabs .tab-btn {
+    padding: 8px 0;
+    font-size: 12px;
+    letter-spacing: 1px;
+    min-height: 36px;
   }
 
   #text-display {
-    font-size: 20px;
+    font-size: 16px;
+    padding: 12px;
     flex: 2;
+  }
+
+  .log-entry {
+    margin-bottom: 8px;
   }
 
   .menu-btn {
@@ -614,27 +637,32 @@ body {
   #user-input {
     min-height: 88px;
     max-height: none;
+    font-size: 14px;
+    padding: 10px;
+    gap: 8px;
   }
 
   .word-token {
-    padding: 6px 10px;
-    min-height: 34px;
-    font-size: 13px;
+    padding: 6px 8px;
+    min-height: 32px;
+    font-size: 12px;
+    gap: 6px;
   }
 
   .word-token-handle {
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
   }
 
   .word-token-text {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .word-token-remove {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
   }
 
   .memory-token {
@@ -643,16 +671,31 @@ body {
 
   #input-row {
     flex-direction: row;
+    gap: 8px;
   }
 
   .directional-buttons {
     order: 0;
+    gap: 4px;
+  }
+
+  .button-row {
+    gap: 4px;
+  }
+
+  .direction-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
   }
 
   .input-btn {
     width: auto;
     flex: 1;
     order: 0;
+    padding: 10px 0;
+    min-height: 44px;
+    font-size: 14px;
   }
 }
 
@@ -685,24 +728,43 @@ body {
 
   #top-row {
     flex-direction: row;
-    max-height: 40%;
+    gap: 4px;
+    flex: 0 1 35%;
   }
 
   #room-image {
-    height: auto;
-    min-height: 120px;
-    flex-basis: auto;
+    height: 100%;
+    min-height: 100px;
+    flex: 1;
+  }
+
+  #sidebar-tabs {
+    flex: 1;
+    padding: 4px;
+    min-height: 100px;
+  }
+
+  #sidebar-tabs .tabs-header {
+    gap: 3px;
+    margin-bottom: 4px;
+  }
+
+  #sidebar-tabs .tab-btn {
+    padding: 4px 0;
+    font-size: 10px;
+    min-height: 28px;
   }
 
   #text-display {
-    font-size: 14px;
-    padding: 8px;
+    font-size: 13px;
+    padding: 6px;
     flex: 1;
   }
 
   #input-row {
     flex-direction: row;
     gap: 4px;
+    flex: 0 1 auto;
   }
 
   .directional-buttons {
@@ -717,7 +779,7 @@ body {
   .direction-btn {
     width: 36px;
     height: 36px;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .input-btn {
@@ -725,35 +787,38 @@ body {
     order: 1;
     min-height: 32px;
     padding: 4px 0;
+    font-size: 12px;
   }
 
   #user-input {
     order: 3;
-    min-height: 60px;
-    max-height: 80px;
-    font-size: 12px;
-    padding: 6px;
+    min-height: 50px;
+    max-height: 70px;
+    font-size: 11px;
+    padding: 4px;
+    flex: 1;
   }
 
   .word-token {
-    padding: 4px 6px;
-    min-height: 28px;
-    font-size: 11px;
+    padding: 3px 5px;
+    min-height: 26px;
+    font-size: 10px;
+    gap: 3px;
   }
 
   .word-token-handle {
-    width: 18px;
-    height: 18px;
-    font-size: 11px;
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
   }
 
   .word-token-text {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .word-token-remove {
-    width: 22px;
-    height: 22px;
-    font-size: 11px;
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
   }
 }
