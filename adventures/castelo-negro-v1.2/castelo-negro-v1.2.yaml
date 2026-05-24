@@ -309,6 +309,7 @@ strings:
       Você acorda.
 
       Não morta. Ainda não.
+      
   death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
   
   death_player: { en: "You collapse from exhaustion and despair.", pt-br: "Você desaba de exaustão e desespero." }
