@@ -33,7 +33,9 @@ GameEngine.prototype.processPlayerCommand = function(input) {
 };
 
 GameEngine.prototype._tryActions = function(cmd) {
-  const actions = this.definition.actions && typeof this.definition.actions === 'object' ? this.definition.actions : null;
+  const actions = this.definition.actions && typeof this.definition.actions === 'object' 
+    ? this.definition.actions 
+    : null;
   if (!actions) return false;
 
   for (const [actionId, actionDef] of Object.entries(actions)) {
@@ -41,14 +43,32 @@ GameEngine.prototype._tryActions = function(cmd) {
     if (!match) continue;
 
     const ok = this._checkActionConditions(actionDef, match);
-    if (!ok) continue;
+    if (ok) {
+      // Happy path: all conditions met
+      if (actionDef.effect) this._applyActionEffects(actionDef.effect, match);
+      const msg = this._pickLang(actionDef.message);
+      if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+      this._afterTurn({ kind: 'action', id: actionId });
+      return true;
+    }
 
-    if (actionDef.effect) this._applyActionEffects(actionDef.effect, match);
-    const msg = this._pickLang(actionDef.message);
-    if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
-    this._afterTurn({ kind: 'action', id: actionId });
-    return true;
+    // Check conditional failure messages
+    if (Array.isArray(actionDef.conditional_messages)) {
+      for (const conditional of actionDef.conditional_messages) {
+        const expanded = this._expandTemplate(String(conditional.condition || ''), match);
+        if (this.evaluateCondition(expanded)) {
+          const msg = this._pickLang(conditional.message);
+          if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+          this._afterTurn({ kind: 'action_failed', id: actionId });
+          return true;
+        }
+      }
+    }
+
+    // If no conditional matched, continue to next action
   }
+  
+  // No action matched at all
   return false;
 };
 

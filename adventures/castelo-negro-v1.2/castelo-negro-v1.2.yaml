@@ -98,9 +98,6 @@ items:
     synonyms: { en: ["baby", "daughter", "infant"], pt-br: ["bebê", "filha"] }
     takeable: true
     description: { en: "Your tiny, crying daughter.", pt-br: "Sua pequena filha chorando." }
-    # on_drop:
-    #   effect: "newborn_daughter_health -= 1"
-    #   message: { en: "You gently place her down.", pt-br: "Você a coloca no chão com cuidado." }
 
   moldy_loaf_of_bread:
     name: { en: "Moldy Loaf of Bread", pt-br: "Pão Mofado" }
@@ -349,6 +346,23 @@ actions:
     message:
       en: "You unlock the front door."
       pt-br: "Você destranca a porta da frente."
+      
+    # Failure branches - evaluated in order, first match wins
+    conditional_messages:
+      - condition: "!here.has('cottage_front_door')"
+        message:
+          en: "There's no front door here."
+          pt-br: "Não há porta aqui."
+      
+      - condition: "!inventory.has('cottage_key')"
+        message:
+          en: "You don't have a key."
+          pt-br: "Você não tem uma chave."
+      
+      - condition: "!cottage_door_locked"
+        message:
+          en: "The door is already unlocked."
+          pt-br: "A porta já está destrancada."
 
   lock_cottage_front_door:
     pattern:
@@ -393,6 +407,10 @@ actions:
     message:
       en: "You take the {object_name}."
       pt-br: "Você pega o {object_name}."
+
+    # on_drop:
+    #   effect: "newborn_daughter_health -= 1"
+    #   message: { en: "You gently place her down.", pt-br: "Você a coloca no chão com cuidado." }
 
 
     # verbs:
