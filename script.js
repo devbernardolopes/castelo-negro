@@ -1,6 +1,3 @@
-// Text Adventure Engine (v1.2+) - Main game script
-// One-file, modular-ish layout: YAML loader -> validation -> engine state -> actions/events -> UI hooks.
-
 /** @typedef {'en'|'pt-br'|string} LanguageCode */
 
 let engine = null;
