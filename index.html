@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Text Adeventure Engine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="true">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Text Adventure Engine</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -72,8 +74,8 @@
     </div>
     <div id="text-display"></div>
     <div id="input-row">
-      <div id="user-input" role="list" aria-label="Command builder"></div>
       <button id="input-btn-send" class="input-btn">Send</button>
+      <div id="user-input" role="list" aria-label="Command builder"></div>
       <div id="directional-buttons-row" class="directional-buttons">
         <div class="button-row">
           <button id="direction-btn-up" class="direction-btn" data-direction="up">↑</button>
@@ -89,4 +91,4 @@
   <script src="script.js"></script>
   <script src="prompt-parser.js"></script>
 </body>
-</html>
+            </html>
