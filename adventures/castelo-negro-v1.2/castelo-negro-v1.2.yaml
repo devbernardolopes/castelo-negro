@@ -317,7 +317,7 @@ verbs:
   give:
     synonyms: { en: ["give", "feed", "hand"], pt-br: ["dar", "alimentar"] }
   examine:
-    synonyms: { en: ["examine", "look at"], pt-br: ["examinar", "olhar"] }
+    synonyms: { en: ["examine", "look at", "inspect", "look"], pt-br: ["examinar", "olhar"] }
   drop:
     synonyms: { en: ["drop", "put down"], pt-br: ["soltar", "colocar"] }
   use:
@@ -346,7 +346,7 @@ actions:
     message:
       en: "You unlock the front door."
       pt-br: "Você destranca a porta da frente."
-      
+
     # Failure branches - evaluated in order, first match wins
     conditional_messages:
       - condition: "!here.has('cottage_front_door')"
