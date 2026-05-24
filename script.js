@@ -709,7 +709,23 @@ class GameEngine {
     for (const itemId of this.gameState.inventory) {
       const item = this.definition.items?.[itemId];
       const li = document.createElement('li');
-      li.textContent = item ? this._pickLang(item.name) : itemId;
+
+      const images = Array.isArray(item?.images) ? item.images : [];
+      if (images.length > 0) {
+        const img = document.createElement('img');
+        img.className = 'inventory-item-img';
+        img.alt = '';
+        this.resolveAssetUrl(images[0]).then((url) => {
+          if (url) img.src = url;
+        });
+        img.onerror = () => { img.style.display = 'none'; };
+        li.appendChild(img);
+      }
+
+      const span = document.createElement('span');
+      span.textContent = item ? this._pickLang(item.name) : itemId;
+      li.appendChild(span);
+
       makeWordsClickable(li);
       inventoryList.appendChild(li);
     }

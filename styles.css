@@ -324,6 +324,17 @@ body {
 #inventory-list li {
   padding: 4px 0;
   color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventory-item-img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 2px;
 }
 
 #memory-list {
