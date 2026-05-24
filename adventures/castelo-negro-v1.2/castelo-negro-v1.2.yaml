@@ -3,7 +3,7 @@ metadata:
   version: 1.5
   languages: [en, pt-br]
   default_language: en
-  assets_path: "assets/images/"
+  assets_path: "assets/"
 
 variables:
   game_turn:
@@ -80,11 +80,13 @@ items:
     synonyms: { en: ["brass key"], pt-br: ["chave de latão"] }
     takeable: true
     description: { en: "A tarnished brass key.", pt-br: "Uma chave de latão oxidada." }
+    images: ["images/items/tti-2026-05-23T23-26-04-394045010.png"]
 
   hand_sickle:
     name: { en: "Hand Sickle", pt-br: "Foice de Mão" }
     synonyms: { en: ["sickle", "reap hook", "reaping hook"], pt-br: ["foice"] }
     takeable: true
+    images: ["images/items/tti-2026-05-23T23-37-55-654889641.png"]
     description: { en: "A worn, curved sickle.", pt-br: "Uma foice desgastada e curvada." }
 
   husband_corpse:
@@ -98,6 +100,7 @@ items:
     synonyms: { en: ["baby", "daughter", "infant"], pt-br: ["bebê", "filha"] }
     takeable: true
     description: { en: "Your tiny, crying daughter.", pt-br: "Sua pequena filha chorando." }
+    images: ["images/items/tti-2026-05-24T02-23-25-446674314.png"]
 
   moldy_loaf_of_bread:
     name: { en: "Moldy Loaf of Bread", pt-br: "Pão Mofado" }
@@ -105,6 +108,7 @@ items:
     takeable: true
     consumable: true
     description: { en: "A small, mold-covered loaf.", pt-br: "Um pequeno pedaço de pão mofado." }
+    images: ["images/items/tti-2026-05-23T23-26-32-610649206.png"]
 
   cottage_front_door:
     name: { en: "Cottage Front Door", pt-br: "Porta da Frente do Chalé" }
@@ -138,7 +142,7 @@ locations:
             message: { en: "The front door is closed. You need to open it first.", pt-br: "A porta da frente está fechada. Você precisa abri-la primeiro." }
           - if: "!cottage_door_locked and cottage_door_open"
             allow: true
-    images: ["tti-2026-05-21T21-51-48-934644704.png"]
+    images: ["images/locations/tti-2026-05-21T21-51-48-934644704.png"]
 
   cottage_kitchen:
     name: { en: "Cottage - Kitchen", pt-br: "Chalé - Cozinha" }
@@ -147,7 +151,7 @@ locations:
     contents: [moldy_loaf_of_bread]
     exits:
       south: cottage_living_room
-    images: ["tti-2026-05-21T22-20-09-116212.png"]
+    images: ["images/locations/tti-2026-05-21T22-20-09-116212.png"]
 
   cottage_porch:
     name: { en: "Cottage - Porch", pt-br: "Chalé - Varanda" }
@@ -156,7 +160,7 @@ locations:
     exits:
       north: path_to_crop_fields
       east: cottage_living_room
-    images: ["tti-2026-05-21T21-50-11-148199714.png"]
+    images: ["images/locations/tti-2026-05-21T21-50-11-148199714.png"]
 
   path_to_crop_fields:
     name: { en: "Path to Crop Fields", pt-br: "Caminho para os Campos de Cultivo" }
@@ -165,7 +169,7 @@ locations:
     exits:
       north: crop_fields
       south: cottage_porch
-    images: ["tti-2026-05-21T21-42-06-488414966.png"]
+    images: ["images/locations/tti-2026-05-21T21-42-06-488414966.png"]
 
   crop_fields:
     name: { en: "Crop Fields", pt-br: "Campos de Cultivo" }
@@ -173,7 +177,7 @@ locations:
       base: { en: "Wilted crops sway in the cold wind.", pt-br: "Culturas murchas balançam ao vento frio." }
     exits:
       south: path_to_crop_fields
-    images: ["tti-2026-05-21T21-40-35-613533080.png"]
+    images: ["images/locations/tti-2026-05-21T21-40-35-613533080.png"]
 
   black_castle_ensuite:
     name: { en: "Black Castle - Ensuite", pt-br: "Castelo Negro - Banheiro Privativo" }
@@ -181,7 +185,7 @@ locations:
       base: { en: "A dark, opulent bathroom inside the Black Castle.", pt-br: "Um banheiro escuro e opulento dentro do Castelo Negro." }
     contents: [old_hag]
     exits: {}
-    images: ["tti-2026-05-21T23-57-11-633718448.png"]
+    images: ["images/locations/tti-2026-05-21T23-57-11-633718448.png"]
 
 actors:
   protagonist:
