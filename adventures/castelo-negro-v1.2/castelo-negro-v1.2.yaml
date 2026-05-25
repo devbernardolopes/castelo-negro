@@ -92,8 +92,14 @@ items:
   husband_corpse:
     name: { en: "Husband's Corpse", pt-br: "Cadáver do Esposo" }
     takeable: false
-    contents: [cottage_key]
+    contents: [husband_belt]
     description: { en: "The body of your husband, cold and still.", pt-br: "O corpo do seu marido, frio e imóvel." }
+
+  husband_belt:
+    name: { en: "Husband's Belt", pt-br: "Cinto do Esposo" }
+    takeable: false
+    contents: [cottage_key]
+    description: { en: "The belt of your husband, worn and torn.", pt-br: "O cinto do seu marido, desgastado e rasgado." }
 
   newborn_daughter:
     name: { en: "Newborn Daughter", pt-br: "Filha Recém-Nascida" }
