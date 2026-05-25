@@ -714,6 +714,10 @@ body {
     gap: 8px;
   }
 
+  #user-input {
+    order: 0;
+  }
+
   .directional-buttons {
     order: 0;
     gap: 4px;
