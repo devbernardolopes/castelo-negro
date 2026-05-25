@@ -166,7 +166,7 @@ items:
     synonyms: { en: ["hearth ashes", "ashes"], pt-br: ["cinzas da lareira", "cinzas"] }
     takeable: true
     description: { en: "Piles of ashes from the stone hearth.", pt-br: "Pilhas de cinzas da lareira de pedra." }
-    # images: ["images/items/tti-2026-05-23T23-37-55-654889641.png"]
+    images: ["images/items/tti-2026-05-25T23-26-53-1025784771.png"]
 
   cottage_front_door:
     name: { en: "Cottage Front Door", pt-br: "Porta da Frente do Chalé" }
