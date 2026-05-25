@@ -166,10 +166,10 @@ locations:
       conditions:
         - if: "!inventory.has(newborn_daughter)"
           text: { en: "You can hear your [baby] crying desperately on the floor.", pt-br: "Você pode ouvir sua [bebê] chorando desesperadamente no chão." }
-        - if: "cottage_door_open"
-          text: { en: "The [front door] stands wide open, letting cold air in.", pt-br: "A [porta da frente] está escancarada, deixando o ar frio entrar." }
-        - if: "!cottage_door_open"
-          text: { en: "The [front door] stands closed.", pt-br: "A [porta da frente] está fechada." }
+        # - if: "cottage_door_open"
+        #   text: { en: "The [front door] stands wide open, letting cold air in.", pt-br: "A [porta da frente] está escancarada, deixando o ar frio entrar." }
+        # - if: "!cottage_door_open"
+        #   text: { en: "The [front door] stands closed.", pt-br: "A [porta da frente] está fechada." }
     contents: [husband_corpse, newborn_daughter, cottage_front_door]
     exits:
       north: cottage_kitchen
@@ -365,41 +365,6 @@ end_conditions:
         en: "You flee into the night with your daughter. Survival is uncertain, but you are free."
         pt-br: "Você foge noite adentro com sua filha. A sobrevivência é incerta, mas vocês estão livres."
 
-strings:
-  intro:
-    en: |
-      Too weak... starving...
-      	
-      You can't [take] it anymore. Your body starts to [give] out.
-
-      You [drop] to your knees, clutching your crying daughter.
-      
-      You collapse.
-      
-      ...
-      
-      You wake up.
-      
-      Not dead. Not yet.
-    pt-br: |
-      Muito fraca... morrendo de fome...
-
-      Você não aguenta mais. Seu corpo começa a falhar.
-
-      Você [pega] sua filha chorando e se agarra a ela.
-      
-      Você desaba.
-      
-      ...
-      
-      Você acorda.
-
-      Não morta. Ainda não.
-      
-  death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
-  
-  death_player: { en: "You collapse from exhaustion and despair.", pt-br: "Você desaba de exaustão e desespero." }
-
 verbs:
   take:
     synonyms: { en: ["take", "pick up", "grab"], pt-br: ["pegar", "apanhar"] }
@@ -419,6 +384,8 @@ verbs:
     synonyms: { en: ["open"], pt-br: ["abrir"] }
   close:
     synonyms: { en: ["close"], pt-br: ["fechar"] }
+  roll:
+    synonyms: { en: ["roll", "flip", "turn"], pt-br: ["virar", "girar"] }
 
 actions:
   examine_husband_corpse:
@@ -623,3 +590,42 @@ actions:
         message:
           en: "You already have the {object_name}."
           pt-br: "Você já tem o {object_name}."
+
+strings:
+  intro:
+    en: |
+      Too weak... starving...
+      	
+      You can't [take] it anymore. Your body starts to [give] out.
+
+      You [drop] to your knees, clutching your crying daughter.
+      
+      You collapse.
+      
+      ...
+      
+      You wake up.
+      
+      Not dead. Not yet.
+
+      You look around...
+    pt-br: |
+      Muito fraca... morrendo de fome...
+
+      Você não aguenta mais. Seu corpo começa a falhar.
+
+      Você [pega] sua filha chorando e se agarra a ela.
+      
+      Você desaba.
+      
+      ...
+      
+      Você acorda.
+
+      Não morta. Ainda não.
+
+      Você olha ao redor...
+      
+  death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
+  
+  death_player: { en: "You collapse from exhaustion and despair.", pt-br: "Você desaba de exaustão e desespero." }
