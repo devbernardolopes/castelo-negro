@@ -230,6 +230,16 @@ GameEngine.prototype._phraseMatchesItemId = function(phrase, itemId) {
 
 GameEngine.prototype._expandTemplate = function(str, match) {
   return String(str).replace(/\{(\w+)\}/g, (_m, key) => {
+    if (key === 'description') {
+      // Special case: look up the item's description
+      const itemId = match?.object;
+      if (itemId) {
+        const item = this.definition.items?.[itemId];
+        return this._pickLang(item?.description) || '';
+      }
+      return '';
+    }
+    
     const v = match?.[key];
     return v == null ? '' : String(v);
   });

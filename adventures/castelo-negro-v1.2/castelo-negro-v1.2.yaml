@@ -571,11 +571,10 @@ actions:
       - object: ["*"]
     conditions:
       - "here.has('{object}') or inventory.has('{object}')"
+    effect: []
     message:
-      en: "You examine the {object_name}."
-      pt-br: "Você examina o {object_name}."
-
-    # Failure branches - evaluated in order, first match wins
+      en: "{description}"
+      pt-br: "{description}"
     conditional_messages:
       - condition: "!here.has('{object}') and !inventory.has('{object}')"
         message:
