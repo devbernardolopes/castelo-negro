@@ -109,7 +109,19 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
 
   for (const slotEntry of pattern) {
     skipStops();
-    if (i >= tokens.length) return null;
+    
+    const isOptional = slotEntry?.optional === true;
+    
+    if (i >= tokens.length) {
+      // If we're out of tokens and this slot is optional, skip it
+      if (isOptional) {
+        out[Object.keys(slotEntry)[0]] = '';  // Set to empty string
+        continue;
+      }
+      // If required, we fail
+      return null;
+    }
+
     if (!slotEntry || typeof slotEntry !== 'object') return null;
     const entries = Object.entries(slotEntry);
     if (entries.length !== 1) return null;
@@ -230,12 +242,38 @@ GameEngine.prototype._phraseMatchesItemId = function(phrase, itemId) {
 
 GameEngine.prototype._expandTemplate = function(str, match) {
   return String(str).replace(/\{(\w+)\}/g, (_m, key) => {
-    if (key === 'description') {
-      // Special case: look up the item's description
-      const itemId = match?.object;
-      if (itemId) {
-        const item = this.definition.items?.[itemId];
-        return this._pickLang(item?.description) || '';
+    // Handle {location_or_object_description}
+    if (key === 'location_or_object_description') {
+      const objectId = match?.object;
+      
+      // If object is specified, return object description
+      if (objectId && objectId !== '') {
+        const item = this.definition.items?.[objectId];
+        if (item?.description) {
+          return this._pickLang(item.description);
+        }
+      }
+      
+      // Otherwise, return location description
+      const locId = this.gameState.current_location;
+      const loc = this.getFullLocationData(locId);
+      if (loc) {
+        const baseDescript = this._pickLang(loc.description?.base);
+        const conditions = Array.isArray(loc.description?.conditions) 
+          ? loc.description.conditions 
+          : [];
+        
+        let fullDesc = baseDescript || '';
+        
+        for (const cond of conditions) {
+          const condExpanded = this._expandTemplate(String(cond.if || ''), match);
+          if (this.evaluateCondition(condExpanded)) {
+            const condText = this._pickLang(cond.text);
+            if (condText) fullDesc += '\n\n' + condText;
+          }
+        }
+        
+        return fullDesc;
       }
       return '';
     }

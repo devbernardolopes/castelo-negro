@@ -161,6 +161,7 @@ items:
 locations:
   cottage_living_room:
     name: { en: "Cottage - Living Room", pt-br: "Chalé - Sala de Estar" }
+    synonyms: { en: ["living room"], pt-br: ["sala de estar"] }
     description:
       base: { en: "You're in the living room of your modest cottage.", pt-br: "Você está na sala de estar do seu modesto chalé." }
       conditions:
@@ -569,14 +570,15 @@ actions:
     pattern:
       - verb: ["examine"]
       - object: ["*"]
+        optional: true
     conditions:
-      - "here.has('{object}') or inventory.has('{object}')"
+      - "'{object}' == '' or here.has('{object}') or inventory.has('{object}')"
     effect: []
     message:
-      en: "{description}"
-      pt-br: "{description}"
+      en: "{location_or_object_description}"
+      pt-br: "{location_or_object_description}"
     conditional_messages:
-      - condition: "!here.has('{object}') and !inventory.has('{object}')"
+      - condition: "'{object}' != '' !here.has('{object}') and !inventory.has('{object}')"
         message:
           en: "There's no {object_name} here."
           pt-br: "Não há {object_name} aqui."
