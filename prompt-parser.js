@@ -76,7 +76,15 @@ GameEngine.prototype._tryActions = function(cmd) {
 GameEngine.prototype._matchAction = function(actionDef, cmd) {
   const pat = actionDef?.pattern;
   if (!pat || !Array.isArray(pat)) return null;
-  const match = this._matchPatternAgainstPrompt(pat, cmd);
+
+  const expandedPattern = pat.map(slot => {
+    if (slot.verb) {
+      return { verb: this._expandVerbSynonyms(slot.verb) };
+    }
+    return slot;
+  });
+
+  const match = this._matchPatternAgainstPrompt(expandedPattern, cmd);
   if (!match) return null;
   return match;
 };
@@ -137,6 +145,18 @@ GameEngine.prototype._getParserStopwords = function() {
   const base = ['the', 'a', 'an', 'to', 'at', 'on', 'in', 'into', 'from', 'with', 'of'];
   const pt = ['o', 'a', 'os', 'as', 'um', 'uma', 'para', 'pro', 'pra', 'no', 'na', 'nos', 'nas', 'em', 'de', 'do', 'da', 'dos', 'das', 'com'];
   return new Set([...base, ...pt]);
+};
+
+GameEngine.prototype._expandVerbSynonyms = function(verbIds) {
+  const expanded = new Set();
+  for (const vid of verbIds) {
+    expanded.add(vid);
+    const verbDef = this.definition.verbs?.[vid];
+    if (verbDef?.synonyms?.[this.language]) {
+      verbDef.synonyms[this.language].forEach(s => expanded.add(s));
+    }
+  }
+  return Array.from(expanded);
 };
 
 GameEngine.prototype._matchVerbAt = function(tokens, idx, verbIds) {
