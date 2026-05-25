@@ -59,6 +59,7 @@ GameEngine.prototype._tryActions = function(cmd) {
         if (this.evaluateCondition(expanded)) {
           const msg = this._pickLang(conditional.message);
           if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+          this._fireEventsByTrigger('action_failed', { actionId, match });
           this._afterTurn({ kind: 'action_failed', id: actionId });
           return true;
         }

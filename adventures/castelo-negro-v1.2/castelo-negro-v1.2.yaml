@@ -74,6 +74,36 @@ variables:
     type: bool
     value: false
 
+  # ---
+  # COTTAGE KEY
+  # ---
+  cottage_key_discovery_stage:
+    type: int
+    value: 0
+    description: "0=unknown, 1=husband_dead, 2=suspected_on_body, 3=belt_spotted, 4=belt_accessible, 5=key_obtained"
+    min_value: 0
+    max_value: 5
+
+  husband_corpse_inspected_count:
+    type: int
+    value: 0
+    description: "How many times the player has examined the corpse"
+
+  husband_corpse_rolled:
+    type: bool
+    value: false
+    description: "Whether the player has rolled/flipped the corpse to access the belt back"
+
+  husband_belt_visible:
+    type: bool
+    value: false
+    description: "Whether the belt is visible to the player"
+
+  cottage_door_unlock_attempted:
+    type: bool
+    value: false
+    description: "True if player has tried to leave via locked door at least once"
+
 items:
   cottage_key:
     name: { en: "Cottage Key", pt-br: "Chave do Chalé" }
@@ -94,13 +124,19 @@ items:
     takeable: false
     contents: [husband_belt]
     description: { en: "The body of your husband, cold and still.", pt-br: "O corpo do seu marido, frio e imóvel." }
+    contents_visibility:
+      husband_belt:
+        visible_when: "husband_belt_visible"
 
   husband_belt:
     name: { en: "Husband's Belt", pt-br: "Cinto do Esposo" }
     takeable: false
     contents: [cottage_key]
     description: { en: "The belt of your husband, worn and torn.", pt-br: "O cinto do seu marido, desgastado e rasgado." }
-
+    contents_visibility:
+      cottage_key:
+        visible_when: "husband_corpse_rolled"
+  
   newborn_daughter:
     name: { en: "Newborn Daughter", pt-br: "Filha Recém-Nascida" }
     synonyms: { en: ["baby", "daughter", "infant"], pt-br: ["bebê", "filha"] }
@@ -212,6 +248,49 @@ actors:
         pt-br: "Hehehe... que família deliciosa você tem..."
 
 events:
+  - id: door_unlock_hint_level_1
+    type: recurring
+    trigger_on: "action_failed"
+    action_id: "unlock_cottage_front_door"
+    conditions:
+      - "cottage_key_discovery_stage == 0"
+      - "cottage_door_unlock_attempted == false"
+    effect:
+      - "cottage_door_unlock_attempted = true"
+    message:
+      en: "You desperately try the locked door, but it won't budge. Where could the key be?"
+      pt-br: "Você tenta desesperadamente a porta trancada, mas ela não se move. Onde poderia estar a chave?"
+
+  - id: door_unlock_hint_level_2
+    type: recurring
+    trigger_on: "action_failed"
+    action_id: "unlock_cottage_front_door"
+    conditions:
+      - "cottage_key_discovery_stage == 1"
+    message:
+      en: "The door remains locked. Your husband... he must have had the key. It must still be on him."
+      pt-br: "A porta continua trancada. Seu marido... ele deve ter tido a chave. Ela ainda deve estar com ele."
+
+  - id: door_unlock_hint_level_3
+    type: recurring
+    trigger_on: "action_failed"
+    action_id: "unlock_cottage_front_door"
+    conditions:
+      - "cottage_key_discovery_stage == 2"
+    message:
+      en: "The door won't open. The key must be tied to his belt somehow..."
+      pt-br: "A porta não abrirá. A chave deve estar amarrada ao seu cinto de alguma forma..."
+
+  - id: door_unlock_no_hint_level_4
+    type: recurring
+    trigger_on: "action_failed"
+    action_id: "unlock_cottage_front_door"
+    conditions:
+      - "cottage_key_discovery_stage >= 3"
+    message:
+      en: "The door is locked. You have to find the key."
+      pt-br: "A porta está trancada. Você precisa encontrar a chave."
+
   - id: baby_cries
     type: recurring
     interval: 3
@@ -342,6 +421,111 @@ verbs:
     synonyms: { en: ["close"], pt-br: ["fechar"] }
 
 actions:
+  examine_husband_corpse:
+    pattern:
+      - verb: ["examine"]
+      - object: ["husband_corpse"]
+    conditions:
+      - "here.has('husband_corpse')"
+    effect:
+      - "husband_corpse_inspected_count += 1"
+    message:
+      en: "You look at the corpse."
+      pt-br: "Você olha para o cadáver."
+    
+    # Conditional messages based on discovery stage
+    conditional_messages:
+      # First inspection: realize husband is dead
+      - condition: "husband_corpse_inspected_count == 1 and cottage_key_discovery_stage == 0"
+        effect:
+          - "cottage_key_discovery_stage = 1"
+        message:
+          en: |
+            Your husband lies still. Cold. His eyes stare blankly at nothing.
+            The realization crashes over you: he's gone. Dead.
+            You collapse to your knees, tears streaming down your face.
+          pt-br: |
+            Seu marido está imóvel. Frio. Seus olhos fixam-se no vazio.
+            A realização desaba sobre você: ele se foi. Morreu.
+            Você cai de joelhos, lágrimas escorrendo pelo seu rosto.
+
+      # Second inspection: suspect the key is on him
+      - condition: "husband_corpse_inspected_count >= 2 and cottage_key_discovery_stage == 1 and cottage_door_unlock_attempted"
+        effect:
+          - "cottage_key_discovery_stage = 2"
+        message:
+          en: |
+            You examine your husband's body more carefully.
+            Surely... surely he had a key? A key to the cottage?
+            Perhaps it's still on him somewhere...
+          pt-br: |
+            Você examina o corpo do seu marido mais cuidadosamente.
+            Certamente... certamente ele tinha uma chave? Uma chave para o chalé?
+            Talvez ainda esteja com ele em algum lugar...
+
+      # Third inspection: notice the belt
+      - condition: "husband_corpse_inspected_count >= 3 and cottage_key_discovery_stage == 2"
+        effect:
+          - "cottage_key_discovery_stage = 3"
+          - "husband_belt_visible = true"
+        message:
+          en: |
+            You notice his belt, worn and faded with time.
+            Something might be tied to it... but you can't see clearly.
+            The body's position obscures the back of the belt.
+          pt-br: |
+            Você nota o seu cinto, desgastado e desbotado pelo tempo.
+            Algo poderia estar amarrado nele... mas você não consegue ver claramente.
+            A posição do corpo obscurece a parte traseira do cinto.
+
+      # Subsequent inspections at stage 3 or higher
+      - condition: "cottage_key_discovery_stage == 3"
+        message:
+          en: |
+            You see the belt more clearly now.
+            Something is tied to the back of it, but the body is in the way.
+          pt-br: |
+            Você vê o cinto mais claramente agora.
+            Algo está amarrado na sua parte traseira, mas o corpo está no caminho.
+
+      # Stage 4 or higher (default)
+      - condition: "cottage_key_discovery_stage >= 4"
+        message:
+          en: "You've already examined the corpse thoroughly."
+          pt-br: "Você já examinou o cadáver completamente."
+
+  roll_husband_corpse:
+    pattern:
+      - verb: ["roll", "flip", "turn"]
+      - target: ["husband_corpse"]
+    conditions:
+      - "here.has('husband_corpse')"
+      - "cottage_key_discovery_stage >= 3"
+      - "!husband_corpse_rolled"
+    effect:
+      - "husband_corpse_rolled = true"
+      - "cottage_key_discovery_stage = 4"
+    message:
+      en: |
+        With great effort, you roll your husband's body over.
+        Your breath catches. Tied to the back of his belt is a tarnished brass key.
+        The cottage key. It's been here all along.
+      pt-br: |
+        Com grande esforço, você vira o corpo do seu marido.
+        Sua respiração prende. Amarrada à parte traseira do seu cinto está uma chave de latão oxidada.
+        A chave do chalé. Esteve aqui o tempo todo.
+
+    conditional_messages:
+      - condition: "cottage_key_discovery_stage < 3"
+        message:
+          en: "You're not sure why you'd do that."
+          pt-br: "Você não tem certeza por que faria isso."
+      
+      - condition: "husband_corpse_rolled"
+        message:
+          en: "The body is already rolled over."
+          pt-br: "O corpo já está virado."
+  
   unlock_cottage_front_door:
     pattern:
       - verb: ["unlock"]
