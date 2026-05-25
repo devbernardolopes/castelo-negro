@@ -203,11 +203,21 @@ body {
   line-height: 1.4;
 }
 
-#top-row {
+#game-area {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  flex: 0 1 180px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 0 1 auto;
+  max-height: 180px;
   overflow: hidden;
 }
 
@@ -618,23 +628,27 @@ body {
     letter-spacing: 1px;
   }
 
-  #top-row {
+  #game-area {
     flex-direction: row;
-    flex: 3;
     gap: 8px;
+  }
+
+  #right-panel {
+    flex: 2;
     max-height: none;
+    gap: 8px;
   }
 
   #room-image {
-    flex: 3;
-    min-width: 384px;
+    width: 100%;
+    aspect-ratio: 768 / 512;
     height: auto;
-    min-height: 256px;
+    flex: 0 0 auto;
   }
 
   #sidebar-tabs {
     flex: 1;
-    min-height: auto;
+    min-height: 0;
     padding: 10px;
   }
 
@@ -653,7 +667,7 @@ body {
   #text-display {
     font-size: 16px;
     padding: 12px;
-    flex: 2;
+    flex: 3;
   }
 
   .log-entry {
@@ -752,7 +766,7 @@ body {
     font-size: 11px;
   }
 
-  #top-row {
+  #right-panel {
     flex-direction: row;
     gap: 4px;
     flex: 0 1 35%;
