@@ -15,11 +15,6 @@ variables:
     type: object
     value: [protagonist]
 
-  inventory:
-    type: list
-    value: []
-    max_capacity: 4
-
   protagonist_memory:
     type: list
     value: []
@@ -265,6 +260,8 @@ actors:
     name: { en: "You", pt-br: "Você" }
     playable: true
     starting_location: cottage_living_room
+    inventory: []
+    max_capacity: 4
     memory:
       words_variable: protagonist_memory
       max_capacity_variable: protagonist_memory_max_capacity
@@ -273,6 +270,8 @@ actors:
     name: { en: "Old Hag", pt-br: "Velha Bruxa" }
     playable: false
     starting_location: black_castle_ensuite
+    inventory: []
+    max_capacity: 4
     dialogue:
       default:
         en: "Hehehe... what a delicious little family you have..."

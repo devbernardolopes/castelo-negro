@@ -236,7 +236,7 @@ function renderInventoryList() {
   while (inventoryList.firstChild) inventoryList.removeChild(inventoryList.firstChild);
 
   if (!engine) return;
-  for (const itemId of engine.gameState.inventory) {
+  for (const itemId of engine.inventory.items) {
     const item = engine.definition.items?.[itemId];
     const li = document.createElement('li');
 

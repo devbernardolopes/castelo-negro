@@ -9,12 +9,14 @@ class InventorySystem {
   }
 
   get maxCapacity() {
-    const invVar = this.engine.gameState.variables.inventory;
-    return Number(invVar?.max_capacity ?? invVar?.definition?.max_capacity ?? 9999);
+    const actorId = this.engine._getPlayerActorId();
+    const actorDef = this.engine.definition.actors?.[actorId];
+    return Number(actorDef?.max_capacity ?? 9999);
   }
 
   get items() {
-    return this.engine.gameState.inventory;
+    const actorId = this.engine._getPlayerActorId();
+    return this.engine.gameState.actors_data?.[actorId]?.inventory ?? [];
   }
 
   has(itemId) {
@@ -188,12 +190,18 @@ class GameEngine {
     }
 
     const startLoc = this.definition.actors.protagonist.starting_location;
-    const invValue = Array.isArray(vars.inventory?.value) ? vars.inventory.value : [];
+
+    const actorsData = {};
+    for (const [actorId, actorDef] of Object.entries(this.definition.actors || {})) {
+      actorsData[actorId] = {
+        inventory: Array.isArray(actorDef.inventory) ? [...actorDef.inventory] : []
+      };
+    }
 
     return {
       current_location: startLoc,
       variables: vars,
-      inventory: invValue,
+      actors_data: actorsData,
       game_turn: Number(vars.game_turn?.value ?? 0),
       flags: {},
       story: {}
@@ -298,16 +306,19 @@ class GameEngine {
       const contents = Array.isArray(currentLoc?.contents) ? currentLoc.contents : [];
       return contents.includes(String(itemId));
     };
-    const maxCap = Number(this.gameState.variables.inventory?.max_capacity ?? this.definition.variables?.inventory?.max_capacity ?? 9999);
     const inventoryObj = {
       ...this._evalContext.inventory,
       add: (itemId) => this.inventory.add(String(itemId)),
       remove: (itemId) => this.inventory.remove(String(itemId)),
       get length() {
-        return Array.isArray(engine.gameState.inventory) ? engine.gameState.inventory.length : 0;
+        const actorId = engine._getPlayerActorId();
+        const data = engine.gameState.actors_data?.[actorId];
+        return data?.inventory?.length ?? 0;
       },
       get max_capacity() {
-        return maxCap;
+        const actorId = engine._getPlayerActorId();
+        const actorDef = engine.definition.actors?.[actorId];
+        return Number(actorDef?.max_capacity ?? 9999);
       }
     };
     return {
@@ -407,7 +418,6 @@ class GameEngine {
 
     variable.value = this._coerceAndClamp(variable, next);
     if (varName === 'game_turn') this.gameState.game_turn = Number(variable.value) || 0;
-    if (varName === 'inventory' && Array.isArray(variable.value)) this.gameState.inventory = variable.value;
   }
 
   _coerceAndClamp(variable, value) {

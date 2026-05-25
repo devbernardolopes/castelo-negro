@@ -273,8 +273,12 @@ function validateDefinition(def) {
   assertSection(typeof def.actors.protagonist.starting_location === 'string', '`actors.protagonist.starting_location` is required');
   assertSection(def.locations[def.actors.protagonist.starting_location], 'Starting location not found in `locations`');
 
-  // Inventory variable is strongly recommended in v1.2
-  if (!def.variables.inventory) console.warn('[engine] `variables.inventory` missing; inventory features will be limited.');
+  // Check actors have inventory capacity defined
+  for (const [actorId, actorDef] of Object.entries(def.actors || {})) {
+    if (!('max_capacity' in actorDef)) {
+      console.warn(`[engine] Actor '${actorId}' has no max_capacity.`);
+    }
+  }
   if (!def.strings || typeof def.strings !== 'object') console.warn('[engine] `strings` missing; intro/death messages may not render.');
   if (def.verbs && typeof def.verbs !== 'object') console.warn('[engine] `verbs` should be an object map.');
   if (def.actions && typeof def.actions !== 'object') console.warn('[engine] `actions` should be an object map.');
