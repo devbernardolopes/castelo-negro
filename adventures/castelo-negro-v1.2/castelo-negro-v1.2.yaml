@@ -463,7 +463,7 @@ actions:
 
   roll_husband_corpse:
     pattern:
-      - verb: ["roll", "flip", "turn"]
+      - verb: ["roll"]
       - target: ["husband_corpse"]
     conditions:
       - "here.has('husband_corpse')"
@@ -540,6 +540,16 @@ actions:
       en: "You lock the front door."
       pt-br: "Você tranca a porta da frente."
 
+  # examine_newborn_daughter:
+  #   pattern:
+  #     - verb: ["examine"]
+  #     - object: ["newborn_daughter"]
+  #   conditions:
+  #     - "inventory.has('newborn_daughter') or here.has('newborn_daughter')"
+  #   message:
+  #     en: "Your tiny, crying daughter."
+  #     pt-br: "Sua filha pequena e chorando."
+
   feed_newborn_daughter:
     pattern:
       - verb: ["give"]
@@ -554,6 +564,23 @@ actions:
     message:
       en: "You break off a piece and feed your daughter."
       pt-br: "Você quebra um pedaço e alimenta sua filha."
+
+  examine:
+    pattern:
+      - verb: ["examine"]
+      - object: ["*"]
+    conditions:
+      - "here.has('{object}') or inventory.has('{object}')"
+    message:
+      en: "You examine the {object_name}."
+      pt-br: "Você examina o {object_name}."
+
+    # Failure branches - evaluated in order, first match wins
+    conditional_messages:
+      - condition: "!here.has('{object}') and !inventory.has('{object}')"
+        message:
+          en: "There's no {object_name} here."
+          pt-br: "Não há {object_name} aqui."
 
   take_item:
     pattern:
