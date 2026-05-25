@@ -144,6 +144,12 @@ items:
     description: { en: "Your tiny, crying daughter.", pt-br: "Sua pequena filha chorando." }
     images: ["images/items/tti-2026-05-24T02-23-25-446674314.png"]
 
+  stone hearth:
+    name: { en: "Stone Hearth", pt-br: "Lareira de Pedra" }
+    synonyms: { en: ["hearth", "stone hearth"], pt-br: ["lareira", "lareira de pedra"] }
+    takeable: false
+    description: { en: "A simple stone hearth for cooking and warmth.", pt-br: "Uma lareira de pedra simples para cozinhar e aquecer." }
+
   moldy_loaf_of_bread:
     name: { en: "Moldy Loaf of Bread", pt-br: "Pão Mofado" }
     synonyms: { en: ["bread", "loaf of bread", "moldy bread", "moldy loaf", "loaf of moldy bread"], pt-br: ["pão", "pão mofado", "pedaço de pão mofado", "pedaço de pão"] }
@@ -161,7 +167,7 @@ items:
 locations:
   cottage_living_room:
     name: { en: "Cottage - Living Room", pt-br: "Chalé - Sala de Estar" }
-    synonyms: { en: ["living room"], pt-br: ["sala de estar"] }
+    synonyms: { en: ["living room", "room"], pt-br: ["sala de estar", "sala"] }
     description:
       base: { en: "You're in the living room of your modest cottage.", pt-br: "Você está na sala de estar do seu modesto chalé." }
       conditions:
@@ -189,6 +195,7 @@ locations:
 
   cottage_kitchen:
     name: { en: "Cottage - Kitchen", pt-br: "Chalé - Cozinha" }
+    synonyms: { en: ["kitchen"], pt-br: ["cozinha"] }
     description:
       base: { en: "A simple kitchen with a stone hearth.", pt-br: "Uma cozinha simples com uma lareira de pedra." }
     contents: [moldy_loaf_of_bread]
@@ -540,16 +547,6 @@ actions:
     message:
       en: "You lock the front door."
       pt-br: "Você tranca a porta da frente."
-
-  # examine_newborn_daughter:
-  #   pattern:
-  #     - verb: ["examine"]
-  #     - object: ["newborn_daughter"]
-  #   conditions:
-  #     - "inventory.has('newborn_daughter') or here.has('newborn_daughter')"
-  #   message:
-  #     en: "Your tiny, crying daughter."
-  #     pt-br: "Sua filha pequena e chorando."
 
   feed_newborn_daughter:
     pattern:
