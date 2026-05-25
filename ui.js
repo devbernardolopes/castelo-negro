@@ -1,0 +1,342 @@
+/** @typedef {'en'|'pt-br'|string} LanguageCode */
+
+let selectedWords = [];
+let pendingWordClickTimer = null;
+let suppressPromptAddUntilTs = 0;
+
+function setText(elId, text) {
+  const el = document.getElementById(elId);
+  if (el) el.textContent = text || '';
+}
+
+function clearEl(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  while (el.firstChild) el.removeChild(el.firstChild);
+}
+
+function setMenuButtonsEnabled(isGameLoaded) {
+  const ids = ['menu-btn-reset-game', 'menu-btn-load-game', 'menu-btn-save-game', 'menu-btn-change-language'];
+  for (const id of ids) {
+    const btn = document.getElementById(id);
+    if (btn) btn.disabled = !isGameLoaded;
+  }
+}
+
+function setGameControlsEnabled(isGameLoaded) {
+  const input = document.getElementById('user-input');
+  if (input) input.setAttribute('aria-disabled', isGameLoaded ? 'false' : 'true');
+
+  syncSendButtonEnabled();
+
+  document.querySelectorAll('#directional-buttons-row .direction-btn').forEach((btn) => {
+    btn.disabled = !isGameLoaded;
+  });
+}
+
+function setSidebarTabsEnabled(isGameLoaded) {
+  const sidebar = document.getElementById('sidebar-tabs');
+  if (sidebar) sidebar.setAttribute('data-enabled', isGameLoaded ? 'true' : 'false');
+  document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
+    btn.disabled = !isGameLoaded;
+  });
+}
+
+function setAdventureTitle(title) {
+  setText('adventure-title-row', title || '');
+}
+
+function resetUiForNewGame() {
+  clearEl('inventory-list');
+  setText('mind-panel', '');
+  clearEl('memory-list');
+  selectedWords = [];
+  renderCommandBuilder();
+  const imgEl = document.getElementById('room-img');
+  if (imgEl) {
+    imgEl.style.display = 'none';
+    imgEl.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+  }
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatBracketBoldToHtml(text) {
+  return String(text).replace(/\[([^\]]+)\]/g, (_m, inner) => `<strong>${inner}</strong>`);
+}
+
+function textToHtmlWithBoldBrackets(text) {
+  const escaped = escapeHtml(String(text ?? '').replace(/\r\n/g, '\n'));
+  const bolded = formatBracketBoldToHtml(escaped);
+  return bolded.replace(/\n/g, '<br>');
+}
+
+function appendOutput(text) {
+  const el = document.getElementById('text-display');
+  if (!el) return;
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = textToHtmlWithBoldBrackets(text);
+  makeWordsClickable(entry);
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+}
+
+function appendPlayerPrompt(promptText) {
+  const el = document.getElementById('text-display');
+  if (!el) return;
+  const entry = document.createElement('div');
+  entry.className = 'log-entry player-prompt';
+  entry.textContent = `> ${promptText}`;
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+}
+
+function stripWordPunctuation(rawWord) {
+  return String(rawWord || '').replace(/^[\s"'“”‘’\(\[\{<]+|[\s"'“”‘’\)\]\}>.,!?:;]+$/g, '');
+}
+
+function makeWordsClickable(rootEl) {
+  if (!rootEl) return;
+  const walker = document.createTreeWalker(rootEl, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      const parent = node.parentElement;
+      if (!parent) return NodeFilter.FILTER_REJECT;
+      if (parent.closest('.click-word')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+  for (const node of textNodes) {
+    const text = node.nodeValue || '';
+    const parts = text.split(/(\s+)/);
+    const frag = document.createDocumentFragment();
+    for (const part of parts) {
+      if (!part) continue;
+      if (/^\s+$/.test(part)) {
+        frag.appendChild(document.createTextNode(part));
+        continue;
+      }
+      const span = document.createElement('span');
+      span.className = 'click-word';
+      span.setAttribute('data-word', part);
+      span.textContent = part;
+      frag.appendChild(span);
+    }
+    node.parentNode?.replaceChild(frag, node);
+  }
+}
+
+function renderCommandBuilder() {
+  const container = document.getElementById('user-input');
+  if (!container) return;
+  container.innerHTML = '';
+
+  for (let i = 0; i < selectedWords.length; i++) {
+    const word = selectedWords[i];
+    const token = document.createElement('div');
+    token.className = 'word-token';
+    token.setAttribute('role', 'listitem');
+    token.setAttribute('draggable', 'true');
+    token.setAttribute('data-index', String(i));
+
+    const handle = document.createElement('div');
+    handle.className = 'word-token-handle';
+    handle.setAttribute('aria-label', 'Drag to reorder');
+    handle.textContent = '≡';
+
+    const text = document.createElement('div');
+    text.className = 'word-token-text';
+    text.textContent = word;
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'word-token-remove';
+    remove.setAttribute('aria-label', 'Remove word');
+    remove.textContent = 'X';
+
+    token.appendChild(handle);
+    token.appendChild(text);
+    token.appendChild(remove);
+    container.appendChild(token);
+  }
+
+  syncSendButtonEnabled();
+}
+
+function syncSendButtonEnabled() {
+  const sendBtn = document.getElementById('input-btn-send');
+  if (!sendBtn) return;
+  sendBtn.disabled = !engine || selectedWords.length === 0;
+}
+
+function addWordToCommand(rawWord) {
+  if (!engine) return;
+  const word = stripWordPunctuation(rawWord);
+  if (!word) return;
+  selectedWords.push(word);
+  renderCommandBuilder();
+}
+
+function scheduleAddWordToCommand(rawWord) {
+  if (pendingWordClickTimer) clearTimeout(pendingWordClickTimer);
+  pendingWordClickTimer = setTimeout(() => {
+    pendingWordClickTimer = null;
+    addWordToCommand(rawWord);
+  }, 250);
+}
+
+function setModalVisible(visible) {
+  const el = document.getElementById('adventure-modal-backdrop');
+  if (!el) return;
+  el.style.display = visible ? 'flex' : 'none';
+}
+
+// --- Engine hook rendering callbacks (DOM-free engine hooks into these) ---
+
+/**
+ * Render the current room image into #room-img.
+ * @param {string|null} url - resolved image URL, or null to hide
+ */
+function renderRoomImage(url) {
+  const imgEl = document.getElementById('room-img');
+  if (!imgEl) return;
+  if (url) {
+    imgEl.src = url;
+    imgEl.style.display = 'block';
+    imgEl.onload = () => { imgEl.style.display = 'block'; };
+    imgEl.onerror = () => { imgEl.style.display = 'none'; };
+  } else {
+    imgEl.style.display = 'none';
+  }
+}
+
+/**
+ * Re-render the inventory list from engine state.
+ * Reads engine.gameState.inventory and engine.definition.items globals.
+ */
+function renderInventoryList() {
+  const inventoryList = document.getElementById('inventory-list');
+  if (!inventoryList) return;
+  while (inventoryList.firstChild) inventoryList.removeChild(inventoryList.firstChild);
+
+  if (!engine) return;
+  for (const itemId of engine.gameState.inventory) {
+    const item = engine.definition.items?.[itemId];
+    const li = document.createElement('li');
+
+    const images = Array.isArray(item?.images) ? item.images : [];
+    if (images.length > 0) {
+      const img = document.createElement('img');
+      img.className = 'inventory-item-img';
+      img.alt = '';
+      engine.resolveAssetUrl(images[0]).then((url) => {
+        if (url) img.src = url;
+      });
+      img.onerror = () => { img.style.display = 'none'; };
+      li.appendChild(img);
+    }
+
+    const span = document.createElement('span');
+    span.textContent = item ? engine._pickLang(item.name) : itemId;
+    li.appendChild(span);
+
+    makeWordsClickable(li);
+    inventoryList.appendChild(li);
+  }
+}
+
+/**
+ * Re-render the mind panel from engine state.
+ */
+function renderMindPanel() {
+  if (!engine) return;
+  const lines = [];
+  const health = engine.gameState.variables.player_health?.value;
+  const sanity = engine.gameState.variables.sanity?.value;
+  const timeOfDay = engine.gameState.variables.time_of_day?.value;
+  const turn = engine.gameState.game_turn;
+  if (health !== undefined) lines.push(`Health: ${health}`);
+  if (sanity !== undefined) lines.push(`Sanity: ${sanity}`);
+  if (timeOfDay !== undefined) lines.push(`Time: ${timeOfDay}`);
+  lines.push(`Turn: ${turn}`);
+  setText('mind-panel', lines.join('\n'));
+}
+
+/**
+ * Re-render the memory word list from engine state.
+ */
+function renderMemoryList() {
+  const el = document.getElementById('memory-list');
+  if (!el) return;
+  while (el.firstChild) el.removeChild(el.firstChild);
+
+  if (!engine) return;
+  const words = engine._getMemoryWords();
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    const token = document.createElement('div');
+    token.className = 'memory-token';
+    token.setAttribute('role', 'listitem');
+    token.setAttribute('data-index', String(i));
+    token.setAttribute('draggable', words.length > 1 ? 'true' : 'false');
+
+    const handle = document.createElement('div');
+    handle.className = 'word-token-handle';
+    handle.setAttribute('aria-hidden', 'true');
+    handle.textContent = '≡';
+
+    const text = document.createElement('div');
+    text.className = 'word-token-text';
+    text.textContent = word;
+
+    const controls = document.createElement('div');
+    controls.className = 'memory-token-controls';
+
+    const up = document.createElement('button');
+    up.type = 'button';
+    up.className = 'memory-token-btn';
+    up.setAttribute('data-action', 'mem-up');
+    up.setAttribute('aria-label', 'Move up');
+    up.textContent = '↑';
+    up.disabled = i === 0;
+
+    const down = document.createElement('button');
+    down.type = 'button';
+    down.className = 'memory-token-btn';
+    down.setAttribute('data-action', 'mem-down');
+    down.setAttribute('aria-label', 'Move down');
+    down.textContent = '↓';
+    down.disabled = i === words.length - 1;
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'word-token-remove';
+    remove.setAttribute('data-action', 'mem-remove');
+    remove.setAttribute('aria-label', 'Remove word');
+    remove.textContent = 'X';
+
+    controls.appendChild(up);
+    controls.appendChild(down);
+    token.appendChild(handle);
+    token.appendChild(text);
+    token.appendChild(controls);
+    token.appendChild(remove);
+    el.appendChild(token);
+  }
+}

@@ -1,0 +1,227 @@
+// ---------------------------
+// Adventure loading & file I/O
+// ---------------------------
+
+const DB_NAME = 'text-adventure-engine';
+const DB_STORE = 'handles';
+const DB_KEY_LAST_ADVENTURE = 'lastAdventureFileHandle';
+const DB_KEY_LAST_ADVENTURE_DIR = 'lastAdventureDirectoryHandle';
+const LS_KEY_LAST_MODE = 'adventureLoadMode';
+
+function openDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(DB_STORE)) db.createObjectStore(DB_STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbGet(key) {
+  const db = await openDb();
+  try {
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(DB_STORE, 'readonly');
+      const store = tx.objectStore(DB_STORE);
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  } finally {
+    db.close();
+  }
+}
+
+async function idbSet(key, value) {
+  const db = await openDb();
+  try {
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(DB_STORE, 'readwrite');
+      const store = tx.objectStore(DB_STORE);
+      const req = store.put(value, key);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+  } finally {
+    db.close();
+  }
+}
+
+async function ensureAdventureDirectoryHandle(startIn) {
+  // Try previously saved directory handle first.
+  try {
+    const saved = await idbGet(DB_KEY_LAST_ADVENTURE_DIR);
+    if (saved) return saved;
+  } catch {
+    // ignore
+  }
+
+  if (typeof window.showDirectoryPicker !== 'function') return null;
+  const dir = await window.showDirectoryPicker({ startIn });
+  try {
+    await idbSet(DB_KEY_LAST_ADVENTURE_DIR, dir);
+  } catch {
+    // ignore
+  }
+  return dir;
+}
+
+function joinPath(a, b) {
+  const left = String(a || '').replace(/\\/g, '/').replace(/\/+$/g, '');
+  const right = String(b || '').replace(/\\/g, '/').replace(/^\/+/g, '');
+  if (!left) return right;
+  if (!right) return left;
+  return `${left}/${right}`;
+}
+
+function splitPath(p) {
+  return String(p || '')
+    .replace(/\\/g, '/')
+    .split('/')
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+async function fileFromDir(dirHandle, relPath) {
+  const parts = splitPath(relPath);
+  let cur = dirHandle;
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    if (i === parts.length - 1) {
+      return await cur.getFileHandle(part, { create: false });
+    }
+    cur = await cur.getDirectoryHandle(part, { create: false });
+  }
+  throw new Error('Invalid asset path');
+}
+
+function makeAssetsResolver(dirHandle, assetsPath) {
+  const base = String(assetsPath || '').trim();
+  return async (relativePath) => {
+    const combined = joinPath(base, relativePath);
+    const fileHandle = await fileFromDir(dirHandle, combined);
+    const file = await fileHandle.getFile();
+    return URL.createObjectURL(file);
+  };
+}
+
+async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets) {
+  const yamlText = await file.text();
+  const parsed = parseYaml(yamlText);
+
+  const assetsPath = String(parsed?.metadata?.assets_path || 'assets/');
+  const assetsResolver = dirHandleForAssets ? makeAssetsResolver(dirHandleForAssets, assetsPath) : null;
+  // When not using a directory handle (no FS Access API), fall back to serving from site root.
+  const assetsBase = assetsResolver ? '' : assetsPath;
+
+  engine = new GameEngine(parsed, {
+    assetsBase,
+    assetsResolver,
+    onOutput: appendOutput,
+    onRoomImageRender: renderRoomImage,
+    onInventoryRender: renderInventoryList,
+    onMindRender: renderMindPanel,
+    onMemoryRender: renderMemoryList
+  });
+  setAdventureTitle(parsed?.metadata?.title || file.name);
+  setMenuButtonsEnabled(true);
+  setGameControlsEnabled(true);
+  setSidebarTabsEnabled(true);
+  resetUiForNewGame();
+  const textDisplay = document.getElementById('text-display');
+  if (textDisplay) textDisplay.innerHTML = '';
+  const intro = engine.getText('intro');
+  if (intro) appendOutput(intro);
+  engine.renderCurrentLocation();
+
+  if (handleForRemember) {
+    try {
+      await idbSet(DB_KEY_LAST_ADVENTURE, handleForRemember);
+    } catch {
+      // ignore
+    }
+  }
+}
+
+async function loadAdventureFromUrl(yamlUrl) {
+  const absoluteYamlUrl = new URL(String(yamlUrl || ''), window.location.href).toString();
+  const res = await fetch(absoluteYamlUrl);
+  if (!res.ok) throw new Error(`Failed to load adventure YAML: ${yamlUrl}`);
+  const yamlText = await res.text();
+  const parsed = parseYaml(yamlText);
+
+  const yamlBaseUrl = new URL('./', absoluteYamlUrl).toString();
+  const assetsBaseUrl = new URL(String(parsed?.metadata?.assets_path || 'assets/'), yamlBaseUrl).toString();
+  const assetsResolver = async (relativePath) => new URL(String(relativePath || ''), assetsBaseUrl).toString();
+
+  engine = new GameEngine(parsed, {
+    assetsBase: '',
+    assetsResolver,
+    onOutput: appendOutput,
+    onRoomImageRender: renderRoomImage,
+    onInventoryRender: renderInventoryList,
+    onMindRender: renderMindPanel,
+    onMemoryRender: renderMemoryList
+  });
+  setAdventureTitle(parsed?.metadata?.title || yamlUrl);
+  setMenuButtonsEnabled(true);
+  setGameControlsEnabled(true);
+  setSidebarTabsEnabled(true);
+  resetUiForNewGame();
+  const textDisplay = document.getElementById('text-display');
+  if (textDisplay) textDisplay.innerHTML = '';
+  const intro = engine.getText('intro');
+  if (intro) appendOutput(intro);
+  engine.renderCurrentLocation();
+}
+
+async function loadManifest() {
+  const res = await fetch('adventures/manifest.json', { cache: 'no-store' });
+  if (!res.ok) throw new Error('Web adventures unavailable; try Disk mode.');
+  const data = await res.json();
+  if (!Array.isArray(data)) throw new Error('Invalid adventures manifest.');
+  return data;
+}
+
+async function pickAdventureFile() {
+  if (typeof window.showOpenFilePicker !== 'function') {
+    fileInput.click();
+    return;
+  }
+
+  let startIn = undefined;
+  try {
+    const lastHandle = await idbGet(DB_KEY_LAST_ADVENTURE);
+    if (lastHandle) startIn = lastHandle;
+  } catch {
+    // ignore
+  }
+
+  const [handle] = await window.showOpenFilePicker({
+    multiple: false,
+    startIn,
+    types: [
+      {
+        description: 'YAML adventures',
+        accept: {
+          'text/yaml': ['.yaml', '.yml'],
+          'application/x-yaml': ['.yaml', '.yml']
+        }
+      }
+    ],
+    excludeAcceptAllOption: true
+  });
+  if (!handle) return;
+  let dirHandle = null;
+  try {
+    dirHandle = await ensureAdventureDirectoryHandle(startIn || handle);
+  } catch (err) {
+    // User can cancel directory picking; proceed without images.
+    console.warn('[engine] Adventure folder not selected; images may not load.', err);
+  }
+  const file = await handle.getFile();
+  await loadAdventureFromFile(file, handle, dirHandle);
+}
