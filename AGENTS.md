@@ -5,6 +5,7 @@
 - Text adventure game engine built with vanilla JavaScript + HTML + CSS. Ongoing project.
 - Entry point: `index.html`. All CSS must be in `styles.css`.
 - Text adventure games are defined in YAML files. They are in the folder `adventures/` in their own subfolders.
+- Since this is still an on-going project, the reference YAML file is `adventures\castelo-negro\castelo-negro.yaml`.
 - No build steps or tests required.
 - Script loading order: `yaml-parser.js` → `ui.js` → `engine.js` → `storage.js` → `script.js` → `prompt-parser.js`.
 - YAML parsing (`parseYaml`, `validateDefinition`, `parseScalar`, and helpers) lives in `yaml-parser.js`.
