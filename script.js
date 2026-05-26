@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => setSidebarTab(btn.getAttribute('data-tab')));
   });
-  setSidebarTab('mind');
+  setSidebarTab('system');
 
   renderCommandBuilder();
 

@@ -93,6 +93,7 @@ function setSidebarTabsEnabled(isGameLoaded) {
   const sidebar = document.getElementById('sidebar-tabs');
   if (sidebar) sidebar.setAttribute('data-enabled', isGameLoaded ? 'true' : 'false');
   document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
+    if (btn.id === 'tab-system') return;
     btn.disabled = !isGameLoaded;
   });
 }
