@@ -91,6 +91,19 @@ function appendOutput(text) {
   el.scrollTop = el.scrollHeight;
 }
 
+function appendLocationName(text) {
+  const el = document.getElementById('text-display');
+  if (!el) return;
+  const entry = document.createElement('div');
+  entry.className = 'log-entry location-name';
+  entry.textContent = text;
+  makeWordsClickable(entry);
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+}
+
 function appendPlayerPrompt(promptText) {
   const el = document.getElementById('text-display');
   if (!el) return;

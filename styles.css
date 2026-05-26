@@ -408,6 +408,12 @@ body {
   margin-bottom: 4px;
 }
 
+.log-entry.location-name {
+  font-weight: bold;
+  font-size: 1.125em;
+  color: #f0f0f0;
+}
+
 #input-row {
   flex-shrink: 0;
   display: flex;

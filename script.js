@@ -396,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     engine = new GameEngine(def, {
       assetsBase: engine.assetsBase,
       onOutput: appendOutput,
+      onLocationNameRender: appendLocationName,
       onRoomImageRender: renderRoomImage,
       onInventoryRender: renderInventoryList,
       onMindRender: renderMindPanel,

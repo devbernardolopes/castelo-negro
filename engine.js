@@ -52,6 +52,7 @@ class GameEngine {
    *   assetsBase?: string,
    *   assetsResolver?: (relativePath:string)=>Promise<string>,
    *   onOutput?: (text:string)=>void,
+   *   onLocationNameRender?: (name:string)=>void,
    *   onLocationRender?: (locationId:string)=>void,
    *   onInventoryRender?: ()=>void,
    *   onRoomImageRender?: (url:string|null)=>void,
@@ -200,6 +201,7 @@ class GameEngine {
 
     return {
       current_location: startLoc,
+      previous_location: null,
       variables: vars,
       actors_data: actorsData,
       game_turn: Number(vars.game_turn?.value ?? 0),
@@ -467,8 +469,16 @@ class GameEngine {
     const loc = this.getFullLocationData(locationId);
     if (!loc) return;
 
-    const desc = this.getLocationDescription(locationId);
-    this.hooks.onOutput?.(desc);
+    const prevLoc = this.gameState.previous_location;
+    if (prevLoc !== locationId) {
+      const nameText = this._pickLang(loc.name);
+      if (nameText) this.hooks.onLocationNameRender?.(nameText);
+
+      const desc = this.getLocationDescription(locationId);
+      this.hooks.onOutput?.(desc);
+
+      this.gameState.previous_location = locationId;
+    }
 
     const images = Array.isArray(loc.images) ? loc.images : [];
     if (images.length) {
