@@ -247,6 +247,42 @@ locations:
       south: path_to_crop_fields
     images: ["images/locations/tti-2026-05-21T21-40-35-613533080.png"]
 
+  path_to_black_castle_01:
+    name: { en: "Path to Black Castle", pt-br: "Caminho para o Castelo Negro" }
+    description:
+      base: { en: "A dark, ominous black castle lies far away atop the hill.", pt-br: "Um castelo negro, escuro e ameaçador, ergue-se ao longe, no alto da colina." }
+    exits:
+      north: path_to_black_castle_02
+    images: ["images/locations/tti-2026-05-26T01-42-37-213623111.png"]
+
+  path_to_black_castle_02:
+    name: { en: "Path to Black Castle", pt-br: "Caminho para o Castelo Negro" }
+    description:
+      base: { en: "A dark, ominous black castle lies ahead atop the hill.", pt-br: "Um castelo negro, escuro e ameaçador, ergue-se à frente, no alto da colina." }
+    exits:
+      north: black_castle
+      south: path_to_black_castle_01
+    images: ["images/locations/tti-2026-05-26T01-41-10-36840184.png"]
+
+  black_castle:
+    name: { en: "Black Castle", pt-br: "Castelo Negro" }
+    description:
+      base: { en: "A dark, ominous black castle.", pt-br: "Um castelo negro e sinistro." }
+    exits:
+      north: black_castle_entrance
+      south: path_to_black_castle_02
+    images: ["images/locations/tti-2026-05-26T01-32-00-798632562.png"]
+
+  black_castle_entrance:
+    name: { en: "Black Castle - Entrance", pt-br: "Castelo Negro - Entrada" }
+    description:
+      base: { en: "The entrance to the dark, ominous black castle.", pt-br: "A entrada do castelo negro e sinistro." }
+    exits:
+      south: black_castle
+      # todo
+      # north:
+    images: ["images/locations/tti-2026-05-26T01-34-21-723276390.png"]
+
   black_castle_ensuite:
     name: { en: "Black Castle - Ensuite", pt-br: "Castelo Negro - Banheiro Privativo" }
     description:
