@@ -241,8 +241,14 @@ body {
   border-radius: 2px;
 }
 
-#sidebar-tabs[data-enabled="false"] {
+#sidebar-tabs[data-enabled="false"] .tab-btn:not(#tab-system) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#sidebar-tabs[data-enabled="false"] .tab-panel:not(#tab-panel-system) {
   opacity: 0.6;
+  pointer-events: none;
 }
 
 #sidebar-tabs .tab-btn:disabled {
