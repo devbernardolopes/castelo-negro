@@ -458,7 +458,7 @@ class GameEngine {
     if (Array.isArray(conds)) {
       for (const c of conds) {
         const ok = this.evaluateCondition(c?.if || '');
-        if (ok) parts.push(this._pickLang(c?.text));
+        if (ok) parts.push(this._pickLang(c?.message));
       }
     }
     return parts.filter(Boolean).join('\n');
