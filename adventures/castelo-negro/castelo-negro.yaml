@@ -321,43 +321,43 @@ events:
       en: "The door is locked. You have to find the key."
       pt-br: "A porta está trancada. Você precisa encontrar a chave."
 
-  - id: newborn_daughter_cries
-    type: recurring
-    interval: 3
-    conditions:
-      - "newborn_daughter_health > 0"
-      - "!inventory.has(newborn_daughter)"
-    effect:
-      - "sanity -= 1"
-    message:
-      en: "Your daughter's cries echo painfully in your mind."
-      pt-br: "Os choros da sua filha ecoam dolorosamente em sua mente."
+  # - id: newborn_daughter_cries
+  #   type: recurring
+  #   interval: 3
+  #   conditions:
+  #     - "newborn_daughter_health > 0"
+  #     - "!inventory.has(newborn_daughter)"
+  #   effect:
+  #     - "sanity -= 1"
+  #   message:
+  #     en: "Your daughter's cries echo painfully in your mind."
+  #     pt-br: "Os choros da sua filha ecoam dolorosamente em sua mente."
 
-  - id: newborn_daughter_health_decay
-    type: recurring
-    interval: 5
-    conditions: ["newborn_daughter_health > 0"]
-    effect: "newborn_daughter_health -= 1"
-    message:
-      en: "Your daughter is getting weaker..."
-      pt-br: "Sua filha está enfraquecendo..."
+  # - id: newborn_daughter_health_decay
+  #   type: recurring
+  #   interval: 5
+  #   conditions: ["newborn_daughter_health > 0"]
+  #   effect: "newborn_daughter_health -= 1"
+  #   message:
+  #     en: "Your daughter is getting weaker..."
+  #     pt-br: "Sua filha está enfraquecendo..."
 
-  - id: night_to_dawn
-    type: time_based
-    trigger_when: "game_turn >= 8"
-    effect: "time_of_day = 'dawn'"
-    message:
-      en: "The sky begins to lighten in the east."
-      pt-br: "O céu começa a clarear no leste."
+  # - id: night_to_dawn
+  #   type: time_based
+  #   trigger_when: "game_turn >= 8"
+  #   effect: "time_of_day = 'dawn'"
+  #   message:
+  #     en: "The sky begins to lighten in the east."
+  #     pt-br: "O céu começa a clarear no leste."
 
-  - id: hag_encounter
-    type: location_enter
-    location: "black_castle_ensuite"
-    conditions: ["!has_met_hag"]
-    effect: "has_met_hag = true"
-    message:
-      en: "An old hag emerges from the shadows, grinning with rotten teeth."
-      pt-br: "Uma velha bruxa surge das sombras, sorrindo com dentes podres."
+  # - id: hag_encounter
+  #   type: location_enter
+  #   location: "black_castle_ensuite"
+  #   conditions: ["!has_met_hag"]
+  #   effect: "has_met_hag = true"
+  #   message:
+  #     en: "An old hag emerges from the shadows, grinning with rotten teeth."
+  #     pt-br: "Uma velha bruxa surge das sombras, sorrindo com dentes podres."
 
 end_conditions:
   lose:
