@@ -23,11 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Sidebar tabs wiring (Mind / Inventory / Memory / etc).
   function setSidebarTab(tabName) {
     const panels = {
+      system: document.getElementById('tab-panel-system'),
       mind: document.getElementById('tab-panel-mind'),
       inventory: document.getElementById('tab-panel-inventory'),
       memory: document.getElementById('tab-panel-memory')
     };
     const buttons = {
+      system: document.getElementById('tab-system'),
       mind: document.getElementById('tab-mind'),
       inventory: document.getElementById('tab-inventory'),
       memory: document.getElementById('tab-memory')

@@ -10,13 +10,6 @@
 </head>
 <body>
   <div id="game">
-    <div id="menu-row">
-      <button id="menu-btn-load-adventure" class="menu-btn" data-action="load-adventure" title="Load Adventure">Game</button>
-      <button id="menu-btn-reset-game" class="menu-btn" data-action="reset-game" title="Reset Game">Reset</button>
-      <button id="menu-btn-load-game" class="menu-btn" data-action="load-game" title="Load Game">Load</button>
-      <button id="menu-btn-save-game" class="menu-btn" data-action="save-game" title="Save Game">Save</button>
-      <button id="menu-btn-change-language" class="menu-btn" data-action="change-language" title="Change Language">Language</button>
-    </div>
     <!-- <div id="adventure-title-row" aria-live="polite"></div> -->
     <div id="adventure-modal-backdrop" class="modal-backdrop" style="display:none;">
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="adventure-modal-title">
@@ -57,11 +50,19 @@
         <div id="room-image"><img id="room-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Room Image" style="max-width:100%;max-height:100%;display:none;"/></div>
         <div id="sidebar-tabs">
           <div class="tabs-header" role="tablist" aria-label="Sidebar">
+            <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-system" id="tab-system" data-tab="system">System</button>
             <button class="tab-btn" type="button" role="tab" aria-selected="true" aria-controls="tab-panel-mind" id="tab-mind" data-tab="mind">Mind</button>
             <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-inventory" id="tab-inventory" data-tab="inventory">Inventory</button>
             <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-memory" id="tab-memory" data-tab="memory">Memory</button>
           </div>
           <div class="tabs-body">
+            <div class="tab-panel" role="tabpanel" id="tab-panel-system" aria-labelledby="tab-system" style="display:none;">
+              <button id="menu-btn-load-adventure" class="menu-btn" data-action="load-adventure" title="Load Adventure">Game</button>
+              <button id="menu-btn-reset-game" class="menu-btn" data-action="reset-game" title="Reset Game">Reset</button>
+              <button id="menu-btn-load-game" class="menu-btn" data-action="load-game" title="Load Game">Load</button>
+              <button id="menu-btn-save-game" class="menu-btn" data-action="save-game" title="Save Game">Save</button>
+              <button id="menu-btn-change-language" class="menu-btn" data-action="change-language" title="Change Language">Language</button>
+            </div>
             <div class="tab-panel" role="tabpanel" id="tab-panel-mind" aria-labelledby="tab-mind">
               <div id="mind-panel"></div>
             </div>
