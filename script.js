@@ -409,6 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const def = engine.definition;
     engine = new GameEngine(def, {
       assetsBase: engine.assetsBase,
+      assetsResolver: engine.assetsResolver,
       onOutput: appendOutput,
       onLocationNameRender: appendLocationName,
       onRoomImageRender: renderRoomImage,
