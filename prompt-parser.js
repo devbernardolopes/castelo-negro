@@ -259,7 +259,7 @@ GameEngine.prototype._expandTemplate = function(str, match) {
       if (objectId && objectId !== '' && objectId !== '__location__') {
         const item = this.definition.items?.[objectId];
         if (item?.description) {
-          return this._pickLang(item.description);
+          return this.getItemDescription(objectId);
         }
       }
       
@@ -277,7 +277,7 @@ GameEngine.prototype._expandTemplate = function(str, match) {
         for (const cond of conditions) {
           const condExpanded = this._expandTemplate(String(cond.if || ''), match);
           if (this.evaluateCondition(condExpanded)) {
-            const condText = this._pickLang(cond.text);
+            const condText = this._pickLang(cond.message);
             if (condText) fullDesc += '\n\n' + condText;
           }
         }
@@ -380,9 +380,20 @@ GameEngine.prototype._takeItemByName = function(query) {
   const loc = this.getFullLocationData(this.gameState.current_location);
   const contents = Array.isArray(loc?.contents) ? loc.contents : [];
   if (!contents.includes(itemId)) {
-    this.hooks.onOutput?.("You don't see that here.");
-    this._afterTurn({ kind: 'take' });
-    return false;
+    // Not directly in location — search inside containers at this location
+    let foundInContainer = false;
+    for (const childId of contents) {
+      const sub = this.gameState.container_contents?.[childId];
+      if (Array.isArray(sub) && sub.includes(itemId)) {
+        foundInContainer = true;
+        break;
+      }
+    }
+    if (!foundInContainer) {
+      this.hooks.onOutput?.("You don't see that here.");
+      this._afterTurn({ kind: 'take' });
+      return false;
+    }
   }
   if (!this.inventory.canAdd(itemId)) {
     this.hooks.onOutput?.('You cannot carry any more.');
@@ -390,7 +401,7 @@ GameEngine.prototype._takeItemByName = function(query) {
     return false;
   }
   this.inventory.add(itemId);
-  loc.contents = contents.filter(x => x !== itemId);
+  this._removeItemFromWorld(itemId);
   this.hooks.onOutput?.(`You take the ${this._pickLang(this.definition.items?.[itemId]?.name) || itemId}.`);
   this._afterTurn({ kind: 'take', itemId });
   return true;

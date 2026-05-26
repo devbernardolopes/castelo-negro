@@ -150,9 +150,9 @@ items:
           A small, worn wooden table.
         pt-br: |
           Uma pequena mesa de madeira desgastada.
-      # conditions:
-      #   - if: "here.has(moldy_loaf_of_bread)"
-      #     message: { en: "A small, mold-covered loaf lies on the table.", pt-br: "Um pequeno pedaço de pão mofado está sobre a mesa." }
+      conditions:
+        - if: "containerHas(cottage_kitchen_table, moldy_loaf_of_bread)"
+          message: { en: "A small, mold-covered loaf lies on the table.", pt-br: "Um pequeno pedaço de pão mofado está sobre a mesa." }
 
   stone_hearth:
     name: { en: "Stone Hearth", pt-br: "Lareira de Pedra" }

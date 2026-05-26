@@ -206,8 +206,17 @@ class GameEngine {
       actors_data: actorsData,
       game_turn: Number(vars.game_turn?.value ?? 0),
       flags: {},
-      story: {}
+      story: {},
+      container_contents: this._initContainerContents()
     };
+  }
+
+  _initContainerContents() {
+    const map = {};
+    for (const [id, def] of Object.entries(this.definition.items || {})) {
+      if (Array.isArray(def.contents)) map[id] = [...def.contents];
+    }
+    return map;
   }
 
   /** @param {string} relOrUrl */
@@ -305,8 +314,14 @@ class GameEngine {
     for (const [k, v] of Object.entries(this.gameState.variables)) vars[k] = v.value;
     const currentLoc = this.getFullLocationData(this.gameState.current_location);
     const locationHas = (itemId) => {
+      const id = String(itemId);
       const contents = Array.isArray(currentLoc?.contents) ? currentLoc.contents : [];
-      return contents.includes(String(itemId));
+      if (contents.includes(id)) return true;
+      for (const childId of contents) {
+        const sub = engine.gameState.container_contents?.[childId];
+        if (Array.isArray(sub) && sub.includes(id)) return true;
+      }
+      return false;
     };
     const inventoryObj = {
       ...this._evalContext.inventory,
@@ -329,6 +344,10 @@ class GameEngine {
       game_turn: this.gameState.game_turn,
       inventory: inventoryObj,
       here: { has: locationHas },
+      containerHas: (containerId, itemId) => {
+        const contents = engine.gameState.container_contents?.[String(containerId)];
+        return Array.isArray(contents) && contents.includes(String(itemId));
+      },
       items: {
         ...this.definition.items,
         takeable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.takeable)
@@ -369,7 +388,10 @@ class GameEngine {
       const call = line.match(/^(inventory)\.(add|remove)\(\s*(['"])(.+?)\3\s*\)\s*$/);
       if (call) {
         const [, , method, , arg] = call;
-        if (method === 'add') this.inventory.add(String(arg));
+        if (method === 'add') {
+          this.inventory.add(String(arg));
+          this._removeItemFromWorld(String(arg));
+        }
         if (method === 'remove') this.inventory.remove(String(arg));
         continue;
       }
@@ -389,6 +411,19 @@ class GameEngine {
       }
       const [, varName, op, rhs] = m;
       this._applyAssignment(varName, op, rhs);
+    }
+  }
+
+  _removeItemFromWorld(itemId) {
+    const id = String(itemId);
+    const loc = this.getFullLocationData(this.gameState.current_location);
+    if (loc && Array.isArray(loc.contents)) {
+      const idx = loc.contents.indexOf(id);
+      if (idx !== -1) { loc.contents.splice(idx, 1); return; }
+    }
+    for (const contents of Object.values(this.gameState.container_contents || {})) {
+      const idx = contents.indexOf(id);
+      if (idx !== -1) { contents.splice(idx, 1); return; }
     }
   }
 
@@ -462,6 +497,27 @@ class GameEngine {
       }
     }
     return parts.filter(Boolean).join('\n');
+  }
+
+  /** @param {string} itemId */
+  getItemDescription(itemId) {
+    const def = this.definition.items?.[itemId];
+    if (!def) return '';
+    const desc = def.description;
+    if (!desc) return '';
+    if (typeof desc === 'string') return desc;
+    if (desc.base !== undefined || Array.isArray(desc.conditions)) {
+      const base = desc.base ? this._pickLang(desc.base) : '';
+      const parts = [base].filter(Boolean);
+      if (Array.isArray(desc.conditions)) {
+        for (const c of desc.conditions) {
+          if (this.evaluateCondition(c?.if || ''))
+            parts.push(this._pickLang(c?.message));
+        }
+      }
+      return parts.filter(Boolean).join('\n');
+    }
+    return this._pickLang(desc);
   }
 
   async renderCurrentLocation() {
