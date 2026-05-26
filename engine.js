@@ -555,18 +555,42 @@ class GameEngine {
   /** @param {'north'|'south'|'east'|'west'} direction */
   go(direction) {
     const loc = this.getFullLocationData(this.gameState.current_location);
-    const next = loc?.exits?.[direction];
-    if (!next) {
+    const raw = loc?.exits?.[direction];
+    if (!raw) {
       this.hooks.onOutput?.(`You can't go ${direction}.`);
       return false;
     }
-    if (!this.definition.locations?.[next]) {
-      console.warn('[engine] Exit points to unknown location:', next);
+
+    let targetLocation;
+    if (typeof raw === 'string') {
+      targetLocation = raw;
+    } else if (raw && typeof raw === 'object') {
+      targetLocation = raw.location;
+      if (!targetLocation) {
+        this.hooks.onOutput?.(`You can't go ${direction}.`);
+        return false;
+      }
+      const conditions = Array.isArray(raw.conditions) ? raw.conditions : [];
+      for (const cond of conditions) {
+        if (cond.if && this.evaluateCondition(String(cond.if))) {
+          if (cond.allow === true) break;
+          const msg = this._pickLang(cond.message);
+          if (msg) this.hooks.onOutput?.(msg);
+          return false;
+        }
+      }
+    } else {
       this.hooks.onOutput?.(`You can't go ${direction}.`);
       return false;
     }
-    this.gameState.current_location = next;
-    this._afterTurn({ kind: 'move', direction, location: next });
+
+    if (!this.definition.locations?.[targetLocation]) {
+      console.warn('[engine] Exit points to unknown location:', targetLocation);
+      this.hooks.onOutput?.(`You can't go ${direction}.`);
+      return false;
+    }
+    this.gameState.current_location = targetLocation;
+    this._afterTurn({ kind: 'move', direction, location: targetLocation });
     return true;
   }
 

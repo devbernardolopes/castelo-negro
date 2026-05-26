@@ -206,10 +206,6 @@ locations:
       conditions:
         - if: "!inventory.has(newborn_daughter)"
           message: { en: "You can hear your baby crying desperately on the floor.", pt-br: "Você pode ouvir sua bebê chorando desesperadamente no chão." }
-        # - if: "cottage_door_open"
-        #   text: { en: "The [front door] stands wide open, letting cold air in.", pt-br: "A [porta da frente] está escancarada, deixando o ar frio entrar." }
-        # - if: "!cottage_door_open"
-        #   text: { en: "The [front door] stands closed.", pt-br: "A [porta da frente] está fechada." }
     contents: [husband_corpse, newborn_daughter, cottage_front_door]
     exits:
       north: cottage_kitchen
