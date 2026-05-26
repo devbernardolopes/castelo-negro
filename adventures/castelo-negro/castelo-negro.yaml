@@ -597,7 +597,7 @@ actions:
       en: "{location_or_object_description}"
       pt-br: "{location_or_object_description}"
     conditional_messages:
-      - condition: "'{object}' != '' !here.has('{object}') and !inventory.has('{object}')"
+      - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
         message:
           en: "There's no {object_name} here."
           pt-br: "Não há {object_name} aqui."
