@@ -1,8 +1,63 @@
 /** @typedef {'en'|'pt-br'|string} LanguageCode */
 
+const PROMPT_HISTORY_KEY = 'adventure_prompt_history';
+
 let selectedWords = [];
 let pendingWordClickTimer = null;
 let suppressPromptAddUntilTs = 0;
+
+let promptHistory = [];
+try {
+  const saved = localStorage.getItem(PROMPT_HISTORY_KEY);
+  if (saved) promptHistory = JSON.parse(saved);
+  if (!Array.isArray(promptHistory)) promptHistory = [];
+} catch { promptHistory = []; }
+
+function savePromptToHistory(prompt) {
+  const text = String(prompt || '').trim();
+  if (!text) return;
+  promptHistory.push(text);
+  try { localStorage.setItem(PROMPT_HISTORY_KEY, JSON.stringify(promptHistory)); } catch {}
+}
+
+function clearPromptHistory() {
+  promptHistory = [];
+  try { localStorage.removeItem(PROMPT_HISTORY_KEY); } catch {}
+}
+
+function renderPromptHistoryPanel() {
+  const panel = document.getElementById('prompt-history-panel');
+  if (!panel) return;
+  panel.innerHTML = '';
+  for (let i = promptHistory.length - 1; i >= 0; i--) {
+    const entry = document.createElement('div');
+    entry.className = 'ph-entry';
+    entry.textContent = promptHistory[i];
+    entry.setAttribute('role', 'option');
+    entry.addEventListener('click', (e) => {
+      e.preventDefault();
+      const words = promptHistory[i].split(/\s+/).filter(Boolean);
+      selectedWords = words;
+      renderCommandBuilder();
+      hidePromptHistoryPanel();
+    });
+    panel.appendChild(entry);
+  }
+}
+
+function showPromptHistoryPanel() {
+  const panel = document.getElementById('prompt-history-panel');
+  if (!panel) return;
+  if (promptHistory.length === 0) return;
+  renderPromptHistoryPanel();
+  panel.style.display = 'block';
+}
+
+function hidePromptHistoryPanel() {
+  const panel = document.getElementById('prompt-history-panel');
+  if (!panel) return;
+  panel.style.display = 'none';
+}
 
 function setText(elId, text) {
   const el = document.getElementById(elId);
@@ -156,6 +211,9 @@ function makeWordsClickable(rootEl) {
 }
 
 function renderCommandBuilder() {
+  // Clear any in-progress text selection before DOM rebuild
+  const sel = window.getSelection();
+  if (sel) sel.removeAllRanges();
   const container = document.getElementById('user-input');
   if (!container) return;
   container.innerHTML = '';

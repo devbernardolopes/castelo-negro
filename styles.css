@@ -420,6 +420,57 @@ body {
   flex-direction: column;
   gap: 4px;
   flex: 0 1 auto;
+  position: relative;
+}
+
+#input-area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  order: 3;
+  flex: 1;
+  min-width: 0;
+}
+
+.prompt-history-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-bottom: none;
+  max-height: 132px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  z-index: 10;
+}
+
+.prompt-history-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.ph-entry {
+  padding: 6px 8px;
+  font-size: 11px;
+  color: #ccc;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid #2a2a2a;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ph-entry:hover {
+  background: #222;
+  color: #fff;
+}
+
+.ph-entry:active {
+  background: #2a2a2a;
 }
 
 .directional-buttons {
@@ -718,6 +769,10 @@ body {
   #input-row {
     flex-direction: row;
     gap: 8px;
+  }
+
+  #input-area {
+    order: 0;
   }
 
   #user-input {

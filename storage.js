@@ -109,6 +109,7 @@ function makeAssetsResolver(dirHandle, assetsPath) {
 }
 
 async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets) {
+  clearPromptHistory();
   const yamlText = await file.text();
   const parsed = parseYaml(yamlText);
 
@@ -148,6 +149,7 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
 }
 
 async function loadAdventureFromUrl(yamlUrl) {
+  clearPromptHistory();
   const absoluteYamlUrl = new URL(String(yamlUrl || ''), window.location.href).toString();
   const res = await fetch(absoluteYamlUrl);
   if (!res.ok) throw new Error(`Failed to load adventure YAML: ${yamlUrl}`);

@@ -53,6 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
     if (!target) return;
 
+    // Close prompt history panel on outside click
+    const panel = document.getElementById('prompt-history-panel');
+    if (panel && panel.style.display !== 'none' && !panel.contains(target)) {
+      hidePromptHistoryPanel();
+    }
+
     if (target.classList.contains('click-word')) {
       if (Date.now() < suppressPromptAddUntilTs) return;
       scheduleAddWordToCommand(target.getAttribute('data-word') || target.textContent || '');
@@ -112,6 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
       ev.preventDefault();
       ev.stopPropagation();
       return tryAddMemoryFromElement(target);
+    }
+
+    // Double-click empty space in #user-input -> show prompt history
+    if (target.closest('#user-input') && !target.closest('.word-token')) {
+      ev.preventDefault();
+      showPromptHistoryPanel();
     }
   });
 
@@ -263,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectedWords.length === 0) return;
     const prompt = selectedWords.join(' ').trim();
     if (!prompt) return;
+    savePromptToHistory(prompt);
     appendPlayerPrompt(prompt);
     selectedWords = [];
     renderCommandBuilder();
@@ -392,6 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('menu-btn-reset-game')?.addEventListener('click', () => {
     if (!engine) return;
+    clearPromptHistory();
     const def = engine.definition;
     engine = new GameEngine(def, {
       assetsBase: engine.assetsBase,
