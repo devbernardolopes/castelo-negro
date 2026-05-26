@@ -231,6 +231,9 @@ locations:
     synonyms: { en: ["kitchen"], pt-br: ["cozinha"] }
     description:
       base: { en: "A simple kitchen with a stone hearth.", pt-br: "Uma cozinha simples com uma lareira de pedra." }
+      conditions:
+        - if: "containerHas(cottage_kitchen_table, moldy_loaf_of_bread)"
+          message: { en: "A small, mold-covered loaf lies on the kitchen table.", pt-br: "Um pequeno pedaço de pão mofado está sobre a mesa da cozinha." }
     contents: [cottage_kitchen_table, stone_hearth]
     exits:
       south: cottage_living_room
