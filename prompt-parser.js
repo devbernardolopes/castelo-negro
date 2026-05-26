@@ -123,7 +123,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     }
 
     if (!slotEntry || typeof slotEntry !== 'object') return null;
-    const entries = Object.entries(slotEntry);
+    const entries = Object.entries(slotEntry).filter(([k]) => k !== 'optional');
     if (entries.length !== 1) return null;
     const slotName = entries[0][0];
     const slotDef = entries[0][1];
