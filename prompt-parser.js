@@ -203,6 +203,14 @@ GameEngine.prototype._matchAnyItemAt = function(tokens, idx) {
     const itemId = this._findItemIdByNameOrSynonym(phrase);
     if (itemId) return { itemId, len };
   }
+  // Fallback: check if phrase matches the current location (by name or synonym)
+  for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
+    const phrase = tokens.slice(idx, idx + len).join(' ');
+    const locId = this._findLocationIdByNameOrSynonym(phrase);
+    if (locId && locId === this.gameState.current_location) {
+      return { itemId: '__location__', len };
+    }
+  }
   return null;
 };
 
@@ -246,8 +254,9 @@ GameEngine.prototype._expandTemplate = function(str, match) {
     if (key === 'location_or_object_description') {
       const objectId = match?.object;
       
-      // If object is specified, return object description
-      if (objectId && objectId !== '') {
+      // If a real object is specified, return its description
+      // __location__ is a sentinel meaning "current location", skip item lookup
+      if (objectId && objectId !== '' && objectId !== '__location__') {
         const item = this.definition.items?.[objectId];
         if (item?.description) {
           return this._pickLang(item.description);
@@ -279,6 +288,8 @@ GameEngine.prototype._expandTemplate = function(str, match) {
     }
     
     const v = match?.[key];
+    // __location__ sentinel acts as empty string in condition templates
+    if (key === 'object' && v === '__location__') return '';
     return v == null ? '' : String(v);
   });
 };
@@ -325,6 +336,28 @@ GameEngine.prototype._findItemIdByNameOrSynonym = function(query) {
     if (n && String(n).trim().toLowerCase() === q) return id;
 
     const syn = item?.synonyms;
+    if (syn && typeof syn === 'object') {
+      const langList = syn?.[this.language];
+      if (Array.isArray(langList)) {
+        for (const s of langList) {
+          if (String(s).trim().toLowerCase() === q) return id;
+        }
+      }
+    }
+  }
+  return null;
+};
+
+GameEngine.prototype._findLocationIdByNameOrSynonym = function(query) {
+  const q = String(query || '').trim().toLowerCase();
+  if (!q) return null;
+  if (this.definition.locations?.[q]) return q;
+  const asId = q.replace(/\s+/g, '_');
+  if (this.definition.locations?.[asId]) return asId;
+  for (const [id, loc] of Object.entries(this.definition.locations || {})) {
+    const n = this._pickLang(loc?.name);
+    if (n && String(n).trim().toLowerCase() === q) return id;
+    const syn = loc?.synonyms;
     if (syn && typeof syn === 'object') {
       const langList = syn?.[this.language];
       if (Array.isArray(langList)) {
