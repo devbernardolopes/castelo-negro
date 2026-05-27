@@ -10,6 +10,7 @@
   --bg-tertiary: #141414;
   --accent: #341db6;
   --accent-active: #4a2fd4;
+  --accent-text: #e0e0e0;
   --text-primary: #e0e0e0;
   --text-secondary: #ccc;
   --text-muted: #888;
@@ -27,6 +28,7 @@
   --bg-tertiary: #e5e5e5;
   --accent: #2563eb;
   --accent-active: #1d4ed8;
+  --accent-text: #ffffff;
   --text-primary: #1a1a1a;
   --text-secondary: #555;
   --text-muted: #888;
@@ -44,6 +46,7 @@
   --bg-tertiary: #1a1a1a;
   --accent: #00ff41;
   --accent-active: #00cc34;
+  --accent-text: #000000;
   --text-primary: #00ff41;
   --text-secondary: #00cc34;
   --text-muted: #006b1a;
@@ -61,6 +64,7 @@
   --bg-tertiary: #ddd0b8;
   --accent: #8b4513;
   --accent-active: #6b3410;
+  --accent-text: #f4ecd8;
   --text-primary: #3b2f1e;
   --text-secondary: #5c4f3a;
   --text-muted: #8c7d6a;
@@ -506,7 +510,7 @@ body {
   border-radius: 50%;
   background: var(--accent);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
+  color: var(--accent-text);
   font-family: 'Courier New', Courier, monospace;
   font-size: 18px;
   cursor: pointer;
@@ -676,7 +680,7 @@ body {
   padding: 6px 0;
   background: var(--accent);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
+  color: var(--accent-text);
   font-family: 'Courier New', Courier, monospace;
   font-size: 12px;
   cursor: pointer;
