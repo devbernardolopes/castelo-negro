@@ -3,7 +3,6 @@
 
 /**
  * Process a player command (text parser will be expanded later).
- * Currently supports: north/south/east/west, go <dir>, take <item>, drop <item>, use <item>, consume <item>
  * @param {string} input
  */
 GameEngine.prototype.processPlayerCommand = function(input) {
@@ -11,11 +10,14 @@ GameEngine.prototype.processPlayerCommand = function(input) {
   if (!raw) return;
   const cmd = raw.toLowerCase();
 
-  const dirs = ['north', 'south', 'east', 'west'];
-  if (dirs.includes(cmd)) return this.go(/** @type {any} */ (cmd));
-  if (cmd.startsWith('go ')) {
-    const d = cmd.slice(3).trim();
-    if (dirs.includes(d)) return this.go(/** @type {any} */ (d));
+  const dir = this._resolveDirection(cmd);
+  if (dir) return this.go(/** @type {any} */ (dir));
+
+  const goVerb = this._matchGoVerb(cmd);
+  if (goVerb) {
+    const d = cmd.slice(goVerb.length).trim();
+    const resolved = this._resolveDirection(d);
+    if (resolved) return this.go(/** @type {any} */ (resolved));
   }
 
   // Action system (v1.3+): try declarative action matches first.

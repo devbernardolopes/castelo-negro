@@ -279,6 +279,54 @@ class GameEngine {
     return String(maybeBilingual);
   }
 
+  /** Resolve a direction alias (ID or synonym) to its canonical ID */
+  _resolveDirection(input) {
+    const lower = String(input || '').trim().toLowerCase();
+    if (!lower) return null;
+
+    const dirs = this.definition.directions;
+    if (dirs && typeof dirs === 'object') {
+      for (const [dirId, dirDef] of Object.entries(dirs)) {
+        if (dirId.toLowerCase() === lower) return dirId;
+        if (dirDef?.synonyms) {
+          for (const langSyns of Object.values(dirDef.synonyms)) {
+            if (Array.isArray(langSyns) && langSyns.some(s => String(s).toLowerCase() === lower)) {
+              return dirId;
+            }
+          }
+        }
+      }
+    }
+
+    const legacy = { north: ['n', 'north'], south: ['s', 'south'], east: ['e', 'east'], west: ['w', 'west'] };
+    for (const [dir, aliases] of Object.entries(legacy)) {
+      if (dir === lower || aliases.includes(lower)) return dir;
+    }
+
+    return null;
+  }
+
+  /** If input starts with a go-verb synonym, return the matched verb prefix */
+  _matchGoVerb(input) {
+    const lower = String(input || '').trim().toLowerCase();
+    if (!lower) return null;
+
+    const verbs = new Set(['go']);
+    const syns = this.definition.verbs?.go?.synonyms;
+    if (syns && typeof syns === 'object') {
+      for (const langSyns of Object.values(syns)) {
+        if (Array.isArray(langSyns)) {
+          langSyns.forEach(s => verbs.add(String(s).toLowerCase()));
+        }
+      }
+    }
+
+    for (const verb of verbs) {
+      if (lower === verb || lower.startsWith(verb + ' ')) return verb;
+    }
+    return null;
+  }
+
   /**
    * Evaluate a condition expression.
    * Supported examples:
