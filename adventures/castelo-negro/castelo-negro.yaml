@@ -348,10 +348,12 @@ events:
     trigger_on: "action_failed"
     action_id: "unlock_cottage_front_door"
     conditions:
+      - "here.has('cottage_front_door')"
       - "cottage_key_discovery_stage == 0"
       - "cottage_door_unlock_attempted == false"
     effect:
       - "cottage_door_unlock_attempted = true"
+      - "cottage_key_discovery_stage = 1"
     message:
       en: "You desperately try the locked door, but it won't budge. Where could the key be?"
       pt-br: "Você tenta desesperadamente a porta trancada, mas ela não se move. Onde poderia estar a chave?"
@@ -361,6 +363,7 @@ events:
     trigger_on: "action_failed"
     action_id: "unlock_cottage_front_door"
     conditions:
+      - "here.has('cottage_front_door')"
       - "cottage_key_discovery_stage == 1"
     message:
       en: "The door remains locked. Your husband... he must have had the key. It must still be on him."
@@ -371,6 +374,7 @@ events:
     trigger_on: "action_failed"
     action_id: "unlock_cottage_front_door"
     conditions:
+      - "here.has('cottage_front_door')"
       - "cottage_key_discovery_stage == 2"
     message:
       en: "The door won't open. The key must be tied to his belt somehow..."
@@ -381,6 +385,7 @@ events:
     trigger_on: "action_failed"
     action_id: "unlock_cottage_front_door"
     conditions:
+      - "here.has('cottage_front_door')"
       - "cottage_key_discovery_stage >= 3"
     message:
       en: "The door is locked. You have to find the key."
@@ -522,9 +527,9 @@ actions:
     # Progressive messages based on discovery stage
     progressive_messages:
       # First inspection: realize husband is dead
-      - condition: "husband_corpse_inspected_count == 1 and cottage_key_discovery_stage == 0"
-        effect:
-          - "cottage_key_discovery_stage = 1"
+      - condition: "husband_corpse_inspected_count == 1"
+        # effect:
+          # - "cottage_key_discovery_stage = 1"
         message:
           en: |
             Your husband lies still. Cold. His eyes stare blankly at nothing.
