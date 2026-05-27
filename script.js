@@ -2,6 +2,14 @@ let engine = null;
 let fileInput;
 
 const DIRECTION_MAP = { up: 'north', down: 'south', left: 'west', right: 'east' };
+const LS_KEY_THEME = 'adventure_theme';
+
+const THEMES = [
+  { id: 'default', name: { en: 'Dark', 'pt-br': 'Escuro' }, colors: ['#000000', '#1a1a1a', '#341db6', '#e0e0e0'] },
+  { id: 'light', name: { en: 'Light', 'pt-br': 'Claro' }, colors: ['#ffffff', '#f0f0f0', '#2563eb', '#1a1a1a'] },
+  { id: 'terminal', name: { en: 'Terminal', 'pt-br': 'Terminal' }, colors: ['#0c0c0c', '#111111', '#00ff41', '#00ff41'] },
+  { id: 'sepia', name: { en: 'Sepia', 'pt-br': 'Sépia' }, colors: ['#f4ecd8', '#e8dcc8', '#8b4513', '#3b2f1e'] }
+];
 
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('direction-btn')) {
@@ -20,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
   resetUiForNewGame();
   setText('text-display', 'Load an adventure to begin.');
   updateScrollBtnVisibility();
+
+  // Apply saved theme
+  const savedTheme = localStorage.getItem(LS_KEY_THEME) || 'default';
+  document.body.setAttribute('data-theme', savedTheme);
 
   // Sidebar tabs wiring (Mind / Inventory / Memory / etc).
   function setSidebarTab(tabName) {
@@ -338,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target?.id === 'adventure-modal-backdrop') setModalVisible(false);
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') setModalVisible(false);
+    if (e.key === 'Escape') { setModalVisible(false); setThemeModalVisible(false); }
   });
 
   const webPane = document.getElementById('adventure-web-pane');
@@ -426,6 +438,59 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (diskHint) {
       diskHint.textContent = '';
     }
+  });
+
+  // Theme modal wiring
+  function setThemeModalVisible(visible) {
+    const el = document.getElementById('theme-modal-backdrop');
+    if (el) el.style.display = visible ? 'flex' : 'none';
+  }
+
+  function renderThemeGrid() {
+    const grid = document.getElementById('theme-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    const currentTheme = document.body.getAttribute('data-theme') || 'default';
+    for (const t of THEMES) {
+      const card = document.createElement('button');
+      card.className = 'theme-card' + (t.id === currentTheme ? ' is-active' : '');
+      card.setAttribute('data-theme-id', t.id);
+
+      const preview = document.createElement('div');
+      preview.className = 'theme-preview';
+      for (const c of t.colors) {
+        const swatch = document.createElement('span');
+        swatch.className = 'theme-swatch';
+        swatch.style.background = c;
+        preview.appendChild(swatch);
+      }
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'theme-name';
+      nameEl.textContent = t.name.en;
+
+      card.appendChild(preview);
+      card.appendChild(nameEl);
+
+      card.addEventListener('click', () => {
+        document.body.setAttribute('data-theme', t.id);
+        localStorage.setItem(LS_KEY_THEME, t.id);
+        document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('is-active'));
+        card.classList.add('is-active');
+      });
+
+      grid.appendChild(card);
+    }
+  }
+
+  document.getElementById('menu-btn-theme')?.addEventListener('click', () => {
+    renderThemeGrid();
+    setThemeModalVisible(true);
+  });
+
+  document.getElementById('theme-modal-close')?.addEventListener('click', () => setThemeModalVisible(false));
+  document.getElementById('theme-modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target?.id === 'theme-modal-backdrop') setThemeModalVisible(false);
   });
 
   document.getElementById('menu-btn-reset-game')?.addEventListener('click', () => {
