@@ -166,7 +166,10 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     if (slotName === 'verb') {
       const verbIds = Array.isArray(slotDef) ? slotDef.map(v => String(v).toLowerCase()) : [];
       const verbMatch = this._matchVerbAt(tokens, i, verbIds);
-      if (!verbMatch) return null;
+      if (!verbMatch) {
+        if (isOptional) { out.verb = ''; continue; }
+        return null;
+      }
       out.verb = verbMatch.canonical;
       i += verbMatch.len;
       continue;
@@ -174,7 +177,10 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
 
     if (slotName === 'object' || slotName === 'target') {
       const itemMatch = this._matchItemSlotAt(tokens, i, slotDef);
-      if (!itemMatch) return null;
+      if (!itemMatch) {
+        if (isOptional) { out[slotName] = ''; continue; }
+        return null;
+      }
       out[slotName] = itemMatch.itemId;
       out[`${slotName}_name`] = this._pickLang(this.definition.items?.[itemMatch.itemId]?.name) || itemMatch.itemId;
       i += itemMatch.len;
@@ -184,7 +190,10 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     if (slotName === 'location') {
       const locationIds = Array.isArray(slotDef) ? slotDef.map(id => String(id)) : [];
       const locMatch = this._matchLocationSlotAt(tokens, i, locationIds);
-      if (!locMatch) return null;
+      if (!locMatch) {
+        if (isOptional) { out[slotName] = ''; continue; }
+        return null;
+      }
       out[slotName] = locMatch.locationId;
       out[`${slotName}_name`] = this._pickLang(this.definition.locations?.[locMatch.locationId]?.name) || locMatch.locationId;
       i += locMatch.len;
