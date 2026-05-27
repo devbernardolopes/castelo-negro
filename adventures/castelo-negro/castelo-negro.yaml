@@ -22,11 +22,11 @@ variables:
 
   protagonist_memory:
     type: list
-    value: ["look", "take", "examine", "open", "unlock", "feed", "give"]
+    value: ["look", "take", "examine", "open", "unlock", "feed", "give", "go"]
 
   protagonist_memory_max_capacity:
     type: int
-    value: 22
+    value: 100
     min_value: 0
 
   newborn_daughter_health:
