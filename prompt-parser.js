@@ -82,15 +82,24 @@ GameEngine.prototype._tryActions = function(cmd) {
 };
 
 GameEngine.prototype._matchAction = function(actionDef, cmd) {
-  const pat = actionDef?.pattern;
-  if (!pat || !Array.isArray(pat)) {
+  const candidates = [];
+
+  if (actionDef?.patterns && typeof actionDef.patterns === 'object') {
+    for (const pat of Object.values(actionDef.patterns)) {
+      if (Array.isArray(pat)) candidates.push(pat);
+    }
+  }
+
+  if (Array.isArray(actionDef?.pattern)) {
+    candidates.push(actionDef.pattern);
+  }
+
+  if (candidates.length === 0) {
     if (cmd) return {};
     return null;
   }
 
-  const patternList = Array.isArray(pat[0]) ? pat : [pat];
-
-  for (const singlePat of patternList) {
+  for (const singlePat of candidates) {
     const expanded = singlePat.map(slot => {
       if (slot.verb) return { verb: this._expandVerbSynonyms(slot.verb) };
       return slot;

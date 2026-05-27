@@ -680,11 +680,13 @@ actions:
           pt-br: "A porta já está fechada."
 
   feed_newborn_daughter:
-    pattern:
-      - - verb: ["give"]
+    patterns:
+      obj_then_target:
+        - verb: ["give"]
         - object: ["moldy_loaf_of_bread"]
         - target: ["newborn_daughter"]
-      - - verb: ["give"]
+      target_then_obj:
+        - verb: ["give"]
         - target: ["newborn_daughter"]
         - object: ["moldy_loaf_of_bread"]
     conditions:
