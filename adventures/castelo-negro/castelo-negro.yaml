@@ -600,13 +600,11 @@ actions:
         Com grande esforço, você vira o corpo do seu marido.
         Sua respiração prende. Amarrada à parte traseira do seu cinto está uma chave de latão oxidada.
         A chave do chalé. Esteve aqui o tempo todo.
-
     conditional_messages:
       - condition: "cottage_key_discovery_stage < 3"
         message:
           en: "You're not sure why you'd do that."
           pt-br: "Você não tem certeza por que faria isso."
-      
       - condition: "husband_corpse_rolled"
         message:
           en: "The body is already rolled over."
