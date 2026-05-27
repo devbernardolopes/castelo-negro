@@ -645,7 +645,7 @@ actions:
   examine_kitchen_from_living_room:
     pattern:
       - verb: ["examine"]
-      - object: ["cottage_kitchen"]
+      - location: ["cottage_kitchen"]
     conditions:
       - "current_location == 'cottage_living_room'"
     effect: []

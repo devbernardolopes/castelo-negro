@@ -146,6 +146,16 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       continue;
     }
 
+    if (slotName === 'location') {
+      const locationIds = Array.isArray(slotDef) ? slotDef.map(id => String(id)) : [];
+      const locMatch = this._matchLocationSlotAt(tokens, i, locationIds);
+      if (!locMatch) return null;
+      out[slotName] = locMatch.locationId;
+      out[`${slotName}_name`] = this._pickLang(this.definition.locations?.[locMatch.locationId]?.name) || locMatch.locationId;
+      i += locMatch.len;
+      continue;
+    }
+
     // Unknown slot types not supported in v1.
     return null;
   }
@@ -237,6 +247,39 @@ GameEngine.prototype._phraseMatchesItemId = function(phrase, itemId) {
   if (name && p === String(name).trim().toLowerCase()) return true;
 
   const syn = item?.synonyms;
+  if (syn && typeof syn === 'object') {
+    const langList = syn?.[this.language];
+    if (Array.isArray(langList)) {
+      for (const s of langList) {
+        if (p === String(s).trim().toLowerCase()) return true;
+      }
+    }
+  }
+  return false;
+};
+
+GameEngine.prototype._matchLocationSlotAt = function(tokens, idx, locationIds) {
+  for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
+    const phrase = tokens.slice(idx, idx + len).join(' ');
+    for (const locId of locationIds) {
+      if (this._phraseMatchesLocationId(phrase, locId)) return { locationId: locId, len };
+    }
+  }
+  return null;
+};
+
+GameEngine.prototype._phraseMatchesLocationId = function(phrase, locId) {
+  const p = String(phrase || '').trim().toLowerCase();
+  const id = String(locId || '').trim();
+  if (!p || !id) return false;
+  if (p === id.toLowerCase()) return true;
+  if (p === id.replace(/_/g, ' ').toLowerCase()) return true;
+
+  const loc = this.definition.locations?.[id];
+  const name = this._pickLang(loc?.name);
+  if (name && p === String(name).trim().toLowerCase()) return true;
+
+  const syn = loc?.synonyms;
   if (syn && typeof syn === 'object') {
     const langList = syn?.[this.language];
     if (Array.isArray(langList)) {
