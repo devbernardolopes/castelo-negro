@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setAdventureTitle('');
   resetUiForNewGame();
   setText('text-display', 'Load an adventure to begin.');
+  updateScrollBtnVisibility();
 
   // Sidebar tabs wiring (Mind / Inventory / Memory / etc).
   function setSidebarTab(tabName) {
@@ -305,8 +306,30 @@ document.addEventListener('DOMContentLoaded', () => {
       setSidebarTabsEnabled(false);
       setAdventureTitle('');
       setText('text-display', 'Failed to load adventure file.');
+      updateScrollBtnVisibility();
     }
   });
+
+  // Scroll-to-bottom button
+  function updateScrollBtnVisibility() {
+    const el = document.getElementById('text-display');
+    const btn = document.getElementById('scroll-down-btn');
+    if (!el || !btn) return;
+    const threshold = 30;
+    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+    btn.classList.toggle('is-visible', !isNearBottom);
+  }
+
+  const textDisplay = document.getElementById('text-display');
+  textDisplay?.addEventListener('scroll', updateScrollBtnVisibility);
+
+  document.getElementById('scroll-down-btn')?.addEventListener('click', () => {
+    const el = document.getElementById('text-display');
+    if (el) el.scrollTop = el.scrollHeight;
+  });
+
+  // Initial check
+  updateScrollBtnVisibility();
 
   // Modal UI wiring
   const closeBtn = document.getElementById('adventure-modal-close');
@@ -422,6 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resetUiForNewGame();
     const textDisplay = document.getElementById('text-display');
     if (textDisplay) textDisplay.innerHTML = '';
+    updateScrollBtnVisibility();
     const intro = engine.getText('intro');
     if (intro) appendOutput(intro);
     engine.renderCurrentLocation();
