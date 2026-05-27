@@ -11,6 +11,11 @@ variables:
     value: 0
     description: "Increments every player action"
 
+  invalid_attempt_count:
+    type: int
+    value: 0
+    description: "Number of consecutive invalid actions. Resets to 0 on valid action."
+
   current_player_actor:
     type: object
     value: [protagonist]
@@ -705,6 +710,27 @@ actions:
         message:
           en: "You already have the {object_name}."
           pt-br: "Você já tem o {object_name}."
+
+  # ============================================================
+  # CATCH-ALL FALLBACK: Handles any unmatched/unparseable input
+  # ============================================================
+  fallback_generic:
+    message_pool:
+      en:
+        - "I don't understand what you mean."
+        - "That makes no sense in this context."
+        - "You're not sure how to do that here."
+        - "That idea doesn't seem to lead anywhere."
+        - "You can't quite figure out how to make that work."
+      pt-br:
+        - "Não entendo o que você quer dizer."
+        - "Isso não faz sentido neste contexto."
+        - "Você não tem certeza de como fazer isso aqui."
+        - "Essa ideia não parece levar a lugar algum."
+        - "Você não consegue imaginar como fazer isso funcionar."
+    # Track repeated failures for adaptive messaging
+    effect:
+      - "invalid_attempt_count += 1"
 
 strings:
   intro:
