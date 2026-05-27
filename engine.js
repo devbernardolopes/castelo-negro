@@ -678,6 +678,13 @@ class GameEngine {
       if (ev.type === 'location_enter') {
         if (action?.kind === 'move' && String(ev.location) === this.gameState.current_location) this._executeEvent(ev);
       }
+      if (ev.trigger_on) {
+        if (ev.trigger_on === action?.kind) {
+          if (!ev.action_id || String(ev.action_id) === action?.id) {
+            this._executeEvent(ev);
+          }
+        }
+      }
     }
   }
 
