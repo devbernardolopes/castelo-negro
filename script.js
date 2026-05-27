@@ -1,6 +1,7 @@
 let engine = null;
 let fileInput;
 
+const DIRECTION_MAP = { up: 'north', down: 'south', left: 'west', right: 'east' };
 const LS_KEY_THEME = 'adventure_theme';
 
 const THEMES = [
@@ -13,8 +14,9 @@ const THEMES = [
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('direction-btn')) {
     const direction = e.target.getAttribute('data-direction');
-    if (!engine || !direction) return;
-    const prompt = `go ${direction}`;
+    const mapped = DIRECTION_MAP[direction];
+    if (!engine || !mapped) return;
+    const prompt = `go ${mapped}`;
     savePromptToHistory(prompt);
     appendPlayerPrompt(prompt);
     engine.processPlayerCommand(prompt);
