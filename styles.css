@@ -392,8 +392,8 @@ body {
 #sidebar-tabs .tab-panel {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
+  /* flex: 0; */
+  /* height: 128px; */
   overflow-y: auto;
 }
 
@@ -1034,7 +1034,7 @@ body {
     font-size: 10px;
     min-height: 28px;
   }
-
+  
   #text-display-wrapper {
     flex: 1;
   }
