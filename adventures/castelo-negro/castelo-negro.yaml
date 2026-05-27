@@ -711,9 +711,6 @@ actions:
           en: "You already have the {object_name}."
           pt-br: "Você já tem o {object_name}."
 
-  # ============================================================
-  # CATCH-ALL FALLBACK: Handles any unmatched/unparseable input
-  # ============================================================
   fallback_generic:
     message_pool:
       en:
