@@ -478,6 +478,30 @@ verbs:
     synonyms: { en: ["close"], pt-br: ["fechar"] }
   roll:
     synonyms: { en: ["roll", "flip", "turn"], pt-br: ["virar", "girar"] }
+  go:
+    synonyms: { en: ["go", "walk", "move"], pt-br: ["ir", "andar", "mover"] }
+
+directions:
+  north:
+    synonyms: { en: ["north", "n", "forward"], pt-br: ["norte", "n", "frente"] }
+  northeast:
+    synonyms: { en: ["northeast", "ne"], pt-br: ["nordeste", "ne"] }
+  northwest:
+    synonyms: { en: ["northwest", "nw"], pt-br: ["noroeste", "nw"] }
+  south:
+    synonyms: { en: ["south", "s", "backward"], pt-br: ["sul", "s", "trás"] }
+  southeast:
+    synonyms: { en: ["southeast", "se"], pt-br: ["sudeste", "se"] }
+  southwest:
+    synonyms: { en: ["southwest", "sw"], pt-br: ["sudoeste", "sw"] }
+  east:
+    synonyms: { en: ["east", "e", "right"], pt-br: ["leste", "e", "direita"] }
+  west:
+    synonyms: { en: ["west", "w", "left"], pt-br: ["oeste", "o", "esquerda"] }
+  up:
+    synonyms: { en: ["up", "u"], pt-br: ["cima", "c"] }
+  down:
+    synonyms: { en: ["down", "d"], pt-br: ["baixo", "b"] }
 
 actions:
   examine_husband_corpse:
@@ -709,6 +733,20 @@ actions:
     message:
       en: "From here, you can see the small kitchen with its stone hearth and worn wooden table."
       pt-br: "Daqui, você pode ver a pequena cozinha com sua lareira de pedra e mesa de madeira desgastada."
+
+  # move:
+  #   pattern:
+  #     - verb: ["go"]
+  #     - direction: ["*"]
+  #   effect: []
+  #   message:
+  #     en: "{location_or_object_description}"
+  #     pt-br: "{location_or_object_description}"
+  #   conditional_messages:
+  #     - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
+  #       message:
+  #         en: "There's no {object_name} here."
+  #         pt-br: "Não há {object_name} aqui."
 
   examine:
     pattern:

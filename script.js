@@ -16,7 +16,10 @@ document.addEventListener('click', (e) => {
     const direction = e.target.getAttribute('data-direction');
     const mapped = DIRECTION_MAP[direction];
     if (!engine || !mapped) return;
-    engine.go(/** @type {any} */ (mapped));
+    const prompt = `go ${mapped}`;
+    savePromptToHistory(prompt);
+    appendPlayerPrompt(prompt);
+    engine.processPlayerCommand(prompt);
   }
 });
 
