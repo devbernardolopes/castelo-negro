@@ -599,19 +599,16 @@ actions:
     message:
       en: "You unlock the front door."
       pt-br: "Você destranca a porta da frente."
-
     # Failure branches - evaluated in order, first match wins
     conditional_messages:
       - condition: "!here.has('cottage_front_door')"
         message:
           en: "There's no front door here."
           pt-br: "Não há porta aqui."
-      
       - condition: "!inventory.has('cottage_key')"
         message:
           en: "You don't have a key."
           pt-br: "Você não tem uma chave."
-      
       - condition: "!cottage_door_locked"
         message:
           en: "The door is already unlocked."
@@ -631,6 +628,56 @@ actions:
     message:
       en: "You lock the front door."
       pt-br: "Você tranca a porta da frente."
+
+  open_cottage_front_door:
+    pattern:
+      - verb: ["open"]
+      - target: ["cottage_front_door"]
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "!cottage_door_locked"
+      - "!cottage_door_open"
+    effect:
+      - "cottage_door_open = true"
+    message:
+      en: "You open the front door."
+      pt-br: "Você abre a porta da frente."
+    conditional_messages:
+      - condition: "!here.has('cottage_front_door')"
+        message:
+          en: "There's no front door here."
+          pt-br: "Não há porta aqui."
+      - condition: "cottage_door_locked"
+        message:
+          en: "The door is locked. You can't open it."
+          pt-br: "A porta está trancada. Você não pode abri-la."
+      - condition: "cottage_door_open"
+        message:
+          en: "The door is already open."
+          pt-br: "A porta já está aberta."
+
+  close_cottage_front_door:
+    pattern:
+      - verb: ["close"]
+      - target: ["cottage_front_door"]
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "!cottage_door_locked"
+      - "cottage_door_open"
+    effect:
+      - "cottage_door_open = false"
+    message:
+      en: "You close the front door."
+      pt-br: "Você fecha a porta da frente."
+    conditional_messages:
+      - condition: "!here.has('cottage_front_door')"
+        message:
+          en: "There's no front door here."
+          pt-br: "Não há porta aqui."
+      - condition: "cottage_door_locked or !cottage_door_open"
+        message:
+          en: "The door is already closed."
+          pt-br: "A porta já está fechada."
 
   feed_newborn_daughter:
     pattern:
