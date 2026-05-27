@@ -681,9 +681,12 @@ actions:
 
   feed_newborn_daughter:
     pattern:
-      - verb: ["give"]
-      - object: ["moldy_loaf_of_bread"]
-      - target: ["newborn_daughter"]
+      - - verb: ["give"]
+        - object: ["moldy_loaf_of_bread"]
+        - target: ["newborn_daughter"]
+      - - verb: ["give"]
+        - target: ["newborn_daughter"]
+        - object: ["moldy_loaf_of_bread"]
     conditions:
       - "inventory.has('moldy_loaf_of_bread')"
       - "inventory.has('newborn_daughter') or here.has('newborn_daughter')"

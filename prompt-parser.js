@@ -88,16 +88,17 @@ GameEngine.prototype._matchAction = function(actionDef, cmd) {
     return null;
   }
 
-  const expandedPattern = pat.map(slot => {
-    if (slot.verb) {
-      return { verb: this._expandVerbSynonyms(slot.verb) };
-    }
-    return slot;
-  });
+  const patternList = Array.isArray(pat[0]) ? pat : [pat];
 
-  const match = this._matchPatternAgainstPrompt(expandedPattern, cmd);
-  if (!match) return null;
-  return match;
+  for (const singlePat of patternList) {
+    const expanded = singlePat.map(slot => {
+      if (slot.verb) return { verb: this._expandVerbSynonyms(slot.verb) };
+      return slot;
+    });
+    const match = this._matchPatternAgainstPrompt(expanded, cmd);
+    if (match) return match;
+  }
+  return null;
 };
 
 GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
