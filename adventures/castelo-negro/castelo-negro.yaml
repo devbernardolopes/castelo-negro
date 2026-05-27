@@ -22,7 +22,7 @@ variables:
 
   protagonist_memory:
     type: list
-    value: ["look", "take", "examine", "open", "unlock", "feed", "give", "go"]
+    value: ["look", "take", "examine", "open", "unlock", "feed", "give", "go", "roll", "close", "lock", "use", "drop", "husband", "baby", "south", "door", "north"]
 
   protagonist_memory_max_capacity:
     type: int
@@ -107,7 +107,7 @@ variables:
 items:
   cottage_key:
     name: { en: "Cottage Key", pt-br: "Chave do Chalé" }
-    synonyms: { en: ["brass key"], pt-br: ["chave de latão"] }
+    synonyms: { en: ["brass key", "key", "cottage key"], pt-br: ["chave de latão", "chave", "chave do chalé"] }
     takeable: true
     description: { en: "A tarnished brass key.", pt-br: "Uma chave de latão oxidada." }
     images: ["images/items/tti-2026-05-23T23-26-04-394045010.png"]
