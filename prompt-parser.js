@@ -46,8 +46,16 @@ GameEngine.prototype._tryActions = function(cmd) {
     if (ok) {
       // Happy path: all conditions met
       if (actionDef.effect) this._applyActionEffects(actionDef.effect, match);
-      const msg = this._pickLang(actionDef.message);
-      if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+      if (actionDef.message_pool) {
+        const pool = this._pickLang(actionDef.message_pool);
+        if (Array.isArray(pool) && pool.length) {
+          const msg = pool[Math.floor(Math.random() * pool.length)];
+          if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+        }
+      } else {
+        const msg = this._pickLang(actionDef.message);
+        if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+      }
       this._afterTurn({ kind: 'action', id: actionId });
       return true;
     }
@@ -75,7 +83,10 @@ GameEngine.prototype._tryActions = function(cmd) {
 
 GameEngine.prototype._matchAction = function(actionDef, cmd) {
   const pat = actionDef?.pattern;
-  if (!pat || !Array.isArray(pat)) return null;
+  if (!pat || !Array.isArray(pat)) {
+    if (cmd) return {};
+    return null;
+  }
 
   const expandedPattern = pat.map(slot => {
     if (slot.verb) {
