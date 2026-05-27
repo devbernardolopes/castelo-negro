@@ -642,6 +642,17 @@ actions:
       en: "You break off a piece and feed your daughter."
       pt-br: "Você quebra um pedaço e alimenta sua filha."
 
+  examine_kitchen_from_living_room:
+    pattern:
+      - verb: ["examine"]
+      - object: ["cottage_kitchen"]
+    conditions:
+      - "current_location == 'cottage_living_room'"
+    effect: []
+    message:
+      en: "From here, you can see the small kitchen with its stone hearth and worn wooden table."
+      pt-br: "Daqui, você pode ver a pequena cozinha com sua lareira de pedra e mesa de madeira desgastada."
+
   examine:
     pattern:
       - verb: ["examine"]
