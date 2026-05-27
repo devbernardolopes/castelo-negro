@@ -163,7 +163,7 @@ items:
 
   moldy_loaf_of_bread:
     name: { en: "Moldy Loaf of Bread", pt-br: "Pão Mofado" }
-    synonyms: { en: ["bread", "loaf of bread", "moldy bread", "moldy loaf", "loaf of moldy bread", "loaf"], pt-br: ["pão", "pão mofado", "pedaço de pão mofado", "pedaço de pão"] }
+    synonyms: { en: ["bread", "loaf of bread", "moldy bread", "moldy loaf", "loaf of moldy bread", "loaf", "mold-covered loaf"], pt-br: ["pão", "pão mofado", "pedaço de pão mofado", "pedaço de pão"] }
     takeable: true
     consumable: true
     description: { en: "A small, mold-covered loaf.", pt-br: "Um pequeno pedaço de pão mofado." }
