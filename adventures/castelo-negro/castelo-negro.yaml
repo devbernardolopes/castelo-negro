@@ -519,8 +519,8 @@ actions:
       en: "You look at the corpse."
       pt-br: "Você olha para o cadáver."
     
-    # Conditional messages based on discovery stage
-    conditional_messages:
+    # Progressive messages based on discovery stage
+    progressive_messages:
       # First inspection: realize husband is dead
       - condition: "husband_corpse_inspected_count == 1 and cottage_key_discovery_stage == 0"
         effect:

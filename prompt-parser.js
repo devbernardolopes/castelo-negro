@@ -58,6 +58,19 @@ GameEngine.prototype._tryActions = function(cmd) {
         const msg = this._pickLang(actionDef.message);
         if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
       }
+
+      if (Array.isArray(actionDef.progressive_messages)) {
+        for (const pm of actionDef.progressive_messages) {
+          const expanded = this._expandTemplate(String(pm.condition || ''), match);
+          if (this.evaluateCondition(expanded)) {
+            if (pm.effect) this._applyActionEffects(pm.effect, match);
+            const msg = this._pickLang(pm.message);
+            if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+            break;
+          }
+        }
+      }
+
       this._afterTurn({ kind: 'action', id: actionId });
       return true;
     }
