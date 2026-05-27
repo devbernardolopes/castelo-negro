@@ -121,6 +121,7 @@ items:
 
   husband_corpse:
     name: { en: "Husband's Corpse", pt-br: "Cadáver do Esposo" }
+    synonyms: { en: ["husband", "corpse", "body"], pt-br: ["marido", "cadáver", "corpo"] }
     takeable: false
     contents: [husband_belt, hand_sickle]
     description: { en: "The body of your husband, cold and still.", pt-br: "O corpo do seu marido, frio e imóvel." }
@@ -209,6 +210,8 @@ locations:
 
           A cozinha fica bem na sua frente, enquanto a varanda fica à sua esquerda.
       conditions:
+        - if: "here.has('husband_corpse')"
+          message: { en: "Your husband lies on the floor, motionless.", pt-br: "Seu marido está no chão, imóvel." }
         - if: "!inventory.has(newborn_daughter)"
           message: { en: "You can hear your baby crying desperately on the floor.", pt-br: "Você pode ouvir sua bebê chorando desesperadamente no chão." }
     contents: [husband_corpse, newborn_daughter, cottage_front_door]
