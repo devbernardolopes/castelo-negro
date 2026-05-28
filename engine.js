@@ -88,6 +88,13 @@ class GameEngine {
     return 'protagonist';
   }
 
+  _addKnownLocation(actorId, locationId) {
+    const data = this.gameState.actors_data?.[actorId];
+    if (!data) return;
+    if (!Array.isArray(data.known_locations)) data.known_locations = [];
+    if (!data.known_locations.includes(locationId)) data.known_locations.push(locationId);
+  }
+
   _getPlayerMemoryConfig() {
     const actorId = this._getPlayerActorId();
     const actor = this.definition.actors?.[actorId];
@@ -196,7 +203,8 @@ class GameEngine {
     const actorsData = {};
     for (const [actorId, actorDef] of Object.entries(this.definition.actors || {})) {
       actorsData[actorId] = {
-        inventory: Array.isArray(actorDef.inventory) ? [...actorDef.inventory] : []
+        inventory: Array.isArray(actorDef.inventory) ? [...actorDef.inventory] : [],
+        known_locations: Array.isArray(actorDef.known_locations) ? [...actorDef.known_locations] : []
       };
     }
 
@@ -640,6 +648,7 @@ class GameEngine {
       return false;
     }
     this.gameState.current_location = targetLocation;
+    this._addKnownLocation(this._getPlayerActorId(), targetLocation);
     this._afterTurn({ kind: 'move', direction, location: targetLocation });
     return true;
   }

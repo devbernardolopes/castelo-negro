@@ -3,6 +3,7 @@ actors:
     name: { en: "You", pt-br: "Você" }
     playable: true
     starting_location: cottage_living_room
+    known_locations: [cottage_living_room, cottage_kitchen, cottage_porch]
     inventory: []
     max_capacity: 4
     memory:
@@ -13,6 +14,7 @@ actors:
     name: { en: "Old Hag", pt-br: "Velha Bruxa" }
     playable: false
     starting_location: black_castle_ensuite
+    known_locations: [black_castle_ensuite]
     inventory: []
     max_capacity: 4
     dialogue:
