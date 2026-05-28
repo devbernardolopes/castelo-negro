@@ -44,14 +44,16 @@ document.addEventListener('DOMContentLoaded', () => {
       mind: document.getElementById('tab-panel-mind'),
       inventory: document.getElementById('tab-panel-inventory'),
       memory: document.getElementById('tab-panel-memory'),
-      debug: document.getElementById('tab-panel-debug')
+      debug: document.getElementById('tab-panel-debug'),
+      map: document.getElementById('tab-panel-map')
     };
     const buttons = {
       system: document.getElementById('tab-system'),
       mind: document.getElementById('tab-mind'),
       inventory: document.getElementById('tab-inventory'),
       memory: document.getElementById('tab-memory'),
-      debug: document.getElementById('tab-debug')
+      debug: document.getElementById('tab-debug'),
+      map: document.getElementById('tab-map')
     };
     for (const [name, panel] of Object.entries(panels)) {
       if (panel) panel.style.display = name === tabName ? 'flex' : 'none';

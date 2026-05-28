@@ -412,6 +412,50 @@ body {
   width: 100%;
 }
 
+#map-viewport {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-primary);
+  cursor: grab;
+  min-height: 120px;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+}
+
+#map-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
+.map-cell {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  box-sizing: border-box;
+  font-size: 9px;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--text-primary);
+  padding: 2px;
+  word-break: break-word;
+  overflow: hidden;
+  user-select: none;
+}
+
+.map-cell-current {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: bold;
+  border-color: var(--accent);
+}
+
 #mind-panel {
   font-size: 13px;
   color: var(--text-secondary);

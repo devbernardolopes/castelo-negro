@@ -95,6 +95,51 @@ class GameEngine {
     if (!data.known_locations.includes(locationId)) data.known_locations.push(locationId);
   }
 
+  _buildMapGrid(knownLocationIds) {
+    const set = new Set(knownLocationIds);
+    const DIR = {
+      north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0],
+      northeast: [1, -1], northwest: [-1, -1], southeast: [1, 1], southwest: [-1, 1]
+    };
+    const startId = this.gameState.current_location;
+    if (!set.has(startId)) return [];
+
+    const coords = {};
+    coords[startId] = { x: 0, y: 0 };
+    const queue = [startId];
+    const visited = new Set();
+
+    while (queue.length) {
+      const id = queue.shift();
+      if (visited.has(id)) continue;
+      visited.add(id);
+      const pos = coords[id];
+      const locDef = this.definition.locations?.[id];
+      if (!locDef?.exits) continue;
+
+      for (const [dir, target] of Object.entries(locDef.exits)) {
+        const offset = DIR[dir];
+        if (!offset) continue;
+        const neighbor = typeof target === 'string' ? target : target?.location;
+        if (!neighbor || !set.has(neighbor)) continue;
+        if (neighbor in coords) continue;
+        coords[neighbor] = { x: pos.x + offset[0], y: pos.y + offset[1] };
+        queue.push(neighbor);
+      }
+    }
+
+    const result = [];
+    for (const id of knownLocationIds) {
+      const c = coords[id];
+      if (!c) continue;
+      const locDef = this.definition.locations?.[id];
+      const fullName = this._pickLang(locDef?.name) || id;
+      const shortName = fullName.length > 14 ? fullName.substring(0, 12) + '…' : fullName;
+      result.push({ id, x: c.x, y: c.y, name: fullName, shortName, isCurrent: id === startId });
+    }
+    return result;
+  }
+
   _getPlayerMemoryConfig() {
     const actorId = this._getPlayerActorId();
     const actor = this.definition.actors?.[actorId];
@@ -607,6 +652,7 @@ class GameEngine {
     this.hooks.onMindRender?.();
     this.hooks.onMemoryRender?.();
     this.hooks.onDebugRender?.();
+    this.hooks.onMapRender?.();
     this.hooks.onLocationRender?.(locationId);
   }
 

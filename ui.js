@@ -4,6 +4,9 @@ const PROMPT_HISTORY_KEY = 'adventure_prompt_history';
 
 let selectedWords = [];
 const _tabContentKeys = {};
+let _mapPanX = 0;
+let _mapPanY = 0;
+let _mapZoom = 1;
 let pendingWordClickTimer = null;
 let suppressPromptAddUntilTs = 0;
 let directInputMode = false;
@@ -126,6 +129,19 @@ function setAdventureTitle(title) {
   setText('adventure-title-row', title || '');
 }
 
+function setMapTabVisibility(visible) {
+  const tabBtn = document.getElementById('tab-map');
+  if (tabBtn) tabBtn.style.display = visible ? '' : 'none';
+  if (!visible) {
+    const panel = document.getElementById('tab-panel-map');
+    if (panel) panel.style.display = 'none';
+    if (tabBtn && tabBtn.getAttribute('aria-selected') === 'true') {
+      const systemBtn = document.getElementById('tab-system');
+      if (systemBtn) systemBtn.click();
+    }
+  }
+}
+
 function resetUiForNewGame() {
   _outputQueue = [];
   _isPausedForSend = false;
@@ -134,6 +150,10 @@ function resetUiForNewGame() {
   setText('mind-panel', '');
   clearEl('memory-list');
   clearEl('debug-panel');
+  clearEl('map-grid');
+  _mapPanX = 0;
+  _mapPanY = 0;
+  _mapZoom = 1;
   selectedWords = [];
   renderCommandBuilder();
   const directInput = document.getElementById('direct-text-input');
@@ -631,4 +651,150 @@ function renderDebugPanel() {
     el.appendChild(row);
   }
   if (_isTabContentChanged('debug', contentKey)) _markTabUpdate('debug');
+}
+
+var _mapControlsInit = false;
+
+function _initMapControls() {
+  if (_mapControlsInit) return;
+  _mapControlsInit = true;
+  const vp = document.getElementById('map-viewport');
+  if (!vp) return;
+
+  let dragging = false;
+  let startX = 0, startY = 0;
+  let panX = 0, panY = 0;
+
+  vp.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    dragging = true;
+    startX = e.clientX - _mapPanX;
+    startY = e.clientY - _mapPanY;
+    vp.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    _mapPanX = e.clientX - startX;
+    _mapPanY = e.clientY - startY;
+    _applyMapTransform();
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    vp.style.cursor = '';
+  });
+
+  vp.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    _mapZoom = Math.max(0.3, Math.min(3, _mapZoom + delta));
+    _applyMapTransform();
+  }, { passive: false });
+
+  let touches = [];
+  let lastTouchDist = 0;
+
+  vp.addEventListener('touchstart', (e) => {
+    touches = Array.from(e.touches);
+    if (touches.length === 1) {
+      startX = e.touches[0].clientX - _mapPanX;
+      startY = e.touches[0].clientY - _mapPanY;
+    } else if (touches.length === 2) {
+      lastTouchDist = Math.hypot(
+        touches[0].clientX - touches[1].clientX,
+        touches[0].clientY - touches[1].clientY
+      );
+    }
+  }, { passive: true });
+
+  vp.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1) {
+      _mapPanX = e.touches[0].clientX - startX;
+      _mapPanY = e.touches[0].clientY - startY;
+      _applyMapTransform();
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (lastTouchDist) {
+        _mapZoom = Math.max(0.3, Math.min(3, _mapZoom + (dist - lastTouchDist) * 0.01));
+        _applyMapTransform();
+      }
+      lastTouchDist = dist;
+    }
+  }, { passive: true });
+
+  vp.addEventListener('touchend', () => {
+    lastTouchDist = 0;
+  }, { passive: true });
+}
+
+function _applyMapTransform() {
+  const grid = document.getElementById('map-grid');
+  if (grid) {
+    grid.style.transform = `translate(${_mapPanX}px, ${_mapPanY}px) scale(${_mapZoom})`;
+  }
+}
+
+function renderMap() {
+  const vp = document.getElementById('map-viewport');
+  if (!vp) return;
+  if (!engine) return;
+  _initMapControls();
+
+  const actorId = engine._getPlayerActorId();
+  const actorData = engine.gameState.actors_data?.[actorId];
+  const known = actorData?.known_locations;
+  if (!known || !known.length) {
+    clearEl('map-grid');
+    _applyMapTransform();
+    return;
+  }
+
+  const currentLoc = engine.gameState.current_location;
+  const grid = engine._buildMapGrid(known);
+  if (!grid || !grid.length) {
+    clearEl('map-grid');
+    _applyMapTransform();
+    return;
+  }
+
+  const contentKey = known.join(',') + '|' + currentLoc;
+  const mapEl = document.getElementById('map-grid');
+  if (!mapEl) return;
+  while (mapEl.firstChild) mapEl.removeChild(mapEl.firstChild);
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const cell of grid) {
+    if (cell.x < minX) minX = cell.x;
+    if (cell.y < minY) minY = cell.y;
+    if (cell.x > maxX) maxX = cell.x;
+    if (cell.y > maxY) maxY = cell.y;
+  }
+
+  const CELL = 72;
+  const GAP = 8;
+
+  for (const cell of grid) {
+    const div = document.createElement('div');
+    div.className = 'map-cell';
+    if (cell.isCurrent) div.classList.add('map-cell-current');
+    div.title = cell.name;
+    div.style.left = ((cell.x - minX) * (CELL + GAP)) + 'px';
+    div.style.top = ((cell.y - minY) * (CELL + GAP)) + 'px';
+    div.style.width = CELL + 'px';
+    div.style.height = CELL + 'px';
+    div.textContent = cell.shortName;
+    mapEl.appendChild(div);
+  }
+
+  mapEl.style.width = ((maxX - minX + 1) * (CELL + GAP) - GAP) + 'px';
+  mapEl.style.height = ((maxY - minY + 1) * (CELL + GAP) - GAP) + 'px';
+
+  _applyMapTransform();
+  if (_isTabContentChanged('map', contentKey)) _markTabUpdate('map');
 }
