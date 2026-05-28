@@ -6,7 +6,7 @@ metadata:
   assets_path: "assets/"
   data_path: "data/"
   data_files: ["actors.yaml", "strings.yaml", "variables.yaml"]
-  allow_direct_input: true
+  allow_direct_input: false
 
 items:
   cottage_key:
