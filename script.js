@@ -565,16 +565,16 @@ document.addEventListener('DOMContentLoaded', () => {
       onDebugRender: renderDebugPanel
     });
     resetUiForNewGame();
+    setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
+    setMenuButtonsEnabled(true);
+    setGameControlsEnabled(true);
+    setSidebarTabsEnabled(true);
+    setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
     const textDisplay = document.getElementById('text-display');
     if (textDisplay) textDisplay.innerHTML = '';
     updateScrollBtnVisibility();
     const intro = engine.getText('intro');
     if (intro) appendOutput(intro);
-    setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
     engine.renderCurrentLocation();
-    setMenuButtonsEnabled(true);
-    setGameControlsEnabled(true);
-    setSidebarTabsEnabled(true);
-    setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
   });
 });
