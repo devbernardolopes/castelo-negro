@@ -15,7 +15,7 @@ variables:
 
   protagonist_memory:
     type: list
-    value: ["look", "take", "examine", "open", "unlock", "feed", "give", "go", "roll", "close", "lock", "use", "drop", "husband", "baby", "south", "door", "north"]
+    value: ["look", "take", "open", "unlock", "give", "roll", "close", "lock", "use", "drop", "husband", "baby", "door"]
 
   protagonist_memory_max_capacity:
     type: int
