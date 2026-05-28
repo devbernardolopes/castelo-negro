@@ -172,9 +172,22 @@ function _doAppendOutput(text) {
   el.scrollTop = el.scrollHeight;
 }
 
+function _doAppendLocationName(text) {
+  const el = document.getElementById('text-display');
+  if (!el) return;
+  const entry = document.createElement('div');
+  entry.className = 'log-entry location-name';
+  entry.textContent = text;
+  makeWordsClickable(entry);
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+}
+
 function appendOutput(text) {
   if (_isPausedForSend) {
-    _outputQueue.push(text);
+    _outputQueue.push({ type: 'text', text });
     return;
   }
   const parts = String(text).split('>>>>');
@@ -182,7 +195,7 @@ function appendOutput(text) {
     _doAppendOutput(parts[0]);
     for (let i = 1; i < parts.length; i++) {
       const trimmed = parts[i].trim();
-      if (trimmed) _outputQueue.push(trimmed);
+      if (trimmed) _outputQueue.push({ type: 'text', text: trimmed });
     }
     _enterPauseState();
     return;
@@ -222,12 +235,35 @@ function _enterPauseState() {
 
 function resumeFromPause() {
   if (!_isPausedForSend) return;
-  if (_outputQueue.length > 0) {
-    const next = _outputQueue.shift();
-    appendOutput(next);
+
+  _isPausedForSend = false;
+
+  let morePauses = false;
+  while (_outputQueue.length > 0 && !morePauses) {
+    const item = _outputQueue.shift();
+    if (item.type === 'location') {
+      _doAppendLocationName(item.text);
+    } else {
+      const parts = String(item.text).split('>>>>');
+      if (parts.length > 1) {
+        _doAppendOutput(parts[0]);
+        for (let i = parts.length - 1; i >= 1; i--) {
+          const trimmed = parts[i].trim();
+          if (trimmed) _outputQueue.unshift({ type: 'text', text: trimmed });
+        }
+        morePauses = true;
+      } else {
+        _doAppendOutput(item.text);
+      }
+    }
+  }
+
+  if (morePauses) {
+    _isPausedForSend = true;
+    const sendBtn = document.getElementById('input-btn-send');
+    if (sendBtn) sendBtn.disabled = false;
     return;
   }
-  _isPausedForSend = false;
 
   document.querySelectorAll('#directional-buttons-row .direction-btn').forEach(btn => {
     if ('savedDisabled' in btn.dataset) {
@@ -258,16 +294,11 @@ function resumeFromPause() {
 }
 
 function appendLocationName(text) {
-  const el = document.getElementById('text-display');
-  if (!el) return;
-  const entry = document.createElement('div');
-  entry.className = 'log-entry location-name';
-  entry.textContent = text;
-  makeWordsClickable(entry);
-  if (el.childNodes.length) el.appendChild(document.createElement('br'));
-  if (el.childNodes.length) el.appendChild(document.createElement('br'));
-  el.appendChild(entry);
-  el.scrollTop = el.scrollHeight;
+  if (_isPausedForSend) {
+    _outputQueue.push({ type: 'location', text });
+    return;
+  }
+  _doAppendLocationName(text);
 }
 
 function appendPlayerPrompt(promptText) {
