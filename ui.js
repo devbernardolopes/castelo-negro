@@ -6,6 +6,8 @@ let selectedWords = [];
 let pendingWordClickTimer = null;
 let suppressPromptAddUntilTs = 0;
 let directInputMode = false;
+let _outputQueue = [];
+let _isPausedForSend = false;
 
 let promptHistory = [];
 try {
@@ -36,6 +38,7 @@ function renderPromptHistoryPanel() {
     entry.textContent = promptHistory[i];
     entry.setAttribute('role', 'option');
     entry.addEventListener('click', (e) => {
+      if (_isPausedForSend) return;
       e.preventDefault();
       const words = promptHistory[i].split(/\s+/).filter(Boolean);
       selectedWords = words;
@@ -47,6 +50,7 @@ function renderPromptHistoryPanel() {
 }
 
 function showPromptHistoryPanel() {
+  if (_isPausedForSend) return;
   const panel = document.getElementById('prompt-history-panel');
   if (!panel) return;
   if (promptHistory.length === 0) return;
@@ -109,6 +113,8 @@ function setAdventureTitle(title) {
 }
 
 function resetUiForNewGame() {
+  _outputQueue = [];
+  _isPausedForSend = false;
   clearEl('inventory-list');
   setText('mind-panel', '');
   clearEl('memory-list');
@@ -153,7 +159,7 @@ function textToHtmlWithBoldBrackets(text) {
   return bolded.replace(/\n/g, '<br>');
 }
 
-function appendOutput(text) {
+function _doAppendOutput(text) {
   const el = document.getElementById('text-display');
   if (!el) return;
   const entry = document.createElement('div');
@@ -164,6 +170,91 @@ function appendOutput(text) {
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
   el.appendChild(entry);
   el.scrollTop = el.scrollHeight;
+}
+
+function appendOutput(text) {
+  if (_isPausedForSend) {
+    _outputQueue.push(text);
+    return;
+  }
+  const parts = String(text).split('>>>>');
+  if (parts.length > 1) {
+    _doAppendOutput(parts[0]);
+    for (let i = 1; i < parts.length; i++) {
+      const trimmed = parts[i].trim();
+      if (trimmed) _outputQueue.push(trimmed);
+    }
+    _enterPauseState();
+    return;
+  }
+  _doAppendOutput(text);
+}
+
+function _enterPauseState() {
+  if (_isPausedForSend) return;
+  _isPausedForSend = true;
+
+  document.querySelectorAll('#directional-buttons-row .direction-btn').forEach(btn => {
+    btn.dataset.savedDisabled = btn.disabled ? 'true' : 'false';
+    btn.disabled = true;
+  });
+
+  document.querySelectorAll('#sidebar-tabs .tab-btn').forEach(btn => {
+    if (btn.id === 'tab-system') return;
+    btn.dataset.savedDisabled = btn.disabled ? 'true' : 'false';
+    btn.disabled = true;
+  });
+
+  const userInput = document.getElementById('user-input');
+  if (userInput) {
+    userInput.dataset.savedAriaDisabled = userInput.getAttribute('aria-disabled') || 'false';
+    userInput.setAttribute('aria-disabled', 'true');
+  }
+  const directInput = document.getElementById('direct-text-input');
+  if (directInput) {
+    directInput.dataset.savedDisabled = directInput.disabled ? 'true' : 'false';
+    directInput.disabled = true;
+  }
+
+  const sendBtn = document.getElementById('input-btn-send');
+  if (sendBtn) sendBtn.disabled = false;
+}
+
+function resumeFromPause() {
+  if (!_isPausedForSend) return;
+  if (_outputQueue.length > 0) {
+    const next = _outputQueue.shift();
+    appendOutput(next);
+    return;
+  }
+  _isPausedForSend = false;
+
+  document.querySelectorAll('#directional-buttons-row .direction-btn').forEach(btn => {
+    if ('savedDisabled' in btn.dataset) {
+      btn.disabled = btn.dataset.savedDisabled === 'true';
+      delete btn.dataset.savedDisabled;
+    }
+  });
+
+  document.querySelectorAll('#sidebar-tabs .tab-btn').forEach(btn => {
+    if ('savedDisabled' in btn.dataset) {
+      btn.disabled = btn.dataset.savedDisabled === 'true';
+      delete btn.dataset.savedDisabled;
+    }
+  });
+
+  const userInput = document.getElementById('user-input');
+  if (userInput && 'savedAriaDisabled' in userInput.dataset) {
+    userInput.setAttribute('aria-disabled', userInput.dataset.savedAriaDisabled);
+    delete userInput.dataset.savedAriaDisabled;
+  }
+  const directInput = document.getElementById('direct-text-input');
+  if (directInput && 'savedDisabled' in directInput.dataset) {
+    directInput.disabled = directInput.dataset.savedDisabled === 'true';
+    delete directInput.dataset.savedDisabled;
+  }
+
+  syncSendButtonEnabled();
 }
 
 function appendLocationName(text) {
@@ -279,7 +370,7 @@ function syncSendButtonEnabled() {
 }
 
 function addWordToCommand(rawWord) {
-  if (!engine) return;
+  if (!engine || _isPausedForSend) return;
   const word = stripWordPunctuation(rawWord);
   if (!word) return;
   selectedWords.push(word);

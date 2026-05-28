@@ -13,9 +13,10 @@ const THEMES = [
 
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('direction-btn')) {
+    if (!engine || _isPausedForSend) return;
     const direction = e.target.getAttribute('data-direction');
     const mapped = DIRECTION_MAP[direction];
-    if (!engine || !mapped) return;
+    if (!mapped) return;
     const prompt = `go ${mapped}`;
     savePromptToHistory(prompt);
     appendPlayerPrompt(prompt);
@@ -78,12 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (target.classList.contains('click-word')) {
+      if (_isPausedForSend) return;
       if (Date.now() < suppressPromptAddUntilTs) return;
       scheduleAddWordToCommand(target.getAttribute('data-word') || target.textContent || '');
       return;
     }
 
     if (target.classList.contains('word-token-remove')) {
+      if (_isPausedForSend) return;
       const token = target.closest('.word-token');
       const index = Number(token?.getAttribute('data-index'));
       if (Number.isFinite(index) && index >= 0) {
@@ -94,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const memAction = target.getAttribute('data-action');
     if (memAction === 'mem-remove' || memAction === 'mem-up' || memAction === 'mem-down') {
-      if (!engine) return;
+      if (!engine || _isPausedForSend) return;
       const token = target.closest('.memory-token');
       const index = Number(token?.getAttribute('data-index'));
       if (!Number.isFinite(index) || index < 0) return;
@@ -107,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Click a memory token (not buttons) -> add word to prompt (memory remains unchanged).
     const memToken = target.closest('.memory-token');
     if (memToken && !target.closest('button')) {
-      if (!engine) return;
+      if (!engine || _isPausedForSend) return;
       const word = memToken.querySelector('.word-token-text')?.textContent || '';
       if (!word) return;
       addWordToCommand(word);
@@ -121,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('dblclick', (ev) => {
+    if (_isPausedForSend) return;
     const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
     if (!target) return;
     if (pendingWordClickTimer) clearTimeout(pendingWordClickTimer);
@@ -157,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   document.addEventListener('pointerdown', (ev) => {
+    if (_isPausedForSend) return;
     const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
     if (!target) return;
     const isClickWord = target.classList.contains('click-word');
@@ -180,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let dragIndex = null;
 
   commandBuilder?.addEventListener('pointerdown', (ev) => {
+    if (_isPausedForSend) return;
     const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
     if (!target) return;
     if (!target.classList.contains('word-token-handle')) return;
@@ -235,6 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let memDragIndex = null;
 
   memoryList?.addEventListener('pointerdown', (ev) => {
+    if (_isPausedForSend) return;
     const target = /** @type {HTMLElement|null} */ (ev.target instanceof HTMLElement ? ev.target : null);
     if (!target) return;
     if (!target.classList.contains('word-token-handle')) return;
@@ -296,7 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function submitPrompt() {
-    if (!engine) return;
+    if (!engine && !_isPausedForSend) return;
+    if (_isPausedForSend) {
+      resumeFromPause();
+      return;
+    }
     const prompt = buildPromptFromInput();
     if (!prompt) return;
     savePromptToHistory(prompt);
@@ -314,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const directTextInput = document.getElementById('direct-text-input');
   directTextInput?.addEventListener('keydown', (ev) => {
-    if (!engine) return;
+    if (!engine && !_isPausedForSend) return;
     if (ev.key === 'Enter') {
       ev.preventDefault();
       submitPrompt();
