@@ -16,6 +16,7 @@ strings:
       Not dead. Not yet.
 
       You look around...
+      >>>>
     pt-br: |
       Muito fraca... morrendo de fome...
 
@@ -32,6 +33,7 @@ strings:
       Não morta. Ainda não.
 
       Você olha ao redor...
+      >>>>
       
   death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
   

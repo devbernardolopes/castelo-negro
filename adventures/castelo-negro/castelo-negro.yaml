@@ -1,11 +1,12 @@
 metadata:
   title: Castelo Negro
-  version: 1.5
+  version: 1.9
   languages: [en, pt-br]
   default_language: en
   assets_path: "assets/"
   data_path: "data/"
   data_files: ["actors.yaml", "strings.yaml", "variables.yaml"]
+  allow_direct_input: true
 
 items:
   cottage_key:
