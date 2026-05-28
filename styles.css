@@ -1111,4 +1111,9 @@ body {
     flex: none;
     height: 256px;
   }
+
+  #sidebar-tabs .tab-panel {
+    flex: 1;
+    min-height: 0;
+  }
 }
