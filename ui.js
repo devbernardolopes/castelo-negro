@@ -480,7 +480,7 @@ function renderInventoryList() {
   const inventoryList = document.getElementById('inventory-list');
   if (!inventoryList) return;
   if (!engine) return;
-  if (!_isTabContentChanged('inventory', engine.inventory.items.join(','))) return;
+  const contentKey = engine.inventory.items.join(',');
   while (inventoryList.firstChild) inventoryList.removeChild(inventoryList.firstChild);
 
   for (const itemId of engine.inventory.items) {
@@ -506,7 +506,7 @@ function renderInventoryList() {
     makeWordsClickable(li);
     inventoryList.appendChild(li);
   }
-  _markTabUpdate('inventory');
+  if (_isTabContentChanged('inventory', contentKey)) _markTabUpdate('inventory');
 }
 
 /**
@@ -518,15 +518,14 @@ function renderMindPanel() {
   const sanity = engine.gameState.variables.sanity?.value;
   const timeOfDay = engine.gameState.variables.time_of_day?.value;
   const turn = engine.gameState.game_turn;
-  const key = `${health ?? ''}|${sanity ?? ''}|${timeOfDay ?? ''}|${turn}`;
-  if (!_isTabContentChanged('mind', key)) return;
+  const contentKey = `${health ?? ''}|${sanity ?? ''}|${timeOfDay ?? ''}|${turn}`;
   const lines = [];
   if (health !== undefined) lines.push(`Health: ${health}`);
   if (sanity !== undefined) lines.push(`Sanity: ${sanity}`);
   if (timeOfDay !== undefined) lines.push(`Time: ${timeOfDay}`);
   lines.push(`Turn: ${turn}`);
   setText('mind-panel', lines.join('\n'));
-  _markTabUpdate('mind');
+  if (_isTabContentChanged('mind', contentKey)) _markTabUpdate('mind');
 }
 
 /**
@@ -537,7 +536,7 @@ function renderMemoryList() {
   if (!el) return;
   if (!engine) return;
   const words = engine._getMemoryWords();
-  if (!_isTabContentChanged('memory', words.join(','))) return;
+  const contentKey = words.join(',');
   while (el.firstChild) el.removeChild(el.firstChild);
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
@@ -590,7 +589,7 @@ function renderMemoryList() {
     token.appendChild(remove);
     el.appendChild(token);
   }
-  _markTabUpdate('memory');
+  if (_isTabContentChanged('memory', contentKey)) _markTabUpdate('memory');
 }
 
 function formatDebugValue(val) {
@@ -607,11 +606,10 @@ function renderDebugPanel() {
 
   const vars = engine.definition.variables || {};
   const state = engine.gameState.variables || {};
-  const key = Object.entries(vars)
+  const contentKey = Object.entries(vars)
     .filter(([, def]) => def.debug_variable)
     .map(([k]) => `${k}:${state[k]?.value}`)
     .join('|');
-  if (!_isTabContentChanged('debug', key)) return;
   while (el.firstChild) el.removeChild(el.firstChild);
 
   for (const [varName, def] of Object.entries(vars)) {
@@ -632,5 +630,5 @@ function renderDebugPanel() {
     row.appendChild(valueSpan);
     el.appendChild(row);
   }
-  _markTabUpdate('debug');
+  if (_isTabContentChanged('debug', contentKey)) _markTabUpdate('debug');
 }
