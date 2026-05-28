@@ -1104,3 +1104,11 @@ body {
     font-size: 9px;
   }
 }
+
+/* ===== PORTRAIT MOBILE (orientation: portrait) ===== */
+@media (orientation: portrait) and (max-width: 767px) {
+  #sidebar-tabs .tabs-body {
+    flex: none;
+    height: 256px;
+  }
+}
