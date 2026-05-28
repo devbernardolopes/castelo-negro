@@ -206,13 +206,11 @@ function appendOutput(text) {
     _outputQueue.push({ type: 'text', text });
     return;
   }
-  const parts = String(text).split('>>>>');
-  if (parts.length > 1) {
-    _doAppendOutput(parts[0]);
-    for (let i = 1; i < parts.length; i++) {
-      const trimmed = parts[i].trim();
-      if (trimmed) _outputQueue.push({ type: 'text', text: trimmed });
-    }
+  const idx = String(text).indexOf('>>>>');
+  if (idx !== -1) {
+    _doAppendOutput(text.slice(0, idx));
+    const rest = text.slice(idx + 4);
+    if (rest.trim()) _outputQueue.push({ type: 'text', text: rest });
     _enterPauseState();
     return;
   }
