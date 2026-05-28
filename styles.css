@@ -738,7 +738,31 @@ body {
   border-color: var(--border-hover);
 }
 
-#user-input[aria-disabled="true"] {
+#user-input[aria-disabled="true"],
+#direct-text-input[disabled] {
+  opacity: 0.6;
+}
+
+#direct-text-input {
+  width: 100%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  padding: 6px;
+  outline: none;
+  border-radius: 2px;
+  order: 2;
+  box-sizing: border-box;
+}
+
+#direct-text-input:focus {
+  border-color: var(--border-hover);
+}
+
+#direct-text-input::placeholder {
+  color: var(--text-secondary);
   opacity: 0.6;
 }
 
@@ -915,6 +939,11 @@ body {
     gap: 8px;
   }
 
+  #direct-text-input {
+    font-size: 14px;
+    padding: 10px;
+  }
+
   .word-token {
     padding: 6px 8px;
     min-height: 32px;
@@ -1079,6 +1108,12 @@ body {
     font-size: 11px;
     padding: 4px;
     flex: 1;
+  }
+
+  #direct-text-input {
+    order: 3;
+    font-size: 11px;
+    padding: 4px;
   }
 
   .word-token {

@@ -5,6 +5,7 @@ const PROMPT_HISTORY_KEY = 'adventure_prompt_history';
 let selectedWords = [];
 let pendingWordClickTimer = null;
 let suppressPromptAddUntilTs = 0;
+let directInputMode = false;
 
 let promptHistory = [];
 try {
@@ -82,6 +83,11 @@ function setGameControlsEnabled(isGameLoaded) {
   const input = document.getElementById('user-input');
   if (input) input.setAttribute('aria-disabled', isGameLoaded ? 'false' : 'true');
 
+  const directInput = document.getElementById('direct-text-input');
+  if (directInput) {
+    directInput.disabled = !isGameLoaded;
+  }
+
   syncSendButtonEnabled();
 
   document.querySelectorAll('#directional-buttons-row .direction-btn').forEach((btn) => {
@@ -108,11 +114,24 @@ function resetUiForNewGame() {
   clearEl('memory-list');
   selectedWords = [];
   renderCommandBuilder();
+  const directInput = document.getElementById('direct-text-input');
+  if (directInput) directInput.value = '';
   const imgEl = document.getElementById('room-img');
   if (imgEl) {
     imgEl.style.display = 'none';
     imgEl.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
   }
+}
+
+function setDirectInputMode(enabled) {
+  directInputMode = !!enabled;
+  const input = document.getElementById('direct-text-input');
+  if (input) {
+    input.style.display = directInputMode ? '' : 'none';
+    input.value = '';
+    input.disabled = !engine;
+  }
+  syncSendButtonEnabled();
 }
 
 function escapeHtml(text) {
@@ -254,7 +273,9 @@ function renderCommandBuilder() {
 function syncSendButtonEnabled() {
   const sendBtn = document.getElementById('input-btn-send');
   if (!sendBtn) return;
-  sendBtn.disabled = !engine || selectedWords.length === 0;
+  const input = document.getElementById('direct-text-input');
+  const hasTextInput = input && input.value.trim().length > 0;
+  sendBtn.disabled = !engine || (selectedWords.length === 0 && !(directInputMode && hasTextInput));
 }
 
 function addWordToCommand(rawWord) {

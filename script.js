@@ -287,18 +287,58 @@ document.addEventListener('DOMContentLoaded', () => {
     engine.moveMemoryWord(memDragIndex, dropIndex - memDragIndex);
   });
 
-  const sendBtn = document.getElementById('input-btn-send');
-  sendBtn?.addEventListener('click', () => {
+  function buildPromptFromInput() {
+    const directInput = document.getElementById('direct-text-input');
+    const typed = directInputMode && directInput ? directInput.value.trim() : '';
+    const words = selectedWords.join(' ').trim();
+    if (typed && words) return typed + ' ' + words;
+    return typed || words;
+  }
+
+  function submitPrompt() {
     if (!engine) return;
-    if (selectedWords.length === 0) return;
-    const prompt = selectedWords.join(' ').trim();
+    const prompt = buildPromptFromInput();
     if (!prompt) return;
     savePromptToHistory(prompt);
     appendPlayerPrompt(prompt);
     selectedWords = [];
     renderCommandBuilder();
+    const directInput = document.getElementById('direct-text-input');
+    if (directInput) directInput.value = '';
+    syncSendButtonEnabled();
     engine.processPlayerCommand(prompt);
+  }
+
+  const sendBtn = document.getElementById('input-btn-send');
+  sendBtn?.addEventListener('click', submitPrompt);
+
+  const directTextInput = document.getElementById('direct-text-input');
+  directTextInput?.addEventListener('keydown', (ev) => {
+    if (!engine) return;
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      submitPrompt();
+      return;
+    }
+    if (directInputMode && ev.key === 'Backspace' && directTextInput.value === '') {
+      ev.preventDefault();
+      if (selectedWords.length > 0) {
+        selectedWords.pop();
+        renderCommandBuilder();
+      }
+      return;
+    }
+    if (directInputMode && ev.key === 'Delete' && directTextInput.value === '') {
+      ev.preventDefault();
+      if (selectedWords.length > 0) {
+        selectedWords.shift();
+        renderCommandBuilder();
+      }
+      return;
+    }
   });
+
+  directTextInput?.addEventListener('input', syncSendButtonEnabled);
 
   // File picker helpers (prefers File System Access API when available).
   fileInput = document.createElement('input');
@@ -520,5 +560,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setMenuButtonsEnabled(true);
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);
+    setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
   });
 });

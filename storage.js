@@ -192,6 +192,7 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
   setMenuButtonsEnabled(true);
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
+  setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');
   if (textDisplay) textDisplay.innerHTML = '';
@@ -245,6 +246,7 @@ async function loadAdventureFromUrl(yamlUrl) {
   setMenuButtonsEnabled(true);
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
+  setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');
   if (textDisplay) textDisplay.innerHTML = '';
