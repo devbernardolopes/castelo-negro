@@ -108,6 +108,19 @@ function setSidebarTabsEnabled(isGameLoaded) {
   });
 }
 
+function setDebugTabVisibility(visible) {
+  const tabBtn = document.getElementById('tab-debug');
+  if (tabBtn) tabBtn.style.display = visible ? '' : 'none';
+  if (!visible) {
+    const panel = document.getElementById('tab-panel-debug');
+    if (panel) panel.style.display = 'none';
+    if (tabBtn && tabBtn.getAttribute('aria-selected') === 'true') {
+      const systemBtn = document.getElementById('tab-system');
+      if (systemBtn) systemBtn.click();
+    }
+  }
+}
+
 function setAdventureTitle(title) {
   setText('adventure-title-row', title || '');
 }

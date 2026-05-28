@@ -63,18 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function setDebugTabVisibility(visible) {
-    const tabBtn = document.getElementById('tab-debug');
-    if (tabBtn) tabBtn.style.display = visible ? '' : 'none';
-    if (!visible) {
-      const panel = document.getElementById('tab-panel-debug');
-      if (panel) panel.style.display = 'none';
-      if (tabBtn && tabBtn.getAttribute('aria-selected') === 'true') {
-        setSidebarTab('system');
-      }
-    }
-  }
-
   document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => setSidebarTab(btn.getAttribute('data-tab')));
   });
