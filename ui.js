@@ -118,6 +118,7 @@ function resetUiForNewGame() {
   clearEl('inventory-list');
   setText('mind-panel', '');
   clearEl('memory-list');
+  clearEl('debug-panel');
   selectedWords = [];
   renderCommandBuilder();
   const directInput = document.getElementById('direct-text-input');
@@ -553,5 +554,41 @@ function renderMemoryList() {
     token.appendChild(controls);
     token.appendChild(remove);
     el.appendChild(token);
+  }
+}
+
+function formatDebugValue(val) {
+  if (val === undefined || val === null) return 'undefined';
+  if (typeof val === 'boolean') return val ? 'true' : 'false';
+  if (Array.isArray(val)) return `[${val.join(', ')}]`;
+  return String(val);
+}
+
+function renderDebugPanel() {
+  const el = document.getElementById('debug-panel');
+  if (!el) return;
+  while (el.firstChild) el.removeChild(el.firstChild);
+  if (!engine) return;
+
+  const vars = engine.definition.variables || {};
+  const state = engine.gameState.variables || {};
+
+  for (const [key, def] of Object.entries(vars)) {
+    if (!def.debug_variable) continue;
+    const val = state[key]?.value;
+    const row = document.createElement('div');
+    row.className = 'debug-row';
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'debug-var-name';
+    nameSpan.textContent = key;
+
+    const valueSpan = document.createElement('span');
+    valueSpan.className = 'debug-var-value';
+    valueSpan.textContent = formatDebugValue(val);
+
+    row.appendChild(nameSpan);
+    row.appendChild(valueSpan);
+    el.appendChild(row);
   }
 }

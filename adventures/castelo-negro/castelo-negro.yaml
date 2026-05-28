@@ -7,6 +7,7 @@ metadata:
   data_path: "data/"
   data_files: ["actors.yaml", "strings.yaml", "variables.yaml"]
   allow_direct_input: false
+  debug: true
 
 items:
   cottage_key:

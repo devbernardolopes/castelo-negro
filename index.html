@@ -68,6 +68,7 @@
             <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-mind" id="tab-mind" data-tab="mind">Mind</button>
             <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-inventory" id="tab-inventory" data-tab="inventory">Inventory</button>
             <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-memory" id="tab-memory" data-tab="memory">Memory</button>
+            <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-panel-debug" id="tab-debug" data-tab="debug" style="display:none;">Debug</button>
           </div>
           <div class="tabs-body">
             <div class="tab-panel" role="tabpanel" id="tab-panel-system" aria-labelledby="tab-system" style="display:none;">
@@ -86,6 +87,9 @@
             </div>
             <div class="tab-panel" role="tabpanel" id="tab-panel-memory" aria-labelledby="tab-memory" style="display:none;">
               <div id="memory-list" role="list" aria-label="Memory words"></div>
+            </div>
+            <div class="tab-panel" role="tabpanel" id="tab-panel-debug" aria-labelledby="tab-debug" style="display:none;">
+              <div id="debug-panel"></div>
             </div>
           </div>
         </div>

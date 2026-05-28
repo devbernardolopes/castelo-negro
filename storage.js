@@ -186,12 +186,14 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
     onRoomImageRender: renderRoomImage,
     onInventoryRender: renderInventoryList,
     onMindRender: renderMindPanel,
-    onMemoryRender: renderMemoryList
+    onMemoryRender: renderMemoryList,
+    onDebugRender: renderDebugPanel
   });
   setAdventureTitle(parsed?.metadata?.title || file.name);
   setMenuButtonsEnabled(true);
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
+  setDebugTabVisibility(!!parsed?.metadata?.debug);
   setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');
@@ -240,12 +242,14 @@ async function loadAdventureFromUrl(yamlUrl) {
     onRoomImageRender: renderRoomImage,
     onInventoryRender: renderInventoryList,
     onMindRender: renderMindPanel,
-    onMemoryRender: renderMemoryList
+    onMemoryRender: renderMemoryList,
+    onDebugRender: renderDebugPanel
   });
   setAdventureTitle(parsed?.metadata?.title || yamlUrl);
   setMenuButtonsEnabled(true);
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
+  setDebugTabVisibility(!!parsed?.metadata?.debug);
   setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');

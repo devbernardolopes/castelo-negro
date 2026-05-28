@@ -414,6 +414,28 @@ body {
   white-space: pre-wrap;
 }
 
+#debug-panel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.debug-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.debug-row .debug-var-name {
+  color: var(--text-muted);
+}
+
+.debug-row .debug-var-value {
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
 #inventory-list {
   list-style: none;
   font-size: 13px;

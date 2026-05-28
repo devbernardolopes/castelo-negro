@@ -37,19 +37,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem(LS_KEY_THEME) || 'default';
   document.body.setAttribute('data-theme', savedTheme);
 
-  // Sidebar tabs wiring (Mind / Inventory / Memory / etc).
+  // Sidebar tabs wiring (Mind / Inventory / Memory / Debug / etc).
   function setSidebarTab(tabName) {
     const panels = {
       system: document.getElementById('tab-panel-system'),
       mind: document.getElementById('tab-panel-mind'),
       inventory: document.getElementById('tab-panel-inventory'),
-      memory: document.getElementById('tab-panel-memory')
+      memory: document.getElementById('tab-panel-memory'),
+      debug: document.getElementById('tab-panel-debug')
     };
     const buttons = {
       system: document.getElementById('tab-system'),
       mind: document.getElementById('tab-mind'),
       inventory: document.getElementById('tab-inventory'),
-      memory: document.getElementById('tab-memory')
+      memory: document.getElementById('tab-memory'),
+      debug: document.getElementById('tab-debug')
     };
     for (const [name, panel] of Object.entries(panels)) {
       if (panel) panel.style.display = name === tabName ? 'flex' : 'none';
@@ -58,6 +60,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!btn) continue;
       btn.setAttribute('aria-selected', name === tabName ? 'true' : 'false');
       btn.tabIndex = name === tabName ? 0 : -1;
+    }
+  }
+
+  function setDebugTabVisibility(visible) {
+    const tabBtn = document.getElementById('tab-debug');
+    if (tabBtn) tabBtn.style.display = visible ? '' : 'none';
+    if (!visible) {
+      const panel = document.getElementById('tab-panel-debug');
+      if (panel) panel.style.display = 'none';
+      if (tabBtn && tabBtn.getAttribute('aria-selected') === 'true') {
+        setSidebarTab('system');
+      }
     }
   }
 
@@ -559,7 +573,8 @@ document.addEventListener('DOMContentLoaded', () => {
       onRoomImageRender: renderRoomImage,
       onInventoryRender: renderInventoryList,
       onMindRender: renderMindPanel,
-      onMemoryRender: renderMemoryList
+      onMemoryRender: renderMemoryList,
+      onDebugRender: renderDebugPanel
     });
     resetUiForNewGame();
     const textDisplay = document.getElementById('text-display');
@@ -567,6 +582,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateScrollBtnVisibility();
     const intro = engine.getText('intro');
     if (intro) appendOutput(intro);
+    setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
     engine.renderCurrentLocation();
     setMenuButtonsEnabled(true);
     setGameControlsEnabled(true);
