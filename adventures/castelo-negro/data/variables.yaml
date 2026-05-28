@@ -28,18 +28,15 @@ variables:
     value: 3
     min_value: 0
     max_value: 3
-    debug_variable: true
 
   cottage_door_open:
     type: bool
     value: false
-    debug_variable: true
     description: "If true, the front door of the cottage is open, otherwise it is closed. This variable does not determine whether the door is locked or unlocked, only whether it is currently open or closed."
 
   cottage_door_locked:
     type: bool
     value: true
-    debug_variable: true
     description: "If true, the front door of the cottage is locked and by extension closed."
 
   player_health:
@@ -47,35 +44,29 @@ variables:
     value: 10
     min_value: 0
     max_value: 10
-    debug_variable: true
 
   sanity:
     type: int
     value: 8
     min_value: 0
     max_value: 10
-    debug_variable: true
 
   has_met_hag:
     type: bool
     value: false
-    debug_variable: true
 
   time_of_day:
     type: string
     value: "night"
     possible_values: ["night", "dawn", "morning", "afternoon", "evening"]
-    debug_variable: true
 
   fed_newborn_daughter: 
     type: bool
     value: false
-    debug_variable: true
 
   entered_castle:
     type: bool
     value: false
-    debug_variable: true
 
   # ---
   # COTTAGE KEY
