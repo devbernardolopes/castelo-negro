@@ -438,7 +438,7 @@ function setModalVisible(visible) {
 
 function _markTabUpdate(tabName) {
   const btn = document.getElementById(`tab-${tabName}`);
-  if (btn && btn.getAttribute('aria-selected') !== 'true') {
+  if (btn && btn.getAttribute('aria-selected') !== 'true' && !btn.classList.contains('has-update')) {
     btn.classList.add('has-update');
   }
 }
