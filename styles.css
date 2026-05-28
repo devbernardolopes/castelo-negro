@@ -397,8 +397,8 @@ body {
 #sidebar-tabs .tab-panel {
   display: flex;
   flex-direction: column;
-  /* flex: 0; */
-  /* height: 128px; */
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 
