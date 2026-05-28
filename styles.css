@@ -366,6 +366,11 @@ body {
   letter-spacing: 0.3px;
   min-height: 28px;
   -webkit-tap-highlight-color: transparent;
+  transition: background 0.4s ease;
+}
+
+#sidebar-tabs .tab-btn.has-update {
+  background: var(--accent);
 }
 
 #sidebar-tabs .tab-btn:hover {

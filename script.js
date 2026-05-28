@@ -61,6 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.setAttribute('aria-selected', name === tabName ? 'true' : 'false');
       btn.tabIndex = name === tabName ? 0 : -1;
     }
+    const selectedBtn = buttons[tabName];
+    if (selectedBtn) selectedBtn.classList.remove('has-update');
   }
 
   document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {

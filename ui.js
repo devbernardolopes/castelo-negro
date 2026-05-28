@@ -436,6 +436,13 @@ function setModalVisible(visible) {
   el.style.display = visible ? 'flex' : 'none';
 }
 
+function _markTabUpdate(tabName) {
+  const btn = document.getElementById(`tab-${tabName}`);
+  if (btn && btn.getAttribute('aria-selected') !== 'true') {
+    btn.classList.add('has-update');
+  }
+}
+
 // --- Engine hook rendering callbacks (DOM-free engine hooks into these) ---
 
 /**
@@ -488,6 +495,7 @@ function renderInventoryList() {
     makeWordsClickable(li);
     inventoryList.appendChild(li);
   }
+  _markTabUpdate('inventory');
 }
 
 /**
@@ -505,6 +513,7 @@ function renderMindPanel() {
   if (timeOfDay !== undefined) lines.push(`Time: ${timeOfDay}`);
   lines.push(`Turn: ${turn}`);
   setText('mind-panel', lines.join('\n'));
+  _markTabUpdate('mind');
 }
 
 /**
@@ -568,6 +577,7 @@ function renderMemoryList() {
     token.appendChild(remove);
     el.appendChild(token);
   }
+  _markTabUpdate('memory');
 }
 
 function formatDebugValue(val) {
@@ -604,4 +614,5 @@ function renderDebugPanel() {
     row.appendChild(valueSpan);
     el.appendChild(row);
   }
+  _markTabUpdate('debug');
 }
