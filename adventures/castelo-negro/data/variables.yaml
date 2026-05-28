@@ -7,7 +7,6 @@ variables:
   invalid_attempt_count:
     type: int
     value: 0
-    debug_variable: true
     description: "Number of consecutive invalid actions. Resets to 0 on valid action."
 
   current_player_actor:

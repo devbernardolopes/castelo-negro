@@ -3,6 +3,7 @@
 const PROMPT_HISTORY_KEY = 'adventure_prompt_history';
 
 let selectedWords = [];
+const _tabContentKeys = {};
 let pendingWordClickTimer = null;
 let suppressPromptAddUntilTs = 0;
 let directInputMode = false;
@@ -443,6 +444,12 @@ function _markTabUpdate(tabName) {
   }
 }
 
+function _isTabContentChanged(tabName, contentKey) {
+  if (_tabContentKeys[tabName] === contentKey) return false;
+  _tabContentKeys[tabName] = contentKey;
+  return true;
+}
+
 // --- Engine hook rendering callbacks (DOM-free engine hooks into these) ---
 
 /**
@@ -469,9 +476,10 @@ function renderRoomImage(url) {
 function renderInventoryList() {
   const inventoryList = document.getElementById('inventory-list');
   if (!inventoryList) return;
+  if (!engine) return;
+  if (!_isTabContentChanged('inventory', engine.inventory.items.join(','))) return;
   while (inventoryList.firstChild) inventoryList.removeChild(inventoryList.firstChild);
 
-  if (!engine) return;
   for (const itemId of engine.inventory.items) {
     const item = engine.definition.items?.[itemId];
     const li = document.createElement('li');
@@ -503,11 +511,13 @@ function renderInventoryList() {
  */
 function renderMindPanel() {
   if (!engine) return;
-  const lines = [];
   const health = engine.gameState.variables.player_health?.value;
   const sanity = engine.gameState.variables.sanity?.value;
   const timeOfDay = engine.gameState.variables.time_of_day?.value;
   const turn = engine.gameState.game_turn;
+  const key = `${health ?? ''}|${sanity ?? ''}|${timeOfDay ?? ''}|${turn}`;
+  if (!_isTabContentChanged('mind', key)) return;
+  const lines = [];
   if (health !== undefined) lines.push(`Health: ${health}`);
   if (sanity !== undefined) lines.push(`Sanity: ${sanity}`);
   if (timeOfDay !== undefined) lines.push(`Time: ${timeOfDay}`);
@@ -522,10 +532,10 @@ function renderMindPanel() {
 function renderMemoryList() {
   const el = document.getElementById('memory-list');
   if (!el) return;
-  while (el.firstChild) el.removeChild(el.firstChild);
-
   if (!engine) return;
   const words = engine._getMemoryWords();
+  if (!_isTabContentChanged('memory', words.join(','))) return;
+  while (el.firstChild) el.removeChild(el.firstChild);
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
     const token = document.createElement('div');
@@ -590,21 +600,26 @@ function formatDebugValue(val) {
 function renderDebugPanel() {
   const el = document.getElementById('debug-panel');
   if (!el) return;
-  while (el.firstChild) el.removeChild(el.firstChild);
   if (!engine) return;
 
   const vars = engine.definition.variables || {};
   const state = engine.gameState.variables || {};
+  const key = Object.entries(vars)
+    .filter(([, def]) => def.debug_variable)
+    .map(([k]) => `${k}:${state[k]?.value}`)
+    .join('|');
+  if (!_isTabContentChanged('debug', key)) return;
+  while (el.firstChild) el.removeChild(el.firstChild);
 
-  for (const [key, def] of Object.entries(vars)) {
+  for (const [varName, def] of Object.entries(vars)) {
     if (!def.debug_variable) continue;
-    const val = state[key]?.value;
+    const val = state[varName]?.value;
     const row = document.createElement('div');
     row.className = 'debug-row';
 
     const nameSpan = document.createElement('span');
     nameSpan.className = 'debug-var-name';
-    nameSpan.textContent = key;
+    nameSpan.textContent = varName;
 
     const valueSpan = document.createElement('span');
     valueSpan.className = 'debug-var-value';
