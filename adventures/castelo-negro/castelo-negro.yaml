@@ -671,25 +671,22 @@ actions:
 
     # Failure branches - evaluated in order, first match wins
     conditional_messages:
-      - condition: "!here.has('{object}')"
-        message:
-          en: "There's no {object_name} here."
-          pt-br: "Não há {object_name} aqui."
-      
-      - condition: "!items.takeable('{object}')"
-        message:
-          en: "You can't take the {object_name}."
-          pt-br: "Você não pode pegar o {object_name}."
-      
-      - condition: "inventory.length >= inventory.max_capacity"
-        message:
-          en: "You can't carry any more items."
-          pt-br: "Você não pode carregar mais itens."
-
       - condition: "inventory.has('{object}')"
         message:
           en: "You already have the {object_name}."
           pt-br: "Você já tem o {object_name}."
+      - condition: "!here.has('{object}')"
+        message:
+          en: "There's no {object_name} here."
+          pt-br: "Não há {object_name} aqui."
+      - condition: "!items.takeable('{object}')"
+        message:
+          en: "You can't take the {object_name}."
+          pt-br: "Você não pode pegar o {object_name}."
+      - condition: "inventory.length >= inventory.max_capacity"
+        message:
+          en: "You can't carry any more items."
+          pt-br: "Você não pode carregar mais itens."
 
   fallback_generic:
     message_pool:
