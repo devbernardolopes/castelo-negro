@@ -1110,10 +1110,10 @@ body {
   #sidebar-tabs .tabs-body {
     flex: none;
     height: 256px;
+    overflow-y: auto;
   }
 
   #sidebar-tabs .tab-panel {
-    flex: 1;
-    min-height: 0;
+    overflow-y: visible;
   }
 }
