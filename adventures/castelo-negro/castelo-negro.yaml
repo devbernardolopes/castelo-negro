@@ -5,7 +5,7 @@ metadata:
   default_language: en
   assets_path: "assets/"
   data_path: "data/"
-  data_files: ["actors.yaml", "strings.yaml", "variables.yaml"]
+  data_files: ["actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml"]
   allow_direct_input: false
   debug: true
 
