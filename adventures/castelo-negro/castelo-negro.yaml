@@ -4,105 +4,8 @@ metadata:
   languages: [en, pt-br]
   default_language: en
   assets_path: "assets/"
-
-variables:
-  game_turn:
-    type: int
-    value: 0
-    description: "Increments every player action"
-
-  invalid_attempt_count:
-    type: int
-    value: 0
-    description: "Number of consecutive invalid actions. Resets to 0 on valid action."
-
-  current_player_actor:
-    type: object
-    value: [protagonist]
-
-  protagonist_memory:
-    type: list
-    value: ["look", "take", "examine", "open", "unlock", "feed", "give", "go", "roll", "close", "lock", "use", "drop", "husband", "baby", "south", "door", "north"]
-
-  protagonist_memory_max_capacity:
-    type: int
-    value: 100
-    min_value: 0
-
-  newborn_daughter_health:
-    type: int
-    value: 3
-    min_value: 0
-    max_value: 3
-
-  cottage_door_open:
-    type: bool
-    value: false
-    description: "If true, the front door of the cottage is open, otherwise it is closed. This variable does not determine whether the door is locked or unlocked, only whether it is currently open or closed."
-
-  cottage_door_locked:
-    type: bool
-    value: true
-    description: "If true, the front door of the cottage is locked and by extension closed."
-
-  player_health:
-    type: int
-    value: 10
-    min_value: 0
-    max_value: 10
-
-  sanity:
-    type: int
-    value: 8
-    min_value: 0
-    max_value: 10
-
-  has_met_hag:
-    type: bool
-    value: false
-
-  time_of_day:
-    type: string
-    value: "night"
-    possible_values: ["night", "dawn", "morning", "afternoon", "evening"]
-
-  fed_newborn_daughter: 
-    type: bool
-    value: false
-
-  entered_castle:
-    type: bool
-    value: false
-
-  # ---
-  # COTTAGE KEY
-  # ---
-  cottage_key_discovery_stage:
-    type: int
-    value: 0
-    description: "0=unknown, 1=husband_dead, 2=suspected_on_body, 3=belt_spotted, 4=belt_accessible, 5=key_obtained"
-    min_value: 0
-    max_value: 5
-
-  husband_corpse_inspected_count:
-    type: int
-    value: 0
-    description: "How many times the player has examined the corpse"
-
-  husband_corpse_rolled:
-    type: bool
-    value: false
-    description: "Whether the player has rolled/flipped the corpse to access the belt back"
-
-  husband_belt_visible:
-    type: bool
-    value: false
-    description: "Whether the belt is visible to the player"
-
-  cottage_door_unlock_attempted:
-    type: bool
-    value: false
-    description: "True if player has tried to leave via locked door at least once"
+  data_path: "data/"
+  data_files: ["actors.yaml", "strings.yaml", "variables.yaml"]
 
 items:
   cottage_key:
@@ -319,28 +222,6 @@ locations:
     contents: [old_hag]
     exits: {}
     images: ["images/locations/tti-2026-05-21T23-57-11-633718448.png"]
-
-actors:
-  protagonist:
-    name: { en: "You", pt-br: "Você" }
-    playable: true
-    starting_location: cottage_living_room
-    inventory: []
-    max_capacity: 4
-    memory:
-      words_variable: protagonist_memory
-      max_capacity_variable: protagonist_memory_max_capacity
-
-  old_hag:
-    name: { en: "Old Hag", pt-br: "Velha Bruxa" }
-    playable: false
-    starting_location: black_castle_ensuite
-    inventory: []
-    max_capacity: 4
-    dialogue:
-      default:
-        en: "Hehehe... what a delicious little family you have..."
-        pt-br: "Hehehe... que família deliciosa você tem..."
 
 events:
   - id: door_unlock_hint_level_1
@@ -825,42 +706,3 @@ actions:
     # Track repeated failures for adaptive messaging
     effect:
       - "invalid_attempt_count += 1"
-
-strings:
-  intro:
-    en: |
-      Too weak... starving...
-      	
-      You can't [take] it anymore. Your body starts to [give] out.
-
-      You [drop] to your knees, clutching your crying daughter.
-      
-      You collapse.
-      
-      ...
-      
-      You wake up.
-      
-      Not dead. Not yet.
-
-      You look around...
-    pt-br: |
-      Muito fraca... morrendo de fome...
-
-      Você não aguenta mais. Seu corpo começa a falhar.
-
-      Você [pega] sua filha chorando e se agarra a ela.
-      
-      Você desaba.
-      
-      ...
-      
-      Você acorda.
-
-      Não morta. Ainda não.
-
-      Você olha ao redor...
-      
-  death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
-  
-  death_player: { en: "You collapse from exhaustion and despair.", pt-br: "Você desaba de exaustão e desespero." }

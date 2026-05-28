@@ -108,10 +108,70 @@ function makeAssetsResolver(dirHandle, assetsPath) {
   };
 }
 
+// -------------------------------------------------------
+// Data file loading & merging (supports data_path in metadata)
+// -------------------------------------------------------
+
+function mergeDataFiles(main, dataParsedList) {
+  for (const dataParsed of dataParsedList) {
+    if (!dataParsed || typeof dataParsed !== 'object') continue;
+    for (const [key, value] of Object.entries(dataParsed)) {
+      if (!(key in main)) {
+        main[key] = value;
+      }
+    }
+  }
+}
+
+async function loadDataFilesFromDir(dirHandle, dataPath) {
+  const parts = splitPath(dataPath);
+  let cur = dirHandle;
+  for (const part of parts) {
+    cur = await cur.getDirectoryHandle(part, { create: false });
+  }
+  const results = [];
+  for await (const entry of cur.values()) {
+    if (entry.kind === 'file' && entry.name.endsWith('.yaml')) {
+      const file = await entry.getFile();
+      const text = await file.text();
+      results.push(parseYaml(text));
+    }
+  }
+  return results;
+}
+
+async function loadDataFilesFromUrl(baseUrl, dataPath, dataFiles) {
+  if (!dataFiles || !dataFiles.length) return [];
+  const results = [];
+  for (const fileName of dataFiles) {
+    const url = new URL(joinPath(dataPath, fileName), baseUrl).toString();
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.warn(`[storage] Failed to load data file: ${url}`);
+      continue;
+    }
+    const text = await res.text();
+    results.push(parseYaml(text));
+  }
+  return results;
+}
+
+// -------------------------------------------------------
+
 async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets) {
   clearPromptHistory();
   const yamlText = await file.text();
   const parsed = parseYaml(yamlText);
+
+  const dataPath = parsed?.metadata?.data_path;
+  if (dataPath && dirHandleForAssets) {
+    try {
+      const dataParsedList = await loadDataFilesFromDir(dirHandleForAssets, dataPath);
+      mergeDataFiles(parsed, dataParsedList);
+    } catch (err) {
+      console.warn('[storage] Failed to load data files:', err);
+    }
+  }
 
   const assetsPath = String(parsed?.metadata?.assets_path || 'assets/');
   const assetsResolver = dirHandleForAssets ? makeAssetsResolver(dirHandleForAssets, assetsPath) : null;
@@ -157,6 +217,17 @@ async function loadAdventureFromUrl(yamlUrl) {
   const parsed = parseYaml(yamlText);
 
   const yamlBaseUrl = new URL('./', absoluteYamlUrl).toString();
+  const dataPath = parsed?.metadata?.data_path;
+  const dataFiles = parsed?.metadata?.data_files;
+  if (dataPath && dataFiles) {
+    try {
+      const dataParsedList = await loadDataFilesFromUrl(yamlBaseUrl, dataPath, dataFiles);
+      mergeDataFiles(parsed, dataParsedList);
+    } catch (err) {
+      console.warn('[storage] Failed to load data files from URL:', err);
+    }
+  }
+
   const assetsBaseUrl = new URL(String(parsed?.metadata?.assets_path || 'assets/'), yamlBaseUrl).toString();
   const assetsResolver = async (relativePath) => new URL(String(relativePath || ''), assetsBaseUrl).toString();
 

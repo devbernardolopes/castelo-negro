@@ -1,0 +1,38 @@
+strings:
+  intro:
+    en: |
+      Too weak... starving...
+      	
+      You can't [take] it anymore. Your body starts to [give] out.
+
+      You [drop] to your knees, clutching your crying daughter.
+      
+      You collapse.
+      
+      ...
+      
+      You wake up.
+      
+      Not dead. Not yet.
+
+      You look around...
+    pt-br: |
+      Muito fraca... morrendo de fome...
+
+      Você não aguenta mais. Seu corpo começa a falhar.
+
+      Você [pega] sua filha chorando e se agarra a ela.
+      
+      Você desaba.
+      
+      ...
+      
+      Você acorda.
+
+      Não morta. Ainda não.
+
+      Você olha ao redor...
+      
+  death_baby: { en: "Your daughter stopped breathing...", pt-br: "Sua filha parou de respirar..." }
+  
+  death_player: { en: "You collapse from exhaustion and despair.", pt-br: "Você desaba de exaustão e desespero." }
