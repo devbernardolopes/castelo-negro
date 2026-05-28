@@ -204,6 +204,13 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     return null;
   }
 
+  skipStops();
+  if (i < tokens.length) {
+    for (let j = i; j < tokens.length; j++) {
+      if (this._verbsIndex.has(tokens[j])) return null;
+    }
+  }
+
   return out;
 };
 
