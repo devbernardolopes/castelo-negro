@@ -129,6 +129,7 @@ function setAdventureTitle(title) {
 function resetUiForNewGame() {
   _outputQueue = [];
   _isPausedForSend = false;
+  for (const k of Object.keys(_tabContentKeys)) delete _tabContentKeys[k];
   clearEl('inventory-list');
   setText('mind-panel', '');
   clearEl('memory-list');
@@ -445,6 +446,10 @@ function _markTabUpdate(tabName) {
 }
 
 function _isTabContentChanged(tabName, contentKey) {
+  if (_tabContentKeys[tabName] === undefined) {
+    _tabContentKeys[tabName] = contentKey;
+    return false;
+  }
   if (_tabContentKeys[tabName] === contentKey) return false;
   _tabContentKeys[tabName] = contentKey;
   return true;
