@@ -36,6 +36,7 @@ items:
 
   husband_belt:
     name: { en: "Husband's Belt", pt-br: "Cinto do Esposo" }
+    synonyms: { en: ["belt", "husband's belt"], pt-br: ["cinto", "cinto do marido"] }
     takeable: false
     contents: [cottage_key]
     description: { en: "The belt of your husband, worn and torn.", pt-br: "O cinto do seu marido, desgastado e rasgado." }
@@ -347,52 +348,6 @@ end_conditions:
       message:
         en: "You flee into the night with your daughter. Survival is uncertain, but you are free."
         pt-br: "Você foge noite adentro com sua filha. A sobrevivência é incerta, mas vocês estão livres."
-
-verbs:
-  take:
-    synonyms: { en: ["take", "pick up", "grab"], pt-br: ["pegar", "apanhar"] }
-  give:
-    synonyms: { en: ["give", "feed", "hand"], pt-br: ["dar", "alimentar"] }
-  examine:
-    synonyms: { en: ["examine", "look at", "inspect", "look"], pt-br: ["examinar", "olhar"] }
-  drop:
-    synonyms: { en: ["drop", "put down"], pt-br: ["soltar", "colocar"] }
-  use:
-    synonyms: { en: ["use"], pt-br: ["usar"] }
-  unlock:
-    synonyms: { en: ["unlock"], pt-br: ["destrancar"] }
-  lock:
-    synonyms: { en: ["lock"], pt-br: ["trancar"] }
-  open:
-    synonyms: { en: ["open"], pt-br: ["abrir"] }
-  close:
-    synonyms: { en: ["close"], pt-br: ["fechar"] }
-  roll:
-    synonyms: { en: ["roll", "flip", "turn"], pt-br: ["virar", "girar"] }
-  go:
-    synonyms: { en: ["go", "walk", "move"], pt-br: ["ir", "andar", "mover"] }
-
-directions:
-  north:
-    synonyms: { en: ["north", "n", "forward"], pt-br: ["norte", "n", "frente"] }
-  northeast:
-    synonyms: { en: ["northeast", "ne"], pt-br: ["nordeste", "ne"] }
-  northwest:
-    synonyms: { en: ["northwest", "nw"], pt-br: ["noroeste", "nw"] }
-  south:
-    synonyms: { en: ["south", "s", "backward"], pt-br: ["sul", "s", "trás"] }
-  southeast:
-    synonyms: { en: ["southeast", "se"], pt-br: ["sudeste", "se"] }
-  southwest:
-    synonyms: { en: ["southwest", "sw"], pt-br: ["sudoeste", "sw"] }
-  east:
-    synonyms: { en: ["east", "e", "right"], pt-br: ["leste", "e", "direita"] }
-  west:
-    synonyms: { en: ["west", "w", "left"], pt-br: ["oeste", "o", "esquerda"] }
-  up:
-    synonyms: { en: ["up", "u"], pt-br: ["cima", "c"] }
-  down:
-    synonyms: { en: ["down", "d"], pt-br: ["baixo", "b"] }
 
 actions:
   examine_husband_corpse:
