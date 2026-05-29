@@ -43,6 +43,7 @@ events:
     conditions:
       - "here.has('cottage_front_door')"
       - "cottage_key_discovery_stage >= 3"
+      - "cottage_door_locked == true"
     message:
       en: "The door is locked. You have to find the key."
       pt-br: "A porta está trancada. Você precisa encontrar a chave."
