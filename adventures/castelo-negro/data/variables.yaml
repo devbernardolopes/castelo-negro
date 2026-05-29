@@ -70,6 +70,12 @@ variables:
   reached_cottage_porch:
     type: bool
     value: false
+    debug_variable: true
+
+  stream_crossed:
+    type: bool
+    value: false
+    debug_variable: true
 
   # ---
   # COTTAGE KEY

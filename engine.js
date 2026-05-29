@@ -733,7 +733,12 @@ class GameEngine {
         if (ev.trigger_when && this.evaluateCondition(String(ev.trigger_when))) this._executeEvent(ev);
       }
       if (ev.type === 'location_enter') {
-        if (action?.kind === 'move' && String(ev.location) === this.gameState.current_location) this._executeEvent(ev);
+        const targetLoc = action?.location || this.gameState.current_location;
+        const entered = String(ev.location) === targetLoc;
+        if (action?.kind === 'move' && entered) {
+          console.log('[events] location_enter triggered:', ev.id, 'at', targetLoc);
+          this._executeEvent(ev);
+        }
       }
       if (ev.trigger_on) {
         if (ev.trigger_on === action?.kind) {

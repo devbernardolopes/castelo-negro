@@ -78,8 +78,17 @@ locations:
       base: { en: "Wilted crops sway in the cold wind.", pt-br: "Culturas murchas balançam ao vento frio." }
     exits:
       south: path_to_crop_fields
-      north: frozen_stream
+      north: path_to_black_castle_01
     images: ["images/locations/tti-2026-05-21T21-40-35-613533080.png"]
+
+  path_to_black_castle_01:
+    name: { en: "Path to Black Castle", pt-br: "Caminho para o Castelo Negro" }
+    description:
+      base: { en: "A dark, ominous black castle lies far away atop the hill.", pt-br: "Um castelo negro, escuro e ameaçador, ergue-se ao longe, no alto da colina." }
+    exits:
+      north: frozen_stream
+      south: crop_fields
+    images: ["images/locations/tti-2026-05-26T01-42-37-213623111.png"]
 
   frozen_stream:
     name: { en: "Frozen Stream", pt-br: "Córrego Congelado" }
@@ -95,9 +104,9 @@ locations:
           O gelo estala fracamente sob o peso do vento. Cruzar aqui é arriscado.
     contents: [stream_ice]
     exits:
-      south: crop_fields
+      south: path_to_black_castle_01
       north: 
-        location: path_to_black_castle_01
+        location: path_to_black_castle_02
         conditions:
           - if: "stream_crossed"
             allow: true
@@ -107,22 +116,14 @@ locations:
               en: "The ice looks too thin to cross safely. You need to find another way."
               pt-br: "O gelo parece muito fino para cruzar com segurança. Você precisa encontrar outro caminho."
     images: ["images/locations/tti-2026-05-29T19-29-01-95057104.png"]
-
-  path_to_black_castle_01:
-    name: { en: "Path to Black Castle", pt-br: "Caminho para o Castelo Negro" }
-    description:
-      base: { en: "A dark, ominous black castle lies far away atop the hill.", pt-br: "Um castelo negro, escuro e ameaçador, ergue-se ao longe, no alto da colina." }
-    exits:
-      north: path_to_black_castle_02
-    images: ["images/locations/tti-2026-05-26T01-42-37-213623111.png"]
-
+  
   path_to_black_castle_02:
     name: { en: "Path to Black Castle", pt-br: "Caminho para o Castelo Negro" }
     description:
       base: { en: "A dark, ominous black castle lies ahead atop the hill.", pt-br: "Um castelo negro, escuro e ameaçador, ergue-se à frente, no alto da colina." }
     exits:
       north: black_castle
-      south: path_to_black_castle_01
+      south: frozen_stream
     images: ["images/locations/tti-2026-05-26T01-41-10-36840184.png"]
 
   black_castle:
