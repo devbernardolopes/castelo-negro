@@ -161,6 +161,7 @@ actions:
     pattern:
       - verb: ["lock"]
       - object: ["cottage_key"]
+        optional: true
       - target: ["cottage_front_door"]
     conditions:
       - "here.has('cottage_front_door')"
@@ -169,9 +170,29 @@ actions:
     effect:
       - "cottage_door_locked = true"
     message:
-      en: "You lock the front door."
-      pt-br: "Você tranca a porta da frente."
+      en: |
+        You lock the front door.
+      pt-br: |
+        Você tranca a porta da frente.
+    conditional_messages:
+      - condition: "!here.has('cottage_front_door')"
+        message:
+          en: "There's no door here."
+          pt-br: "Não há porta aqui."
+      - condition: "cottage_door_locked"
+        message:
+          en: "The door is already locked."
+          pt-br: "A porta já está trancada."
+      - condition: "!inventory.has('cottage_key')"
+        message:
+          en: "You need a key to lock the door."
+          pt-br: "Você precisa de uma chave para trancar a porta."
+      - condition: "cottage_door_open"
+        message:
+          en: "You can't lock the door while it's open. You need to close it first."
+          pt-br: "Você não pode trancar a porta enquanto ela está aberta. Você precisa fechá-la primeiro."
 
+  
   open_cottage_front_door:
     pattern:
       - verb: ["open"]

@@ -14,7 +14,7 @@ items:
 
   hand_sickle:
     name: { en: "Hand Sickle", pt-br: "Foice de Mão" }
-    synonyms: { en: ["sickle", "reap hook", "reaping hook"], pt-br: ["foice"] }
+    synonyms: { en: ["sickle", "reap hook", "reaping hook"], pt-br: ["foice", "foice de mão"] }
     takeable: true
     images: ["images/items/tti-2026-05-23T23-37-55-654889641.png"]
     description: { en: "A worn, curved sickle.", pt-br: "Uma foice desgastada e curvada." }
