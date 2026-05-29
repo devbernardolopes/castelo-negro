@@ -3,12 +3,17 @@ let fileInput;
 
 const DIRECTION_MAP = { up: 'north', down: 'south', left: 'west', right: 'east' };
 const LS_KEY_THEME = 'adventure_theme';
+const LS_KEY_FONT_FAMILY = 'adventure_font_family';
+const LS_KEY_FONT_SIZE = 'adventure_font_size';
 
 const THEMES = [
   { id: 'default', name: { en: 'Dark', 'pt-br': 'Escuro' }, colors: ['#000000', '#1a1a1a', '#341db6', '#e0e0e0'] },
   { id: 'light', name: { en: 'Light', 'pt-br': 'Claro' }, colors: ['#ffffff', '#f0f0f0', '#2563eb', '#1a1a1a'] },
   { id: 'terminal', name: { en: 'Terminal', 'pt-br': 'Terminal' }, colors: ['#0c0c0c', '#111111', '#00ff41', '#00ff41'] },
-  { id: 'sepia', name: { en: 'Sepia', 'pt-br': 'Sépia' }, colors: ['#f4ecd8', '#e8dcc8', '#8b4513', '#3b2f1e'] }
+  { id: 'sepia', name: { en: 'Sepia', 'pt-br': 'Sépia' }, colors: ['#f4ecd8', '#e8dcc8', '#8b4513', '#3b2f1e'] },
+  { id: 'high-contrast', name: { en: 'High Contrast', 'pt-br': 'Alto Contraste' }, colors: ['#000000', '#000000', '#ffff00', '#ffffff'] },
+  { id: 'black-white', name: { en: 'Black & White', 'pt-br': 'Preto e Branco' }, colors: ['#000000', '#111111', '#ffffff', '#ffffff'] },
+  { id: 'pastel', name: { en: 'Pastel', 'pt-br': 'Pastel' }, colors: ['#fef9f0', '#fdf6e3', '#a8d8ea', '#5d4e37'] }
 ];
 
 document.addEventListener('click', (e) => {
@@ -36,6 +41,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Apply saved theme
   const savedTheme = localStorage.getItem(LS_KEY_THEME) || 'default';
   document.body.setAttribute('data-theme', savedTheme);
+
+  // Apply saved font family & size
+  const FONT_SIZE_MAP = ['small', 'regular', 'large', 'larger'];
+  const savedFontFamily = localStorage.getItem(LS_KEY_FONT_FAMILY) || "'Courier New', Courier, monospace";
+  const savedFontSize = localStorage.getItem(LS_KEY_FONT_SIZE) || '1';
+  const textDisplayEl = document.getElementById('text-display');
+  if (textDisplayEl) {
+    textDisplayEl.style.fontFamily = savedFontFamily;
+    textDisplayEl.setAttribute('data-font-size', FONT_SIZE_MAP[parseInt(savedFontSize)] || 'regular');
+  }
 
   // Sidebar tabs wiring (Mind / Inventory / Memory / Debug / etc).
   function setSidebarTab(tabName) {
@@ -552,6 +567,31 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('theme-modal-backdrop')?.addEventListener('click', (e) => {
     if (e.target?.id === 'theme-modal-backdrop') setThemeModalVisible(false);
   });
+
+  // Font controls wiring
+  const fontFamilySelect = document.getElementById('font-family-select');
+  const fontSizeSlider = document.getElementById('font-size-slider');
+
+  if (fontFamilySelect) {
+    fontFamilySelect.value = savedFontFamily;
+    fontFamilySelect.addEventListener('change', () => {
+      const val = fontFamilySelect.value;
+      const td = document.getElementById('text-display');
+      if (td) td.style.fontFamily = val;
+      localStorage.setItem(LS_KEY_FONT_FAMILY, val);
+    });
+  }
+
+  if (fontSizeSlider) {
+    fontSizeSlider.value = savedFontSize;
+    fontSizeSlider.addEventListener('input', () => {
+      const val = parseInt(fontSizeSlider.value);
+      const label = FONT_SIZE_MAP[val] || 'regular';
+      const td = document.getElementById('text-display');
+      if (td) td.setAttribute('data-font-size', label);
+      localStorage.setItem(LS_KEY_FONT_SIZE, String(val));
+    });
+  }
 
   document.getElementById('menu-btn-reset-game')?.addEventListener('click', () => {
     if (!engine) return;
