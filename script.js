@@ -581,6 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const textDisplay = document.getElementById('text-display');
     if (textDisplay) textDisplay.innerHTML = '';
     updateScrollBtnVisibility();
+    appendGameMetadata(engine?.definition?.metadata);
     const intro = engine.getText('intro');
     if (intro) appendOutput(intro);
     engine.renderCurrentLocation();

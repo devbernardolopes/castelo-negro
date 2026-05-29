@@ -202,6 +202,7 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');
   if (textDisplay) textDisplay.innerHTML = '';
+  appendGameMetadata(parsed?.metadata);
   const intro = engine.getText('intro');
   if (intro) appendOutput(intro);
   engine.renderCurrentLocation();
@@ -254,6 +255,7 @@ async function loadAdventureFromUrl(yamlUrl) {
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');
   if (textDisplay) textDisplay.innerHTML = '';
+  appendGameMetadata(parsed?.metadata);
   const intro = engine.getText('intro');
   if (intro) appendOutput(intro);
   engine.renderCurrentLocation();

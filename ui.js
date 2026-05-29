@@ -165,6 +165,15 @@ function resetUiForNewGame() {
   }
 }
 
+function appendGameMetadata(metadata) {
+  if (!metadata) return;
+  const lines = [];
+  if (metadata.title) lines.push(metadata.title);
+  if (metadata.author) lines.push(`by ${metadata.author}`);
+  if (metadata.version) lines.push(`version ${metadata.version}`);
+  if (lines.length) appendOutput(lines.join('\n'));
+}
+
 function setDirectInputMode(enabled) {
   directInputMode = !!enabled;
   const input = document.getElementById('direct-text-input');
