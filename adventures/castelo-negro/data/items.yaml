@@ -97,15 +97,21 @@ items:
     takeable: false
     description: { en: "The sturdy front door of your cottage.", pt-br: "A porta da frente do seu chalé." }
 
+  cottage_living_room_walls:
+    name: { en: "Living Room Walls", pt-br: "Paredes da Sala de Estar" }
+    synonyms: { en: ["wooden walls", "wooden wall", "living room walls", "walls", "wall", "living room wall", "room walls", "room wall"], pt-br: ["paredes de madeira", "parede de madeira", "paredes da sala de estar", "paredes", "parede", "parede da sala de estar", "paredes da sala", "parede da sala"] }
+    takeable: false
+    description: { en: "The wooden walls of the living room.", pt-br: "As paredes de madeira da sala de estar." }
+
   cottage_living_room_left_window:
     name: { en: "Living Room Left Window", pt-br: "Janela Esquerda da Sala de Estar" }
-    synonyms: { en: ["living room left window", "left window", "window"], pt-br: ["janela esquerda da sala de estar", "janela esquerda", "janela"] }
+    synonyms: { en: ["living room left window", "left window", "window", "windows"], pt-br: ["janela esquerda da sala de estar", "janela esquerda", "janela", "janelas"] }
     takeable: false
     description: { en: "A small window on the left side of the living room.", pt-br: "Uma pequena janela no lado esquerdo da sala de estar." }
 
   cottage_living_room_right_window:
     name: { en: "Living Room Right Window", pt-br: "Janela Direita da Sala de Estar" }
-    synonyms: { en: ["living room right window", "right window", "window"], pt-br: ["janela direita da sala de estar", "janela direita", "janela"] }
+    synonyms: { en: ["living room right window", "right window", "window", "windows"], pt-br: ["janela direita da sala de estar", "janela direita", "janela", "janelas"] }
     takeable: false
     description: { en: "A small window on the right side of the living room.", pt-br: "Uma pequena janela no lado direito da sala de estar." }
 
