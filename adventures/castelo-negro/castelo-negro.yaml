@@ -33,17 +33,21 @@ items:
     contents_visibility:
       husband_belt:
         visible_when: "husband_belt_visible"
-
+  
   husband_belt:
     name: { en: "Husband's Belt", pt-br: "Cinto do Esposo" }
     synonyms: { en: ["belt", "husband's belt"], pt-br: ["cinto", "cinto do marido"] }
     takeable: false
     contents: [cottage_key]
-    description: { en: "The belt of your husband, worn and torn.", pt-br: "O cinto do seu marido, desgastado e rasgado." }
+    description: 
+      base: { en: "The belt of your husband, worn and torn.", pt-br: "O cinto do seu marido, desgastado e rasgado." }
+      conditions:
+        - if: "husband_corpse_rolled"
+          message: { en: "You see a tarnished brass key tied to the back of the belt.", pt-br: "Você vê uma chave de latão oxidada amarrada na parte de trás do cinto." }
     contents_visibility:
       cottage_key:
-        visible_when: "husband_corpse_rolled"
-  
+        visible_when: "husband_corpse_rolled and husband_belt_visible"
+
   newborn_daughter:
     name: { en: "Newborn Daughter", pt-br: "Filha Recém-Nascida" }
     synonyms: { en: ["baby", "daughter", "infant", "newborn"], pt-br: ["bebê", "filha", "criança", "recém-nascida"] }
@@ -433,6 +437,7 @@ actions:
       - "!husband_corpse_rolled"
     effect:
       - "husband_corpse_rolled = true"
+      - "husband_belt_visible = true"
       - "cottage_key_discovery_stage = 4"
     message:
       en: |
@@ -453,6 +458,27 @@ actions:
           en: "The body is already rolled over."
           pt-br: "O corpo já está virado."
   
+  take_cottage_key_from_belt:
+    pattern:
+      - verb: ["take", "grab", "get"]
+      - object: ["cottage_key", "key", "brass key"]
+    conditions:
+      - "here.has('husband_corpse')"
+      - "husband_corpse_rolled"
+      - "husband_belt_visible"
+      - "!inventory.has('cottage_key')"
+    effect:
+      - "inventory.add('cottage_key')"
+      - "cottage_key_discovery_stage = 5"
+    message:
+      en: "You carefully untie the tarnished brass key from your husband's belt."
+      pt-br: "Você cuidadosamente desamarra a chave de latão oxidada do cinto do seu marido."
+    conditional_messages:
+      - condition: "inventory.has('cottage_key')"
+        message: { en: "You already have the key.", pt-br: "Você já tem a chave." }
+      - condition: "!husband_corpse_rolled"
+        message: { en: "The key is hidden behind the body. You need to move him first.", pt-br: "A chave está escondida atrás do corpo. Você precisa movê-lo primeiro." }
+
   unlock_cottage_front_door:
     pattern:
       - verb: ["unlock"]
@@ -466,8 +492,8 @@ actions:
     effect:
       - "cottage_door_locked = false"
     message:
-      en: "You unlock the front door."
-      pt-br: "Você destranca a porta da frente."
+      en: "The key turns with a satisfying click. You unlock the front door."
+      pt-br: "A chave vira com um clique satisfatório. Você destranca a porta da frente."
     # Failure branches - evaluated in order, first match wins
     conditional_messages:
       - condition: "!here.has('cottage_front_door')"
@@ -476,8 +502,8 @@ actions:
           pt-br: "Não há porta aqui."
       - condition: "!inventory.has('cottage_key')"
         message:
-          en: "You don't have a key."
-          pt-br: "Você não tem uma chave."
+          en: "You need a key to unlock the door."
+          pt-br: "Você precisa de uma chave para destrancar a porta."
       - condition: "!cottage_door_locked"
         message:
           en: "The door is already unlocked."
