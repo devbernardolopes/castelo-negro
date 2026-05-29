@@ -1,35 +1,35 @@
-end_conditions:
-  lose:
-    - id: newborn_daughter_dead
-      condition: "newborn_daughter_health <= 0"
-      message:
-        en: "Your daughter has died in your arms. Overwhelmed by grief, you lose all will to continue..."
-        pt-br: "Sua filha morreu em seus braços. Dominado pela dor, você perde toda a vontade de continuar..."
-      final_image: "death_newborn_daughter.png"
+# end_conditions:
+#   lose:
+#     - id: newborn_daughter_dead
+#       condition: "newborn_daughter_health <= 0"
+#       message:
+#         en: "Your daughter has died in your arms. Overwhelmed by grief, you lose all will to continue..."
+#         pt-br: "Sua filha morreu em seus braços. Dominado pela dor, você perde toda a vontade de continuar..."
+#       final_image: "death_newborn_daughter.png"
 
-    - id: player_dead
-      condition: "player_health <= 0 or sanity <= 0"
-      message:
-        en: "Darkness takes you. You collapse, never to wake again."
-        pt-br: "A escuridão te toma. Você desaba, sem nunca mais acordar."
-      final_image: "death_player.png"
+#     - id: player_dead
+#       condition: "player_health <= 0 or sanity <= 0"
+#       message:
+#         en: "Darkness takes you. You collapse, never to wake again."
+#         pt-br: "A escuridão te toma. Você desaba, sem nunca mais acordar."
+#       final_image: "death_player.png"
 
-    - id: starvation
-      condition: "game_turn >= 30 and player_health <= 3"
-      message:
-        en: "Hunger and despair finally consume you."
-        pt-br: "Fome e desespero finalmente te consomem."
+#     - id: starvation
+#       condition: "game_turn >= 30 and player_health <= 3"
+#       message:
+#         en: "Hunger and despair finally consume you."
+#         pt-br: "Fome e desespero finalmente te consomem."
 
-  win:
-    - id: reach_sanctuary
-      condition: "current_location == 'black_castle_ensuite' and newborn_daughter_health >= 2 and has_met_hag"
-      message:
-        en: "The hag reveals a hidden ritual that saves your daughter... at a terrible cost."
-        pt-br: "A bruxa revela um ritual oculto que salva sua filha... a um custo terrível."
-      final_image: "ending_true.png"
+#   win:
+#     - id: reach_sanctuary
+#       condition: "current_location == 'black_castle_ensuite' and newborn_daughter_health >= 2 and has_met_hag"
+#       message:
+#         en: "The hag reveals a hidden ritual that saves your daughter... at a terrible cost."
+#         pt-br: "A bruxa revela um ritual oculto que salva sua filha... a um custo terrível."
+#       final_image: "ending_true.png"
 
-    - id: escape_with_baby
-      condition: "current_location == 'crop_fields' and inventory.has(newborn_daughter) and newborn_daughter_health >= 1"
-      message:
-        en: "You flee into the night with your daughter. Survival is uncertain, but you are free."
-        pt-br: "Você foge noite adentro com sua filha. A sobrevivência é incerta, mas vocês estão livres."
+#     - id: escape_with_baby
+#       condition: "current_location == 'crop_fields' and inventory.has(newborn_daughter) and newborn_daughter_health >= 1"
+#       message:
+#         en: "You flee into the night with your daughter. Survival is uncertain, but you are free."
+#         pt-br: "Você foge noite adentro com sua filha. A sobrevivência é incerta, mas vocês estão livres."
