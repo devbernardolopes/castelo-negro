@@ -1,17 +1,20 @@
 strings:
   intro:
     en: |
+      The famine in New England during the 1630s was a period of severe food scarcity and hardship caused by inadequate farming practices, long cold winters, and the settlers' initial dependence on trade with Native Americans or supply ships from England.
+
+      ...
+      >>>>
       Too weak... starving...
       	
-      You can't [take] it anymore. Your body starts to [give] out.
+      You can't take it anymore. Your body starts to give out.
 
-      You [drop] to your knees, clutching your crying daughter.
+      You drop to your knees, clutching your crying daughter.
       
       You collapse.
       
       ...
       >>>>
-
       You wake up.
       
       Not dead. Not yet.
@@ -19,17 +22,20 @@ strings:
       You look around...
       >>>>
     pt-br: |
+      A fome na Nova Inglaterra durante a década de 1630 foi um período de escassez severa de alimentos e dificuldades causadas por práticas agrícolas inadequadas, invernos longos e frios, e a dependência inicial dos colonos do comércio com os nativos americanos ou navios de suprimentos da Inglaterra.
+
+      ...
+      >>>>
       Muito fraca... morrendo de fome...
 
       Você não aguenta mais. Seu corpo começa a falhar.
 
-      Você [pega] sua filha chorando e se agarra a ela.
+      Você pega sua filha chorando e se agarra a ela.
       
       Você desaba.
       
       ...
       >>>>
-      
       Você acorda.
 
       Não morta. Ainda não.
