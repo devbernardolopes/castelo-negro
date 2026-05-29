@@ -184,6 +184,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
   /** @type {any} */
   const out = {};
   let i = 0;
+  let optionalSkipped = false;
 
   const skipStops = () => {
     while (i < tokens.length && stopwords.has(tokens[i])) i++;
@@ -198,6 +199,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       // If we're out of tokens and this slot is optional, skip it
       if (isOptional) {
         out[Object.keys(slotEntry)[0]] = '';  // Set to empty string
+        optionalSkipped = true;
         continue;
       }
       // If required, we fail
@@ -214,7 +216,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       const verbIds = Array.isArray(slotDef) ? slotDef.map(v => String(v).toLowerCase()) : [];
       const verbMatch = this._matchVerbAt(tokens, i, verbIds);
       if (!verbMatch) {
-        if (isOptional) { out.verb = ''; continue; }
+        if (isOptional) { out.verb = ''; optionalSkipped = true; continue; }
         return null;
       }
       out.verb = verbMatch.canonical;
@@ -225,7 +227,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     if (slotName === 'object' || slotName === 'target') {
       const itemMatch = this._matchItemSlotAt(tokens, i, slotDef);
       if (!itemMatch) {
-        if (isOptional) { out[slotName] = ''; continue; }
+        if (isOptional) { out[slotName] = ''; optionalSkipped = true; continue; }
         return null;
       }
       if (itemMatch.ambiguous) {
@@ -248,7 +250,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       const locationIds = Array.isArray(slotDef) ? slotDef.map(id => String(id)) : [];
       const locMatch = this._matchLocationSlotAt(tokens, i, locationIds);
       if (!locMatch) {
-        if (isOptional) { out[slotName] = ''; continue; }
+        if (isOptional) { out[slotName] = ''; optionalSkipped = true; continue; }
         return null;
       }
       out[slotName] = locMatch.locationId;
@@ -263,6 +265,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
 
   skipStops();
   if (i < tokens.length) {
+    if (optionalSkipped) return null;
     for (let j = i; j < tokens.length; j++) {
       if (this._verbsIndex.has(tokens[j])) return null;
     }
