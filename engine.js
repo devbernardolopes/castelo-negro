@@ -611,7 +611,7 @@ class GameEngine {
     if (!desc) return '';
     if (typeof desc === 'string') return desc;
     if (desc.base !== undefined || Array.isArray(desc.conditions)) {
-      const base = desc.base ? this._pickLang(desc.base) : '';
+      const base = desc.base ? this._pickLang(desc.base) : this._pickLang(desc);
       const parts = [base].filter(Boolean);
       if (Array.isArray(desc.conditions)) {
         for (const c of desc.conditions) {

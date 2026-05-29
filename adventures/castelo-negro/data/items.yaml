@@ -18,7 +18,11 @@ items:
     synonyms: { en: ["husband", "corpse", "body"], pt-br: ["marido", "cadáver", "corpo"] }
     takeable: false
     contents: [husband_belt, hand_sickle]
-    description: { en: "The body of your husband, cold and still.", pt-br: "O corpo do seu marido, frio e imóvel." }
+    description:
+      en: |
+        The body of your husband, cold and still.
+      pt-br: |
+        O corpo do seu marido, frio e imóvel.
     contents_visibility:
       husband_belt:
         visible_when: "husband_belt_visible"
@@ -32,7 +36,10 @@ items:
     takeable: false
     contents: [cottage_key]
     description: 
-      base: { en: "The belt of your husband, worn and torn.", pt-br: "O cinto do seu marido, desgastado e rasgado." }
+      en: |
+        The belt of your husband, worn and torn.
+      pt-br: |
+        O cinto do seu marido, desgastado e rasgado.
       conditions:
         - if: "husband_corpse_rolled"
           message: { en: "You see a tarnished brass key tied to the back of the belt.", pt-br: "Você vê uma chave de latão oxidada amarrada na parte de trás do cinto." }
@@ -53,11 +60,10 @@ items:
     takeable: false
     contents: [moldy_loaf_of_bread]
     description:
-      base:
-        en: |
-          A small, worn wooden table.
-        pt-br: |
-          Uma pequena mesa de madeira desgastada.
+      en: |
+        A small, worn wooden table.
+      pt-br: |
+        Uma pequena mesa de madeira desgastada.
       conditions:
         - if: "containerHas(cottage_kitchen_table, moldy_loaf_of_bread)"
           message: { en: "A small, mold-covered loaf lies on the table.", pt-br: "Um pequeno pedaço de pão mofado está sobre a mesa." }
@@ -67,7 +73,11 @@ items:
     synonyms: { en: ["hearth", "stone hearth"], pt-br: ["lareira", "lareira de pedra"] }
     takeable: false
     contents: [charred_wood, hearth_ashes]
-    description: { en: "A simple stone hearth for cooking and warmth.", pt-br: "Uma lareira de pedra simples para cozinhar e aquecer." }
+    description:
+      en: |
+        A simple stone hearth for cooking and warmth.
+      pt-br: |
+        Uma lareira de pedra simples para cozinhar e aquecer.
 
   moldy_loaf_of_bread:
     name: { en: "Moldy Loaf of Bread", pt-br: "Pão Mofado" }
