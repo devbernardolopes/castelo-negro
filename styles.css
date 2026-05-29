@@ -702,8 +702,8 @@ body {
 }
 
 .ph-entry {
-  padding: 6px 8px;
-  font-size: 11px;
+  padding: 10px 10px;
+  /* font-size: 11px; */
   color: var(--text-secondary);
   cursor: pointer;
   white-space: nowrap;
