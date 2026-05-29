@@ -468,18 +468,21 @@ GameEngine.prototype._expandTemplate = function(str, match) {
       const locId = this.gameState.current_location;
       const loc = this.getFullLocationData(locId);
       if (loc) {
+        const nameText = this._pickLang(loc.name);
         const baseDescript = this._pickLang(loc.description?.base);
         const conditions = Array.isArray(loc.description?.conditions) 
           ? loc.description.conditions 
           : [];
         
-        let fullDesc = baseDescript || '';
+        let fullDesc = '';
+        if (nameText) fullDesc = nameText + '\n\n';
+        fullDesc += baseDescript || '';
         
         for (const cond of conditions) {
           const condExpanded = this._expandTemplate(String(cond.if || ''), match);
           if (this.evaluateCondition(condExpanded)) {
             const condText = this._pickLang(cond.message);
-            if (condText) fullDesc += '\n\n' + condText;
+            if (condText) fullDesc += '\n' + condText;
           }
         }
         
