@@ -1,0 +1,86 @@
+events:
+  - id: door_unlock_hint_level_1
+    type: recurring
+    trigger_on: "action_failed"
+    action_id: "unlock_cottage_front_door"
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "cottage_key_discovery_stage == 0"
+      - "cottage_door_unlock_attempted == false"
+    effect:
+      - "cottage_door_unlock_attempted = true"
+      - "cottage_key_discovery_stage = 1"
+    message:
+      en: "You desperately try the locked door, but it won't budge. Where could the key be?"
+      pt-br: "Você tenta desesperadamente a porta trancada, mas ela não se move. Onde poderia estar a chave?"
+
+  - id: door_unlock_hint_level_2
+    type: recurring
+    trigger_on: "action_failed"
+    action_id: "unlock_cottage_front_door"
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "cottage_key_discovery_stage == 1"
+    message:
+      en: "The door remains locked. Your husband... he must have had the key. It must still be on him."
+      pt-br: "A porta continua trancada. Seu marido... ele deve ter tido a chave. Ela ainda deve estar com ele."
+
+  - id: door_unlock_hint_level_3
+    type: recurring
+    trigger_on: "action_failed"
+    action_id: "unlock_cottage_front_door"
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "cottage_key_discovery_stage == 2"
+    message:
+      en: "The door won't open. The key must be tied to his belt somehow..."
+      pt-br: "A porta não abrirá. A chave deve estar amarrada ao seu cinto de alguma forma..."
+
+  - id: door_unlock_no_hint_level_4
+    type: recurring
+    trigger_on: "action_failed"
+    action_id: "unlock_cottage_front_door"
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "cottage_key_discovery_stage >= 3"
+    message:
+      en: "The door is locked. You have to find the key."
+      pt-br: "A porta está trancada. Você precisa encontrar a chave."
+
+  # - id: newborn_daughter_cries
+  #   type: recurring
+  #   interval: 3
+  #   conditions:
+  #     - "newborn_daughter_health > 0"
+  #     - "!inventory.has(newborn_daughter)"
+  #   effect:
+  #     - "sanity -= 1"
+  #   message:
+  #     en: "Your daughter's cries echo painfully in your mind."
+  #     pt-br: "Os choros da sua filha ecoam dolorosamente em sua mente."
+
+  # - id: newborn_daughter_health_decay
+  #   type: recurring
+  #   interval: 5
+  #   conditions: ["newborn_daughter_health > 0"]
+  #   effect: "newborn_daughter_health -= 1"
+  #   message:
+  #     en: "Your daughter is getting weaker..."
+  #     pt-br: "Sua filha está enfraquecendo..."
+
+  # - id: night_to_dawn
+  #   type: time_based
+  #   trigger_when: "game_turn >= 8"
+  #   effect: "time_of_day = 'dawn'"
+  #   message:
+  #     en: "The sky begins to lighten in the east."
+  #     pt-br: "O céu começa a clarear no leste."
+
+  # - id: hag_encounter
+  #   type: location_enter
+  #   location: "black_castle_ensuite"
+  #   conditions: ["!has_met_hag"]
+  #   effect: "has_met_hag = true"
+  #   message:
+  #     en: "An old hag emerges from the shadows, grinning with rotten teeth."
+  #     pt-br: "Uma velha bruxa surge das sombras, sorrindo com dentes podres."
