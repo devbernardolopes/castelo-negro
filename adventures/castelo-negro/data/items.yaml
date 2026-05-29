@@ -96,3 +96,9 @@ items:
     synonyms: { en: ["front door", "door"], pt-br: ["porta da frente", "porta"] }
     takeable: false
     description: { en: "The sturdy front door of your cottage.", pt-br: "A porta da frente do seu chalé." }
+
+  stream_ice:
+    name: { en: "Thin Ice", pt-br: "Gelo Fino" }
+    synonyms: { en: ["ice", "frozen surface", "stream ice"], pt-br: ["gelo", "superfície congelada"] }
+    takeable: false
+    description: { en: "The ice shimmers deceptively. One wrong step could mean disaster.", pt-br: "O gelo brilha de forma enganosa. Um passo em falso poderia significar desastre." }
