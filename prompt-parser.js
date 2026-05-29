@@ -182,7 +182,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
         return null;
       }
       out[slotName] = itemMatch.itemId;
-      out[`${slotName}_name`] = this._pickLang(this.definition.items?.[itemMatch.itemId]?.name) || itemMatch.itemId;
+      out[`${slotName}_name`] = itemMatch.phrase;
       i += itemMatch.len;
       continue;
     }
@@ -262,14 +262,14 @@ GameEngine.prototype._matchAnyItemAt = function(tokens, idx) {
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
     const phrase = tokens.slice(idx, idx + len).join(' ');
     const itemId = this._findItemIdByNameOrSynonym(phrase);
-    if (itemId) return { itemId, len };
+    if (itemId) return { itemId, len, phrase };
   }
   // Fallback: check if phrase matches the current location (by name or synonym)
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
     const phrase = tokens.slice(idx, idx + len).join(' ');
     const locId = this._findLocationIdByNameOrSynonym(phrase);
     if (locId && locId === this.gameState.current_location) {
-      return { itemId: '__location__', len };
+      return { itemId: '__location__', len, phrase };
     }
   }
   return null;
@@ -280,7 +280,7 @@ GameEngine.prototype._matchSpecificItemAt = function(tokens, idx, itemIds) {
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
     const phrase = tokens.slice(idx, idx + len).join(' ');
     for (const itemId of canonicalIds) {
-      if (this._phraseMatchesItemId(phrase, itemId)) return { itemId, len };
+      if (this._phraseMatchesItemId(phrase, itemId)) return { itemId, len, phrase };
     }
   }
   return null;
