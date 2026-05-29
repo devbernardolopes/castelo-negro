@@ -97,6 +97,18 @@ items:
     takeable: false
     description: { en: "The sturdy front door of your cottage.", pt-br: "A porta da frente do seu chalé." }
 
+  cottage_living_room_left_window:
+    name: { en: "Living Room Left Window", pt-br: "Janela Esquerda da Sala de Estar" }
+    synonyms: { en: ["living room left window", "left window", "window"], pt-br: ["janela esquerda da sala de estar", "janela esquerda", "janela"] }
+    takeable: false
+    description: { en: "A small window on the left side of the living room.", pt-br: "Uma pequena janela no lado esquerdo da sala de estar." }
+
+  cottage_living_room_right_window:
+    name: { en: "Living Room Right Window", pt-br: "Janela Direita da Sala de Estar" }
+    synonyms: { en: ["living room right window", "right window", "window"], pt-br: ["janela direita da sala de estar", "janela direita", "janela"] }
+    takeable: false
+    description: { en: "A small window on the right side of the living room.", pt-br: "Uma pequena janela no lado direito da sala de estar." }
+
   stream_ice:
     name: { en: "Thin Ice", pt-br: "Gelo Fino" }
     synonyms: { en: ["ice", "frozen surface", "stream ice"], pt-br: ["gelo", "superfície congelada"] }

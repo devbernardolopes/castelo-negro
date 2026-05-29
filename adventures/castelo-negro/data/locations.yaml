@@ -7,9 +7,13 @@ locations:
         en: |
           You're in the living room of your modest cottage.
 
+          Its wooden walls are painted with faded colors, and two small windows let in some light.
+
           The kitchen lies right in front of you, while the porch to your left.
         pt-br: |
           Você está na sala de estar do seu modesto chalé.
+
+          Suas paredes de madeira são pintadas com cores desbotadas, e duas pequenas janelas deixam entrar um pouco de luz.
 
           A cozinha fica bem na sua frente, enquanto a varanda fica à sua esquerda.
       conditions:
@@ -17,7 +21,7 @@ locations:
           message: { en: "Your husband lies on the floor, motionless.", pt-br: "Seu marido está no chão, imóvel." }
         - if: "!inventory.has(newborn_daughter)"
           message: { en: "You can hear your baby crying desperately on the floor.", pt-br: "Você pode ouvir sua bebê chorando desesperadamente no chão." }
-    contents: [husband_corpse, newborn_daughter, cottage_front_door]
+    contents: [husband_corpse, newborn_daughter, cottage_front_door, cottage_living_room_left_window, cottage_living_room_right_window]
     exits:
       north: cottage_kitchen
       west:
@@ -48,6 +52,7 @@ locations:
 
   cottage_porch:
     name: { en: "Cottage - Porch", pt-br: "Chalé - Varanda" }
+    synonyms: { en: ["porch", "cottage porch"], pt-br: ["varanda", "varanda do chalé"] }
     description:
       base:
         en: |
@@ -66,7 +71,15 @@ locations:
   path_to_crop_fields:
     name: { en: "Path to Crop Fields", pt-br: "Caminho para os Campos de Cultivo" }
     description:
-      base: { en: "A dirt path leads toward the fields.", pt-br: "Um caminho de terra leva aos campos." }
+      base:
+        en: |
+          A dirt path leads toward the fields to the north.
+
+          To the south, the wooden porch of your cottage is visible in the distance.
+        pt-br: |
+          Um caminho de terra leva aos campos ao norte.
+
+          Ao sul, a varanda de madeira do seu chalé é visível à distância.
     exits:
       north: crop_fields
       south: cottage_porch

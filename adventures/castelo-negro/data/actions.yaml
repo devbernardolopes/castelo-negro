@@ -1,3 +1,6 @@
+# conditional_messages are evaluated before effects
+# progressive_messages are evaluated after effects
+
 actions:
   examine_husband_corpse:
     pattern:
@@ -93,7 +96,7 @@ actions:
         Com grande esforço, você vira o corpo do seu marido.
         Sua respiração prende. Amarrada à parte traseira do seu cinto está uma chave de latão oxidada.
         A chave do chalé. Esteve aqui o tempo todo.
-    progressive_messages:
+    conditional_messages:
       - condition: "cottage_key_discovery_stage < 3"
         message:
           en: "You're not sure why you'd do that."
@@ -230,7 +233,7 @@ actions:
         - target: ["newborn_daughter"]
         - object: ["moldy_loaf_of_bread"]
     conditions:
-      - "inventory.has('moldy_loaf_of_bread')"
+      - "inventory.has('moldy_loaf_of_bread') or here.has('moldy_loaf_of_bread')"
       - "inventory.has('newborn_daughter') or here.has('newborn_daughter')"
     effect:
       - "fed_newborn_daughter = true"
@@ -249,6 +252,34 @@ actions:
     message:
       en: "From here, you can see the small kitchen with its stone hearth and worn wooden table."
       pt-br: "Daqui, você pode ver a pequena cozinha com sua lareira de pedra e mesa de madeira desgastada."
+
+  examine_porch_from_living_room:
+    pattern:
+      - verb: ["examine"]
+      - location: ["cottage_porch"]
+    conditions:
+      - "current_location == 'cottage_living_room'"
+      - "cottage_door_open"
+    effect: []
+    message:
+      en: "From here, you can see the small porch with its weathered planks and hanging lantern."
+      pt-br: "Daqui, você pode ver a pequena varanda com seus degraus desgastados e lanterna pendurada."
+    conditional_messages:
+      - condition: "!cottage_door_open"
+        message:
+          en: "The front door is closed, blocking your view of the porch."
+          pt-br: "A porta da frente está fechada, bloqueando sua visão da varanda."
+
+  examine_porch_from_path_to_crop_fields:
+    pattern:
+      - verb: ["examine"]
+      - location: ["cottage_porch"]
+    conditions:
+      - "current_location == 'path_to_crop_fields'"
+    effect: []
+    message:
+      en: "From here, you can see the wooden porch of your cottage to the south, with its weathered planks and hanging lantern."
+      pt-br: "Daqui, você pode ver a varanda de madeira do seu chalé ao sul, com seus degraus desgastados e lanterna pendurada."
 
   # move:
   #   pattern:

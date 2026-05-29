@@ -21,6 +21,44 @@ verbs:
     synonyms: { en: ["roll", "flip", "turn"], pt-br: ["virar", "girar"] }
   go:
     synonyms: { en: ["go", "walk", "move"], pt-br: ["ir", "andar", "mover"] }
+  attack:
+    synonyms: { en: ["attack", "hit", "strike"], pt-br: ["atacar", "bater", "golpear"] }
+  eat:
+    synonyms: { en: ["eat", "consume"], pt-br: ["comer", "consumir"] }
+  climb:
+    synonyms: { en: ["climb", "ascend"], pt-br: ["subir", "escalar"] }
+  jump:
+    synonyms: { en: ["jump", "leap"], pt-br: ["pular", "saltar"] }
+  talk:
+    synonyms: { en: ["talk", "speak"], pt-br: ["falar", "conversar"] }
+  pull:
+    synonyms: { en: ["pull"], pt-br: ["puxar"] }
+  push:
+    synonyms: { en: ["push"], pt-br: ["empurrar"] }
+  smell:
+    synonyms: { en: ["smell", "sniff"], pt-br: ["cheirar"] }
+  listen:
+    synonyms: { en: ["listen", "hear"], pt-br: ["ouvir", "escutar"] }
+  read:
+    synonyms: { en: ["read"], pt-br: ["ler"] }
+  throw:
+    synonyms: { en: ["throw", "toss"], pt-br: ["jogar", "arremessar"] }
+  wear:
+    synonyms: { en: ["wear", "put on"], pt-br: ["vestir", "colocar"] }
+  press:
+    synonyms: { en: ["press", "push"], pt-br: ["pressionar", "empurrar"] }
+  cut:
+    synonyms: { en: ["cut", "slice"], pt-br: ["cortar", "fatiar"] }
+  drink:
+    synonyms: { en: ["drink", "sip"], pt-br: ["beber", "tomar"] }
+  sleep:
+    synonyms: { en: ["sleep", "rest"], pt-br: ["dormir", "descansar"] }
+  lower:
+    synonyms: { en: ["lower", "descend"], pt-br: ["abaixar", "descer"] }
+  raise:
+    synonyms: { en: ["raise", "ascend"], pt-br: ["levantar", "subir"] }
+  call:
+    synonyms: { en: ["call", "shout"], pt-br: ["chamar", "gritar"] }
 
 directions:
   north:
