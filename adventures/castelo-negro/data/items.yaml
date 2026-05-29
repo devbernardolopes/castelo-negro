@@ -32,7 +32,6 @@ items:
     contents_visibility:
       husband_belt:
         visible_when: "husband_belt_visible"
-    contents_visibility:
       hand_sickle:
         visible_when: "husband_belt_visible"
 
@@ -122,6 +121,7 @@ items:
   cottage_living_room_left_window:
     name: { en: "Living Room Left Window", pt-br: "Janela Esquerda da Sala de Estar" }
     synonyms: { en: ["living room left window", "left window", "window", "windows"], pt-br: ["janela esquerda da sala de estar", "janela esquerda", "janela", "janelas"] }
+    openable: true
     takeable: false
     description:
       en: |
@@ -137,6 +137,7 @@ items:
   cottage_living_room_right_window:
     name: { en: "Living Room Right Window", pt-br: "Janela Direita da Sala de Estar" }
     synonyms: { en: ["living room right window", "right window", "window", "windows"], pt-br: ["janela direita da sala de estar", "janela direita", "janela", "janelas"] }
+    openable: true
     takeable: false
     description:
       en: |

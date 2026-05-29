@@ -452,7 +452,8 @@ class GameEngine {
       },
       items: {
         ...this.definition.items,
-        takeable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.takeable)
+        takeable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.takeable),
+        openable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.openable)
       },
       locations: this.definition.locations || {},
       actors: this.definition.actors || {}
