@@ -10,6 +10,26 @@ GameEngine.prototype.processPlayerCommand = function(input) {
   if (!raw) return;
   const cmd = raw.toLowerCase();
 
+  // Check for pending disambiguation
+  if (this._pendingAmbiguity) {
+    const resolved = this._resolveAmbiguity(cmd);
+    if (resolved) {
+      const { actionId, actionDef, match, slotName } = this._pendingAmbiguity;
+      match[slotName] = resolved.itemId;
+      match[`${slotName}_name`] = resolved.phrase;
+      this._pendingAmbiguity = null;
+
+      const ok = this._checkActionConditions(actionDef, match);
+      if (ok) {
+        this._executeActionSuccess(actionId, actionDef, match);
+      } else {
+        this._executeActionFailure(actionId, actionDef, match);
+      }
+      return true;
+    }
+    this._pendingAmbiguity = null;
+  }
+
   const dir = this._resolveDirection(cmd);
   if (dir) return this.go(/** @type {any} */ (dir));
 
@@ -34,64 +54,91 @@ GameEngine.prototype.processPlayerCommand = function(input) {
   if (consume) return this._consumeItemByName(consume[2]);
 };
 
+GameEngine.prototype._executeActionSuccess = function(actionId, actionDef, match) {
+  if (actionDef.effect) this._applyActionEffects(actionDef.effect, match);
+
+  if (actionDef.message_pool) {
+    const pool = this._pickLang(actionDef.message_pool);
+    if (Array.isArray(pool) && pool.length) {
+      const msg = pool[Math.floor(Math.random() * pool.length)];
+      if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+    }
+  } else {
+    const msg = this._pickLang(actionDef.message);
+    if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+  }
+
+  if (Array.isArray(actionDef.progressive_messages)) {
+    for (const pm of actionDef.progressive_messages) {
+      const expanded = this._expandTemplate(String(pm.condition || ''), match);
+      if (this.evaluateCondition(expanded)) {
+        if (pm.effect) this._applyActionEffects(pm.effect, match);
+        const msg = this._pickLang(pm.message);
+        if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+        break;
+      }
+    }
+  }
+
+  this._afterTurn({ kind: 'action', id: actionId });
+};
+
+GameEngine.prototype._executeActionFailure = function(actionId, actionDef, match) {
+  if (Array.isArray(actionDef.conditional_messages)) {
+    for (const conditional of actionDef.conditional_messages) {
+      const expanded = this._expandTemplate(String(conditional.condition || ''), match);
+      if (this.evaluateCondition(expanded)) {
+        const msg = this._pickLang(conditional.message);
+        if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+        this._afterTurn({ kind: 'action_failed', id: actionId });
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 GameEngine.prototype._tryActions = function(cmd) {
   const actions = this.definition.actions && typeof this.definition.actions === 'object' 
     ? this.definition.actions 
     : null;
   if (!actions) return false;
 
+  let firstAmbiguity = null;
+
   for (const [actionId, actionDef] of Object.entries(actions)) {
     const match = this._matchAction(actionDef, cmd);
     if (!match) continue;
 
+    if (match._ambiguous) {
+      if (!firstAmbiguity) firstAmbiguity = { actionId, actionDef, match };
+      continue;
+    }
+
     const ok = this._checkActionConditions(actionDef, match);
     if (ok) {
-      // Happy path: all conditions met
-      if (actionDef.effect) this._applyActionEffects(actionDef.effect, match);
-      if (actionDef.message_pool) {
-        const pool = this._pickLang(actionDef.message_pool);
-        if (Array.isArray(pool) && pool.length) {
-          const msg = pool[Math.floor(Math.random() * pool.length)];
-          if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
-        }
-      } else {
-        const msg = this._pickLang(actionDef.message);
-        if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
-      }
-
-      if (Array.isArray(actionDef.progressive_messages)) {
-        for (const pm of actionDef.progressive_messages) {
-          const expanded = this._expandTemplate(String(pm.condition || ''), match);
-          if (this.evaluateCondition(expanded)) {
-            if (pm.effect) this._applyActionEffects(pm.effect, match);
-            const msg = this._pickLang(pm.message);
-            if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
-            break;
-          }
-        }
-      }
-
-      this._afterTurn({ kind: 'action', id: actionId });
+      this._executeActionSuccess(actionId, actionDef, match);
       return true;
     }
 
-    // Check conditional failure messages
-    if (Array.isArray(actionDef.conditional_messages)) {
-      for (const conditional of actionDef.conditional_messages) {
-        const expanded = this._expandTemplate(String(conditional.condition || ''), match);
-        if (this.evaluateCondition(expanded)) {
-          const msg = this._pickLang(conditional.message);
-          if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
-          this._afterTurn({ kind: 'action_failed', id: actionId });
-          return true;
-        }
-      }
-    }
-
-    // If no conditional matched, continue to next action
+    if (this._executeActionFailure(actionId, actionDef, match)) return true;
   }
-  
-  // No action matched at all
+
+  if (firstAmbiguity) {
+    const { actionId, actionDef, match } = firstAmbiguity;
+    this._pendingAmbiguity = {
+      actionId,
+      actionDef,
+      match: match.partialMatch,
+      slotName: match.slotName,
+      candidates: match.candidates,
+      phrase: match.phrase
+    };
+    const msg = this._buildDisambiguationMessage(match.candidates, match.phrase);
+    if (msg) this.hooks.onOutput?.(msg);
+    return true;
+  }
+
   return false;
 };
 
@@ -181,6 +228,16 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
         if (isOptional) { out[slotName] = ''; continue; }
         return null;
       }
+      if (itemMatch.ambiguous) {
+        return {
+          _ambiguous: true,
+          slotName,
+          candidates: itemMatch.candidates,
+          phrase: itemMatch.phrase,
+          len: itemMatch.len,
+          partialMatch: out
+        };
+      }
       out[slotName] = itemMatch.itemId;
       out[`${slotName}_name`] = itemMatch.phrase;
       i += itemMatch.len;
@@ -258,11 +315,11 @@ GameEngine.prototype._matchItemSlotAt = function(tokens, idx, slotDef) {
 };
 
 GameEngine.prototype._matchAnyItemAt = function(tokens, idx) {
-  const items = this.definition.items && typeof this.definition.items === 'object' ? this.definition.items : {};
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
     const phrase = tokens.slice(idx, idx + len).join(' ');
-    const itemId = this._findItemIdByNameOrSynonym(phrase);
-    if (itemId) return { itemId, len, phrase };
+    const matches = this._findAllItemIdsByNameOrSynonym(phrase);
+    if (matches.length === 1) return { itemId: matches[0], len, phrase };
+    if (matches.length > 1) return { ambiguous: true, candidates: matches, phrase, len };
   }
   // Fallback: check if phrase matches the current location (by name or synonym)
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
@@ -279,9 +336,12 @@ GameEngine.prototype._matchSpecificItemAt = function(tokens, idx, itemIds) {
   const canonicalIds = itemIds.map((id) => String(id));
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
     const phrase = tokens.slice(idx, idx + len).join(' ');
+    const matches = [];
     for (const itemId of canonicalIds) {
-      if (this._phraseMatchesItemId(phrase, itemId)) return { itemId, len, phrase };
+      if (this._phraseMatchesItemId(phrase, itemId)) matches.push(itemId);
     }
+    if (matches.length === 1) return { itemId: matches[0], len, phrase };
+    if (matches.length > 1) return { ambiguous: true, candidates: matches, phrase, len };
   }
   return null;
 };
@@ -442,6 +502,37 @@ GameEngine.prototype._findItemIdByNameOrSynonym = function(query) {
   return null;
 };
 
+GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
+  const q = String(query || '').trim().toLowerCase();
+  if (!q) return [];
+  const results = [];
+  if (this.definition.items?.[q]) results.push(q);
+  const asId = q.replace(/\s+/g, '_');
+  if (asId !== q && this.definition.items?.[asId]) results.push(asId);
+
+  for (const [id, item] of Object.entries(this.definition.items || {})) {
+    if (results.includes(id)) continue;
+    const n = this._pickLang(item?.name);
+    if (n && String(n).trim().toLowerCase() === q) {
+      results.push(id);
+      continue;
+    }
+    const syn = item?.synonyms;
+    if (syn && typeof syn === 'object') {
+      const langList = syn?.[this.language];
+      if (Array.isArray(langList)) {
+        for (const s of langList) {
+          if (String(s).trim().toLowerCase() === q) {
+            if (!results.includes(id)) results.push(id);
+            break;
+          }
+        }
+      }
+    }
+  }
+  return results;
+};
+
 GameEngine.prototype._findLocationIdByNameOrSynonym = function(query) {
   const q = String(query || '').trim().toLowerCase();
   if (!q) return null;
@@ -571,4 +662,82 @@ GameEngine.prototype._verbItemByName = function(verb, query) {
   this.hooks.onOutput?.("Nothing happens.");
   this._afterTurn({ kind: 'verb', verb, itemId });
   return false;
+};
+
+GameEngine.prototype._resolveAmbiguity = function(input) {
+  const q = String(input || '').trim().toLowerCase();
+  if (!q || !this._pendingAmbiguity) return null;
+  const { candidates } = this._pendingAmbiguity;
+
+  for (const candidateId of candidates) {
+    if (this._phraseMatchesItemId(q, candidateId)) {
+      return { itemId: candidateId, phrase: q };
+    }
+  }
+
+  const words = q.split(/\s+/);
+  if (words.length === 1) {
+    const singleWord = words[0];
+    const scored = [];
+    for (const candidateId of candidates) {
+      const item = this.definition.items?.[candidateId];
+      if (!item) continue;
+      const name = this._pickLang(item.name) || '';
+      const syns = item.synonyms?.[this.language] || [];
+      const allTerms = [
+        candidateId.replace(/_/g, ' '),
+        name.toLowerCase(),
+        ...syns.map(s => s.toLowerCase())
+      ];
+      for (const term of allTerms) {
+        if (term.split(/\s+/).includes(singleWord)) {
+          scored.push(candidateId);
+          break;
+        }
+      }
+    }
+    if (scored.length === 1) {
+      return { itemId: scored[0], phrase: singleWord };
+    }
+  }
+
+  return null;
+};
+
+GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase) {
+  const labels = candidates.map(id => {
+    const item = this.definition.items?.[id];
+    if (!item) return id;
+    const name = this._pickLang(item.name) || id;
+    const syns = item.synonyms?.[this.language] || [];
+
+    const allTerms = [...syns.map(s => s.trim().toLowerCase()), name.trim().toLowerCase(), id.replace(/_/g, ' ')];
+    const sharedTerms = new Set();
+    if (candidates.length > 1) {
+      for (const otherId of candidates) {
+        if (otherId === id) continue;
+        const otherItem = this.definition.items?.[otherId];
+        if (!otherItem) continue;
+        const otherName = this._pickLang(otherItem.name) || '';
+        const otherSyns = otherItem.synonyms?.[this.language] || [];
+        const otherTerms = [...otherSyns.map(s => s.trim().toLowerCase()), otherName.trim().toLowerCase(), otherId.replace(/_/g, ' ')];
+        for (const t of allTerms) {
+          if (otherTerms.includes(t)) sharedTerms.add(t);
+        }
+      }
+    }
+
+    const unique = allTerms.filter(t => !sharedTerms.has(t));
+    if (unique.length > 0) {
+      unique.sort((a, b) => a.length - b.length);
+      return unique[0];
+    }
+    allTerms.sort((a, b) => a.length - b.length);
+    return allTerms[0];
+  });
+
+  if (this.language === 'pt-br') {
+    return `Qual ${phrase}? ${labels.join(' ou ')}?`;
+  }
+  return `Which ${phrase}? ${labels.join(' or ')}?`;
 };
