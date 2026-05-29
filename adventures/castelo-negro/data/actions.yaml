@@ -1,0 +1,333 @@
+actions:
+  examine_husband_corpse:
+    pattern:
+      - verb: ["examine"]
+      - object: ["husband_corpse"]
+    conditions:
+      - "here.has('husband_corpse')"
+    effect:
+      - "husband_corpse_inspected_count += 1"
+    message:
+      en: "You look at the corpse."
+      pt-br: "Você olha para o cadáver."
+    
+    # Progressive messages based on discovery stage
+    progressive_messages:
+      # First inspection: realize husband is dead
+      - condition: "husband_corpse_inspected_count == 1"
+        # effect:
+          # - "cottage_key_discovery_stage = 1"
+        message:
+          en: |
+            Your husband lies still. Cold. His eyes stare blankly at nothing.
+            The realization crashes over you: he's gone. Dead.
+            You collapse to your knees, tears streaming down your face.
+          pt-br: |
+            Seu marido está imóvel. Frio. Seus olhos fixam-se no vazio.
+            A realização desaba sobre você: ele se foi. Morreu.
+            Você cai de joelhos, lágrimas escorrendo pelo seu rosto.
+
+      # Second inspection: suspect the key is on him
+      - condition: "husband_corpse_inspected_count >= 2 and cottage_key_discovery_stage == 1 and cottage_door_unlock_attempted"
+        effect:
+          - "cottage_key_discovery_stage = 2"
+        message:
+          en: |
+            You examine your husband's body more carefully.
+            Surely... surely he had a key? A key to the cottage?
+            Perhaps it's still on him somewhere...
+          pt-br: |
+            Você examina o corpo do seu marido mais cuidadosamente.
+            Certamente... certamente ele tinha uma chave? Uma chave para o chalé?
+            Talvez ainda esteja com ele em algum lugar...
+
+      # Third inspection: notice the belt
+      - condition: "husband_corpse_inspected_count >= 3 and cottage_key_discovery_stage == 2"
+        effect:
+          - "cottage_key_discovery_stage = 3"
+          - "husband_belt_visible = true"
+        message:
+          en: |
+            You notice his belt, worn and faded with time.
+            Something might be tied to it... but you can't see clearly.
+            The body's position obscures the back of the belt.
+          pt-br: |
+            Você nota o seu cinto, desgastado e desbotado pelo tempo.
+            Algo poderia estar amarrado nele... mas você não consegue ver claramente.
+            A posição do corpo obscurece a parte traseira do cinto.
+
+      # Subsequent inspections at stage 3 or higher
+      - condition: "cottage_key_discovery_stage == 3"
+        message:
+          en: |
+            You see the belt more clearly now.
+            Something is tied to the back of it, but the body is in the way.
+          pt-br: |
+            Você vê o cinto mais claramente agora.
+            Algo está amarrado na sua parte traseira, mas o corpo está no caminho.
+
+      # Stage 4 or higher (default)
+      - condition: "cottage_key_discovery_stage >= 4"
+        message:
+          en: "You've already examined the corpse thoroughly."
+          pt-br: "Você já examinou o cadáver completamente."
+
+  roll_husband_corpse:
+    pattern:
+      - verb: ["roll"]
+      - target: ["husband_corpse"]
+    conditions:
+      - "here.has('husband_corpse')"
+      - "cottage_key_discovery_stage >= 3"
+      - "!husband_corpse_rolled"
+    effect:
+      - "husband_corpse_rolled = true"
+      - "husband_belt_visible = true"
+      - "cottage_key_discovery_stage = 4"
+    message:
+      en: |
+        With great effort, you roll your husband's body over.
+        Your breath catches. Tied to the back of his belt is a tarnished brass key.
+        The cottage key. It's been here all along.
+      pt-br: |
+        Com grande esforço, você vira o corpo do seu marido.
+        Sua respiração prende. Amarrada à parte traseira do seu cinto está uma chave de latão oxidada.
+        A chave do chalé. Esteve aqui o tempo todo.
+    progressive_messages:
+      - condition: "cottage_key_discovery_stage < 3"
+        message:
+          en: "You're not sure why you'd do that."
+          pt-br: "Você não tem certeza por que faria isso."
+      - condition: "husband_corpse_rolled"
+        message:
+          en: "The body is already rolled over."
+          pt-br: "O corpo já está virado."
+  
+  take_cottage_key_from_belt:
+    pattern:
+      - verb: ["take", "grab", "get"]
+      - object: ["cottage_key", "key", "brass key"]
+    conditions:
+      - "here.has('husband_corpse')"
+      - "husband_corpse_rolled"
+      - "husband_belt_visible"
+      - "!inventory.has('cottage_key')"
+    effect:
+      - "inventory.add('cottage_key')"
+      - "cottage_key_discovery_stage = 5"
+    message:
+      en: "You carefully untie the tarnished brass key from your husband's belt."
+      pt-br: "Você cuidadosamente desamarra a chave de latão oxidada do cinto do seu marido."
+    conditional_messages:
+      - condition: "inventory.has('cottage_key')"
+        message: { en: "You already have the key.", pt-br: "Você já tem a chave." }
+      - condition: "!husband_corpse_rolled"
+        message: { en: "The key is hidden behind the body. You need to move him first.", pt-br: "A chave está escondida atrás do corpo. Você precisa movê-lo primeiro." }
+
+  unlock_cottage_front_door:
+    pattern:
+      - verb: ["unlock"]
+      - object: ["cottage_key"]
+        optional: true
+      - target: ["cottage_front_door"]
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "cottage_door_locked"
+      - "inventory.has('cottage_key')"
+    effect:
+      - "cottage_door_locked = false"
+    message:
+      en: "The key turns with a satisfying click. You unlock the front door."
+      pt-br: "A chave vira com um clique satisfatório. Você destranca a porta da frente."
+    # Failure branches - evaluated in order, first match wins
+    conditional_messages:
+      - condition: "!here.has('cottage_front_door')"
+        message:
+          en: "There's no front door here."
+          pt-br: "Não há porta aqui."
+      - condition: "!inventory.has('cottage_key')"
+        message:
+          en: "You need a key to unlock the door."
+          pt-br: "Você precisa de uma chave para destrancar a porta."
+      - condition: "!cottage_door_locked"
+        message:
+          en: "The door is already unlocked."
+          pt-br: "A porta já está destrancada."
+
+  lock_cottage_front_door:
+    pattern:
+      - verb: ["lock"]
+      - object: ["cottage_key"]
+      - target: ["cottage_front_door"]
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "!cottage_door_open"
+      - "inventory.has('cottage_key')"
+    effect:
+      - "cottage_door_locked = true"
+    message:
+      en: "You lock the front door."
+      pt-br: "Você tranca a porta da frente."
+
+  open_cottage_front_door:
+    pattern:
+      - verb: ["open"]
+      - target: ["cottage_front_door"]
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "!cottage_door_locked"
+      - "!cottage_door_open"
+    effect:
+      - "cottage_door_open = true"
+    message:
+      en: "You open the front door."
+      pt-br: "Você abre a porta da frente."
+    conditional_messages:
+      - condition: "!here.has('cottage_front_door')"
+        message:
+          en: "There's no front door here."
+          pt-br: "Não há porta aqui."
+      - condition: "cottage_door_locked"
+        message:
+          en: "The door is locked. You can't open it."
+          pt-br: "A porta está trancada. Você não pode abri-la."
+      - condition: "cottage_door_open"
+        message:
+          en: "The door is already open."
+          pt-br: "A porta já está aberta."
+
+  close_cottage_front_door:
+    pattern:
+      - verb: ["close"]
+      - target: ["cottage_front_door"]
+    conditions:
+      - "here.has('cottage_front_door')"
+      - "!cottage_door_locked"
+      - "cottage_door_open"
+    effect:
+      - "cottage_door_open = false"
+    message:
+      en: "You close the front door."
+      pt-br: "Você fecha a porta da frente."
+    conditional_messages:
+      - condition: "!here.has('cottage_front_door')"
+        message:
+          en: "There's no front door here."
+          pt-br: "Não há porta aqui."
+      - condition: "cottage_door_locked or !cottage_door_open"
+        message:
+          en: "The door is already closed."
+          pt-br: "A porta já está fechada."
+
+  feed_newborn_daughter:
+    patterns:
+      obj_then_target:
+        - verb: ["give"]
+        - object: ["moldy_loaf_of_bread"]
+        - target: ["newborn_daughter"]
+      target_then_obj:
+        - verb: ["give"]
+        - target: ["newborn_daughter"]
+        - object: ["moldy_loaf_of_bread"]
+    conditions:
+      - "inventory.has('moldy_loaf_of_bread')"
+      - "inventory.has('newborn_daughter') or here.has('newborn_daughter')"
+    effect:
+      - "fed_newborn_daughter = true"
+      - "newborn_daughter_health += 2"
+    message:
+      en: "You break off a piece and feed your daughter."
+      pt-br: "Você quebra um pedaço e alimenta sua filha."
+
+  examine_kitchen_from_living_room:
+    pattern:
+      - verb: ["examine"]
+      - location: ["cottage_kitchen"]
+    conditions:
+      - "current_location == 'cottage_living_room'"
+    effect: []
+    message:
+      en: "From here, you can see the small kitchen with its stone hearth and worn wooden table."
+      pt-br: "Daqui, você pode ver a pequena cozinha com sua lareira de pedra e mesa de madeira desgastada."
+
+  # move:
+  #   pattern:
+  #     - verb: ["go"]
+  #     - direction: ["*"]
+  #   effect: []
+  #   message:
+  #     en: "{location_or_object_description}"
+  #     pt-br: "{location_or_object_description}"
+  #   conditional_messages:
+  #     - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
+  #       message:
+  #         en: "There's no {object_name} here."
+  #         pt-br: "Não há {object_name} aqui."
+
+  examine:
+    pattern:
+      - verb: ["examine"]
+      - object: ["*"]
+        optional: true
+    conditions:
+      - "'{object}' == '' or here.has('{object}') or inventory.has('{object}')"
+    effect: []
+    message:
+      en: "{location_or_object_description}"
+      pt-br: "{location_or_object_description}"
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
+        message:
+          en: "There's no {object_name} here."
+          pt-br: "Não há {object_name} aqui."
+
+  take_item:
+    pattern:
+      - verb: ["take"]
+      - object: ["*"]
+    conditions:
+      - "items.takeable('{object}')"
+      - "here.has('{object}')"
+      - "inventory.length < inventory.max_capacity"
+      - "!inventory.has('{object}')"
+    effect: "inventory.add('{object}')"
+    message:
+      en: "You take the {object_name}."
+      pt-br: "Você pega o {object_name}."
+
+    # Failure branches - evaluated in order, first match wins
+    conditional_messages:
+      - condition: "inventory.has('{object}')"
+        message:
+          en: "You already have the {object_name}."
+          pt-br: "Você já tem o {object_name}."
+      - condition: "!here.has('{object}')"
+        message:
+          en: "There's no {object_name} here."
+          pt-br: "Não há {object_name} aqui."
+      - condition: "!items.takeable('{object}')"
+        message:
+          en: "You can't take the {object_name}."
+          pt-br: "Você não pode pegar o {object_name}."
+      - condition: "inventory.length >= inventory.max_capacity"
+        message:
+          en: "You can't carry any more items."
+          pt-br: "Você não pode carregar mais itens."
+
+  fallback_generic:
+    message_pool:
+      en:
+        - "I don't understand what you mean."
+        - "That makes no sense in this context."
+        - "You're not sure how to do that here."
+        - "That idea doesn't seem to lead anywhere."
+        - "You can't quite figure out how to make that work."
+      pt-br:
+        - "Não entendo o que você quer dizer."
+        - "Isso não faz sentido neste contexto."
+        - "Você não tem certeza de como fazer isso aqui."
+        - "Essa ideia não parece levar a lugar algum."
+        - "Você não consegue imaginar como fazer isso funcionar."
+    # Track repeated failures for adaptive messaging
+    effect:
+      - "invalid_attempt_count += 1"

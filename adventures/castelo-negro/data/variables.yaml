@@ -67,6 +67,10 @@ variables:
     type: bool
     value: false
 
+  reached_cottage_porch:
+    type: bool
+    value: false
+
   # ---
   # COTTAGE KEY
   # ---

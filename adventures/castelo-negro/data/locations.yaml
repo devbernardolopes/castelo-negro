@@ -1,0 +1,132 @@
+locations:
+  cottage_living_room:
+    name: { en: "Cottage - Living Room", pt-br: "Chalé - Sala de Estar" }
+    synonyms: { en: ["living room", "room"], pt-br: ["sala de estar", "sala"] }
+    description:
+      base:
+        en: |
+          You're in the living room of your modest cottage.
+
+          The kitchen lies right in front of you, while the porch to your left.
+        pt-br: |
+          Você está na sala de estar do seu modesto chalé.
+
+          A cozinha fica bem na sua frente, enquanto a varanda fica à sua esquerda.
+      conditions:
+        - if: "here.has('husband_corpse')"
+          message: { en: "Your husband lies on the floor, motionless.", pt-br: "Seu marido está no chão, imóvel." }
+        - if: "!inventory.has(newborn_daughter)"
+          message: { en: "You can hear your baby crying desperately on the floor.", pt-br: "Você pode ouvir sua bebê chorando desesperadamente no chão." }
+    contents: [husband_corpse, newborn_daughter, cottage_front_door]
+    exits:
+      north: cottage_kitchen
+      west:
+        location: cottage_porch
+        conditions:
+          - if: "cottage_door_locked"
+            allow: false
+            message: { en: "The front door is locked. You can't go outside.", pt-br: "A porta da frente está trancada. Você não pode sair." }
+          - if: "!cottage_door_locked and !cottage_door_open"
+            allow: false
+            message: { en: "The front door is closed. You need to open it first.", pt-br: "A porta da frente está fechada. Você precisa abri-la primeiro." }
+          - if: "!cottage_door_locked and cottage_door_open"
+            allow: true
+    images: ["images/locations/tti-2026-05-21T21-51-48-934644704.png"]
+
+  cottage_kitchen:
+    name: { en: "Cottage - Kitchen", pt-br: "Chalé - Cozinha" }
+    synonyms: { en: ["kitchen", "cottage kitchen"], pt-br: ["cozinha", "cozinha do chalé"] }
+    description:
+      base: { en: "A simple kitchen with a stone hearth.", pt-br: "Uma cozinha simples com uma lareira de pedra." }
+      conditions:
+        - if: "containerHas(cottage_kitchen_table, moldy_loaf_of_bread)"
+          message: { en: "A small, mold-covered loaf lies on the kitchen table.", pt-br: "Um pequeno pedaço de pão mofado está sobre a mesa da cozinha." }
+    contents: [cottage_kitchen_table, stone_hearth]
+    exits:
+      south: cottage_living_room
+    images: ["images/locations/tti-2026-05-21T22-20-09-116212.png"]
+
+  cottage_porch:
+    name: { en: "Cottage - Porch", pt-br: "Chalé - Varanda" }
+    description:
+      base:
+        en: |
+          The wooden porch creaks under your feet.
+
+          To the north, a dirt path leads toward the fields.
+        pt-br: |
+          A varanda de madeira range sob seus pés.
+
+          Ao norte, um caminho de terra leva aos campos.
+    exits:
+      north: path_to_crop_fields
+      east: cottage_living_room
+    images: ["images/locations/tti-2026-05-21T21-50-11-148199714.png"]
+
+  path_to_crop_fields:
+    name: { en: "Path to Crop Fields", pt-br: "Caminho para os Campos de Cultivo" }
+    description:
+      base: { en: "A dirt path leads toward the fields.", pt-br: "Um caminho de terra leva aos campos." }
+    exits:
+      north: crop_fields
+      south: cottage_porch
+    images: ["images/locations/tti-2026-05-21T21-42-06-488414966.png"]
+
+  crop_fields:
+    name: { en: "Crop Fields", pt-br: "Campos de Cultivo" }
+    description:
+      base: { en: "Wilted crops sway in the cold wind.", pt-br: "Culturas murchas balançam ao vento frio." }
+    exits:
+      south: path_to_crop_fields
+    images: ["images/locations/tti-2026-05-21T21-40-35-613533080.png"]
+
+  path_to_black_castle_01:
+    name: { en: "Path to Black Castle", pt-br: "Caminho para o Castelo Negro" }
+    description:
+      base: { en: "A dark, ominous black castle lies far away atop the hill.", pt-br: "Um castelo negro, escuro e ameaçador, ergue-se ao longe, no alto da colina." }
+    exits:
+      north: path_to_black_castle_02
+    images: ["images/locations/tti-2026-05-26T01-42-37-213623111.png"]
+
+  path_to_black_castle_02:
+    name: { en: "Path to Black Castle", pt-br: "Caminho para o Castelo Negro" }
+    description:
+      base: { en: "A dark, ominous black castle lies ahead atop the hill.", pt-br: "Um castelo negro, escuro e ameaçador, ergue-se à frente, no alto da colina." }
+    exits:
+      north: black_castle
+      south: path_to_black_castle_01
+    images: ["images/locations/tti-2026-05-26T01-41-10-36840184.png"]
+
+  black_castle:
+    name: { en: "Black Castle", pt-br: "Castelo Negro" }
+    description:
+      base: { en: "A dark, ominous black castle.", pt-br: "Um castelo negro e sinistro." }
+    exits:
+      north: black_castle_entrance
+      south: path_to_black_castle_02
+    images: ["images/locations/tti-2026-05-26T01-32-00-798632562.png"]
+
+  black_castle_entrance:
+    name: { en: "Black Castle - Entrance", pt-br: "Castelo Negro - Entrada" }
+    description:
+      base: { en: "The entrance to the dark, ominous black castle.", pt-br: "A entrada do castelo negro e sinistro." }
+    exits:
+      south: black_castle
+      north: black_castle_main_room
+    images: ["images/locations/tti-2026-05-26T01-34-21-723276390.png"]
+
+  black_castle_main_room:
+    name: { en: "Black Castle - Main Room", pt-br: "Castelo Negro - Sala Principal" }
+    description:
+      base: { en: "The main room of the dark, ominous black castle.", pt-br: "A sala principal do castelo negro e sinistro." }
+    exits:
+      south: black_castle_entrance
+    images: ["images/locations/tti-2026-05-26T01-56-29-138797493.png"]
+
+  black_castle_ensuite:
+    name: { en: "Black Castle - Ensuite", pt-br: "Castelo Negro - Banheiro Privativo" }
+    description:
+      base: { en: "A dark, opulent bathroom inside the Black Castle.", pt-br: "Um banheiro escuro e opulento dentro do Castelo Negro." }
+    contents: [old_hag]
+    exits: {}
+    images: ["images/locations/tti-2026-05-21T23-57-11-633718448.png"]
