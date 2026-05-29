@@ -700,6 +700,12 @@ function _initMapControls() {
     _applyMapTransform();
   });
 
+  vp.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    _mapZoom = Math.max(0.3, Math.min(3, _mapZoom - e.deltaY * 0.002));
+    _applyMapTransform();
+  }, { passive: false });
+
   let touches = [];
   let lastTouchDist = 0;
   let lastTapTime = 0;
