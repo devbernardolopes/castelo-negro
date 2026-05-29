@@ -566,10 +566,14 @@ document.addEventListener('DOMContentLoaded', () => {
       onInventoryRender: renderInventoryList,
       onMindRender: renderMindPanel,
       onMemoryRender: renderMemoryList,
-      onDebugRender: renderDebugPanel
+      onDebugRender: renderDebugPanel,
+      onMapRender: renderMap
     });
     resetUiForNewGame();
     setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
+    setMapTabVisibility(true);
+    document.getElementById('tab-inventory').style.display = '';
+    document.getElementById('tab-memory').style.display = '';
     setMenuButtonsEnabled(true);
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);

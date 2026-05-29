@@ -196,6 +196,8 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
   setSidebarTabsEnabled(true);
   setDebugTabVisibility(!!parsed?.metadata?.debug);
   setMapTabVisibility(true);
+  document.getElementById('tab-inventory').style.display = '';
+  document.getElementById('tab-memory').style.display = '';
   setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');
@@ -203,14 +205,6 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
   const intro = engine.getText('intro');
   if (intro) appendOutput(intro);
   engine.renderCurrentLocation();
-
-  if (handleForRemember) {
-    try {
-      await idbSet(DB_KEY_LAST_ADVENTURE, handleForRemember);
-    } catch {
-      // ignore
-    }
-  }
 }
 
 async function loadAdventureFromUrl(yamlUrl) {
@@ -254,6 +248,8 @@ async function loadAdventureFromUrl(yamlUrl) {
   setSidebarTabsEnabled(true);
   setDebugTabVisibility(!!parsed?.metadata?.debug);
   setMapTabVisibility(true);
+  document.getElementById('tab-inventory').style.display = '';
+  document.getElementById('tab-memory').style.display = '';
   setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');
