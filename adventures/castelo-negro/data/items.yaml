@@ -1,3 +1,9 @@
+# All three item description patterns now work:
+# Item format                     Example	                            desc.base desc.conditions Base text source
+# {en, pt-br} (no conditions)     cottage_key	                        undefined falsy           _pickLang(desc) via line 624
+# {en, pt-br, conditions}	        cottage_kitchen_table, husband_belt undefined truthy          _pickLang(desc) via line 614 fallback
+# {base: {en, pt-br}, conditions} (locations)	                        truthy    truthy          _pickLang(desc.base) via line 614 primary
+
 items:
   cottage_key:
     name: { en: "Cottage Key", pt-br: "Chave do Chalé" }

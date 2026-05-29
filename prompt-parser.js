@@ -112,7 +112,38 @@ GameEngine.prototype._tryActions = function(cmd) {
     if (!match) continue;
 
     if (match._ambiguous) {
-      if (!firstAmbiguity) firstAmbiguity = { actionId, actionDef, match };
+      const passingCandidates = [];
+      for (const candidateId of match.candidates) {
+        const testMatch = { ...match.partialMatch };
+        testMatch[match.slotName] = candidateId;
+        testMatch[`${match.slotName}_name`] = match.phrase;
+        if (this._checkActionConditions(actionDef, testMatch)) {
+          passingCandidates.push(candidateId);
+        }
+      }
+
+      if (passingCandidates.length === 0) {
+        const testMatch = { ...match.partialMatch };
+        testMatch[match.slotName] = match.candidates[0];
+        testMatch[`${match.slotName}_name`] = match.phrase;
+        if (this._executeActionFailure(actionId, actionDef, testMatch)) return true;
+        continue;
+      }
+
+      if (passingCandidates.length === 1) {
+        const finalMatch = { ...match.partialMatch };
+        finalMatch[match.slotName] = passingCandidates[0];
+        finalMatch[`${match.slotName}_name`] = match.phrase;
+        this._executeActionSuccess(actionId, actionDef, finalMatch);
+        return true;
+      }
+
+      if (!firstAmbiguity) {
+        firstAmbiguity = {
+          actionId, actionDef, match,
+          filteredCandidates: passingCandidates
+        };
+      }
       continue;
     }
 
@@ -132,16 +163,16 @@ GameEngine.prototype._tryActions = function(cmd) {
   }
 
   if (firstAmbiguity) {
-    const { actionId, actionDef, match } = firstAmbiguity;
+    const { actionId, actionDef, match, filteredCandidates } = firstAmbiguity;
     this._pendingAmbiguity = {
       actionId,
       actionDef,
       match: match.partialMatch,
       slotName: match.slotName,
-      candidates: match.candidates,
+      candidates: filteredCandidates,
       phrase: match.phrase
     };
-    const msg = this._buildDisambiguationMessage(match.candidates, match.phrase);
+    const msg = this._buildDisambiguationMessage(filteredCandidates, match.phrase);
     if (msg) this.hooks.onOutput?.(msg);
     return true;
   }
