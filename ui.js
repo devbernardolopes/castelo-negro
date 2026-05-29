@@ -763,7 +763,7 @@ function renderMap() {
     return;
   }
 
-  const contentKey = known.join(',') + '|' + currentLoc;
+  const contentKey = known.join(',');
   const mapEl = document.getElementById('map-grid');
   if (!mapEl) return;
   while (mapEl.firstChild) mapEl.removeChild(mapEl.firstChild);
