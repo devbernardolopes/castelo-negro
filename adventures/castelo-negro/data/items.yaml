@@ -123,16 +123,33 @@ items:
     name: { en: "Living Room Left Window", pt-br: "Janela Esquerda da Sala de Estar" }
     synonyms: { en: ["living room left window", "left window", "window", "windows"], pt-br: ["janela esquerda da sala de estar", "janela esquerda", "janela", "janelas"] }
     takeable: false
-    description: { en: "A small window on the left side of the living room.", pt-br: "Uma pequena janela no lado esquerdo da sala de estar." }
+    description:
+      en: |
+        A small window on the left side of the living room.
+      pt-br: |
+        Uma pequena janela no lado esquerdo da sala de estar.
+      conditions:
+        - if: "cottage_living_room_left_window_open"
+          message: { en: "The left window is open, letting in the cold winter air.", pt-br: "A janela esquerda está aberta, deixando entrar o ar frio do inverno." }
+        - if: "!cottage_living_room_left_window_open"
+          message: { en: "The left window is closed.", pt-br: "A janela esquerda está fechada." }
 
   cottage_living_room_right_window:
     name: { en: "Living Room Right Window", pt-br: "Janela Direita da Sala de Estar" }
     synonyms: { en: ["living room right window", "right window", "window", "windows"], pt-br: ["janela direita da sala de estar", "janela direita", "janela", "janelas"] }
     takeable: false
-    description: { en: "A small window on the right side of the living room.", pt-br: "Uma pequena janela no lado direito da sala de estar." }
+    description:
+      en: |
+        A small window on the right side of the living room.
+      pt-br: |
+        Uma pequena janela no lado direito da sala de estar.
 
   stream_ice:
     name: { en: "Thin Ice", pt-br: "Gelo Fino" }
-    synonyms: { en: ["ice", "frozen surface", "stream ice"], pt-br: ["gelo", "superfície congelada"] }
+    synonyms: { en: ["ice", "frozen surface", "stream ice", "thin ice"], pt-br: ["gelo", "superfície congelada", "gelo fino"] }
     takeable: false
-    description: { en: "The ice shimmers deceptively. One wrong step could mean disaster.", pt-br: "O gelo brilha de forma enganosa. Um passo em falso poderia significar desastre." }
+    description:
+      en: |
+        The ice shimmers deceptively. One wrong step could mean disaster.
+      pt-br: |
+        O gelo brilha de forma enganosa. Um passo em falso poderia significar desastre.

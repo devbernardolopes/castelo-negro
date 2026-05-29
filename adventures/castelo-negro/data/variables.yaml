@@ -28,6 +28,16 @@ variables:
     min_value: 0
     max_value: 3
 
+  cottage_living_room_left_window_open:
+    type: bool
+    value: false
+    description: "If true, the left window of the living room is open, otherwise it is closed. This variable does not determine whether the window is locked or unlocked, only whether it is currently open or closed."
+
+  cottage_living_room_right_window_open:
+    type: bool
+    value: false
+    description: "If true, the right window of the living room is open, otherwise it is closed. This variable does not determine whether the window is locked or unlocked, only whether it is currently open or closed."
+
   cottage_door_open:
     type: bool
     value: false

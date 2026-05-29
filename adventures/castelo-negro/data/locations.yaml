@@ -17,6 +17,10 @@ locations:
 
           A cozinha fica bem na sua frente, enquanto a varanda fica à sua esquerda.
       conditions:
+        - if: "(cottage_living_room_left_window_open and !cottage_living_room_right_window_open) or (!cottage_living_room_left_window_open and cottage_living_room_right_window_open)"
+          message: { en: "One window is open, letting in the cold winter air.", pt-br: "Uma janela está aberta, deixando entrar o ar frio do inverno." }
+        - if: "cottage_living_room_left_window_open and cottage_living_room_right_window_open"
+          message: { en: "Both windows are open, letting in the cold winter air.", pt-br: "Ambas as janelas estão abertas, deixando entrar o ar frio do inverno." }
         - if: "here.has('husband_corpse')"
           message: { en: "Your husband lies on the floor, motionless.", pt-br: "Seu marido está no chão, imóvel." }
         - if: "!inventory.has(newborn_daughter)"

@@ -222,6 +222,50 @@ actions:
           en: "The door is already closed."
           pt-br: "A porta já está fechada."
 
+  open_cottage_living_room_left_window:
+    pattern:
+      - verb: ["open"]
+      - target: ["cottage_living_room_left_window"]
+    conditions:
+      - "here.has('cottage_living_room_left_window')"
+      - "!cottage_living_room_left_window_open"
+    effect:
+      - "cottage_living_room_left_window_open = true"
+    message:
+      en: "You open the left window of the living room."
+      pt-br: "Você abre a janela esquerda da sala de estar."
+    conditional_messages:
+      - condition: "!here.has('cottage_living_room_left_window')"
+        message:
+          en: "There's no window here to open."
+          pt-br: "Não há janela aqui para abrir."
+      - condition: "cottage_living_room_left_window_open"
+        message:
+          en: "The window is already open."
+          pt-br: "A janela já está aberta."
+
+  close_cottage_living_room_left_window:
+    pattern:
+      - verb: ["close"]
+      - target: ["cottage_living_room_left_window"]
+    conditions:
+      - "here.has('cottage_living_room_left_window')"
+      - "cottage_living_room_left_window_open"
+    effect:
+      - "cottage_living_room_left_window_open = false"
+    message:
+      en: "You close the left window of the living room."
+      pt-br: "Você fecha a janela esquerda da sala de estar."
+    conditional_messages:
+      - condition: "!here.has('cottage_living_room_left_window')"
+        message:
+          en: "There's no window here to close."
+          pt-br: "Não há janela aqui para fechar."
+      - condition: "!cottage_living_room_left_window_open"
+        message:
+          en: "The window is already closed."
+          pt-br: "A janela já está fechada."
+
   feed_newborn_daughter:
     patterns:
       obj_then_target:
