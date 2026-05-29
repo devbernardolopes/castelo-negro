@@ -108,8 +108,8 @@ actions:
   
   take_cottage_key_from_belt:
     pattern:
-      - verb: ["take", "grab", "get"]
-      - object: ["cottage_key", "key", "brass key"]
+      - verb: ["take"]
+      - object: ["cottage_key"]
     conditions:
       - "here.has('husband_corpse')"
       - "husband_corpse_rolled"
