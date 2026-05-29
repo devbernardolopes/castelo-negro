@@ -105,6 +105,7 @@ GameEngine.prototype._tryActions = function(cmd) {
   if (!actions) return false;
 
   let firstAmbiguity = null;
+  let fallbackMatch = null;
 
   for (const [actionId, actionDef] of Object.entries(actions)) {
     const match = this._matchAction(actionDef, cmd);
@@ -112,6 +113,12 @@ GameEngine.prototype._tryActions = function(cmd) {
 
     if (match._ambiguous) {
       if (!firstAmbiguity) firstAmbiguity = { actionId, actionDef, match };
+      continue;
+    }
+
+    // Catch-all actions (no pattern, empty match) — defer to lowest priority
+    if (Object.keys(match).length === 0) {
+      if (!fallbackMatch) fallbackMatch = { actionId, actionDef, match };
       continue;
     }
 
@@ -136,6 +143,12 @@ GameEngine.prototype._tryActions = function(cmd) {
     };
     const msg = this._buildDisambiguationMessage(match.candidates, match.phrase);
     if (msg) this.hooks.onOutput?.(msg);
+    return true;
+  }
+
+  if (fallbackMatch) {
+    const { actionId, actionDef, match } = fallbackMatch;
+    this._executeActionSuccess(actionId, actionDef, match);
     return true;
   }
 

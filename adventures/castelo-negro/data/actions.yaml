@@ -281,20 +281,6 @@ actions:
       en: "From here, you can see the wooden porch of your cottage to the south, with its weathered planks and hanging lantern."
       pt-br: "Daqui, você pode ver a varanda de madeira do seu chalé ao sul, com seus degraus desgastados e lanterna pendurada."
 
-  # move:
-  #   pattern:
-  #     - verb: ["go"]
-  #     - direction: ["*"]
-  #   effect: []
-  #   message:
-  #     en: "{location_or_object_description}"
-  #     pt-br: "{location_or_object_description}"
-  #   conditional_messages:
-  #     - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
-  #       message:
-  #         en: "There's no {object_name} here."
-  #         pt-br: "Não há {object_name} aqui."
-
   examine:
     pattern:
       - verb: ["examine"]
