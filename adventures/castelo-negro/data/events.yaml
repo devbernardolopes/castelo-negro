@@ -47,6 +47,25 @@ events:
       en: "The door is locked. You have to find the key."
       pt-br: "A porta está trancada. Você precisa encontrar a chave."
 
+  - id: reached_cottage_porch_for_the_first_time
+    type: location_enter
+    location: "cottage_porch"
+    conditions: ["!reached_cottage_porch"]
+    effect: "reached_cottage_porch = true"
+    message:
+      en: |
+        You're out. The cold night air hits you like a wall, and the wooden porch creaks under your feet.
+
+        Now it is only you and your daughter. You remember the path that leads north, toward the fields. Beyond the crop fields there is a black castle where a nobleman is rumored to live.
+
+        Maybe he could help. You have to get there. You have to find a way to survive.
+      pt-br: |
+        Você está fora. O ar frio da noite bate em você como uma parede, e a varanda de madeira range sob seus pés.
+
+        Agora é só você e sua filha. Você se lembra do caminho que leva para o norte, em direção aos campos. Além dos campos cultivos há um castelo negro onde um nobre é conhecido por viver.
+
+        Talvez ele possa ajudar. Você tem que chegar lá. Você tem que encontrar uma forma de sobreviver.
+
   # - id: newborn_daughter_cries
   #   type: recurring
   #   interval: 3
