@@ -633,11 +633,11 @@ class GameEngine {
     const prevLoc = this.gameState.previous_location;
     if (prevLoc !== locationId) {
       const nameText = this._pickLang(loc.name);
+      if (nameText) this.hooks.onLocationNameRender?.(nameText);
+
       const desc = this.getLocationDescription(locationId);
-      let fullText = '';
-      if (nameText) fullText = nameText + '\n\n';
-      fullText += desc;
-      if (fullText) this.hooks.onOutput?.(fullText);
+      this.hooks.onOutput?.(desc);
+
       this.gameState.previous_location = locationId;
     }
 

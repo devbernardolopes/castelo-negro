@@ -212,7 +212,6 @@ function _doAppendOutput(text) {
   entry.innerHTML = textToHtmlWithBoldBrackets(text);
   makeWordsClickable(entry);
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
-  if (el.childNodes.length) el.appendChild(document.createElement('br'));
   el.appendChild(entry);
   el.scrollTop = el.scrollHeight;
 }
@@ -224,7 +223,6 @@ function _doAppendLocationName(text) {
   entry.className = 'log-entry location-name';
   entry.textContent = text;
   makeWordsClickable(entry);
-  if (el.childNodes.length) el.appendChild(document.createElement('br'));
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
   el.appendChild(entry);
   el.scrollTop = el.scrollHeight;
@@ -350,7 +348,6 @@ function appendPlayerPrompt(promptText) {
   const entry = document.createElement('div');
   entry.className = 'log-entry player-prompt';
   entry.textContent = `> ${promptText}`;
-  if (el.childNodes.length) el.appendChild(document.createElement('br'));
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
   el.appendChild(entry);
   el.scrollTop = el.scrollHeight;
