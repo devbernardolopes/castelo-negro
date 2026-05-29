@@ -58,14 +58,15 @@ events:
 
         Now it is only you and your daughter. You remember the path that leads north, toward the fields. Beyond the crop fields there is a black castle where a nobleman is rumored to live.
 
-        Maybe he could help. You have to get there. You have to find a way to survive.
+        Maybe he could help. You have to get there. You have to find a way to survive...
+        >>>>
       pt-br: |
         Você está fora. O ar frio da noite bate em você como uma parede, e a varanda de madeira range sob seus pés.
 
         Agora é só você e sua filha. Você se lembra do caminho que leva para o norte, em direção aos campos. Além dos campos cultivos há um castelo negro onde um nobre é conhecido por viver.
 
-        Talvez ele possa ajudar. Você tem que chegar lá. Você tem que encontrar uma forma de sobreviver.
-
+        Talvez ele possa ajudar. Você tem que chegar lá. Você tem que encontrar uma forma de sobreviver...
+        >>>>
   # - id: newborn_daughter_cries
   #   type: recurring
   #   interval: 3
