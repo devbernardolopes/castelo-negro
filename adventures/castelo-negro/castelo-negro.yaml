@@ -7,7 +7,7 @@ metadata:
   data_path: "data/"
   data_files: ["actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml"]
   allow_direct_input: false
-  debug: true
+  debug: true # Show the value of the variables that have `debug_variable` set to `true`
 
 items:
   cottage_key:
