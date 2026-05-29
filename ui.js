@@ -693,15 +693,16 @@ function _initMapControls() {
     vp.style.cursor = '';
   });
 
-  vp.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    _mapZoom = Math.max(0.3, Math.min(3, _mapZoom + delta));
+  vp.addEventListener('dblclick', () => {
+    _mapPanX = 0;
+    _mapPanY = 0;
+    _mapZoom = 1;
     _applyMapTransform();
-  }, { passive: false });
+  });
 
   let touches = [];
   let lastTouchDist = 0;
+  let lastTapTime = 0;
 
   vp.addEventListener('touchstart', (e) => {
     touches = Array.from(e.touches);
@@ -735,6 +736,16 @@ function _initMapControls() {
   }, { passive: true });
 
   vp.addEventListener('touchend', () => {
+    const now = Date.now();
+    if (now - lastTapTime < 300 && lastTapTime > 0) {
+      _mapPanX = 0;
+      _mapPanY = 0;
+      _mapZoom = 1;
+      _applyMapTransform();
+      lastTapTime = 0;
+    } else {
+      lastTapTime = now;
+    }
     lastTouchDist = 0;
   }, { passive: true });
 }
