@@ -9,6 +9,7 @@ items:
     name: { en: "Cottage Key", pt-br: "Chave do Chalé" }
     synonyms: { en: ["brass key", "key", "cottage key"], pt-br: ["chave de latão", "chave", "chave do chalé"] }
     takeable: true
+    size: 1
     description: { en: "A tarnished brass key.", pt-br: "Uma chave de latão oxidada." }
     images: ["images/items/tti-2026-05-23T23-26-04-394045010.png"]
     on_ground_messages:
@@ -21,6 +22,7 @@ items:
     name: { en: "Hand Sickle", pt-br: "Foice de Mão" }
     synonyms: { en: ["sickle", "reap hook", "reaping hook"], pt-br: ["foice", "foice de mão"] }
     takeable: true
+    size: 1
     images: ["images/items/tti-2026-05-23T23-37-55-654889641.png"]
     description: { en: "A worn, curved sickle.", pt-br: "Uma foice desgastada e curvada." }
     on_ground_messages:
@@ -34,7 +36,7 @@ items:
     synonyms: { en: ["hand", "husband's hand", "husband's grasp", "grasp"], pt-br: ["mão", "mão do marido"] }
     openable: true
     takeable: false
-    container_capacity: 1
+    container_capacity: 2
     contents: [hand_sickle]
     description:
       en: |
@@ -84,6 +86,7 @@ items:
     name: { en: "Newborn Daughter", pt-br: "Filha Recém-Nascida" }
     synonyms: { en: ["baby", "daughter", "infant", "newborn"], pt-br: ["bebê", "filha", "criança", "recém-nascida"] }
     takeable: true
+    size: 8
     description: { en: "Your tiny, crying daughter.", pt-br: "Sua pequena filha chorando." }
     images: ["images/items/tti-2026-05-24T02-23-25-446674314.png"]
 
@@ -107,7 +110,8 @@ items:
     name: { en: "Leather Pouch", pt-br: "Bolsa de Couro" }
     synonyms: { en: ["pouch", "leather pouch"], pt-br: ["bolsa", "bolsa de couro"] }
     takeable: true
-    container_capacity: 1
+    container_capacity: 3
+    size: 1
     contents: []
     description:
       en: |
@@ -139,6 +143,7 @@ items:
     synonyms: { en: ["bread", "loaf of bread", "moldy bread", "moldy loaf", "loaf of moldy bread", "loaf", "mold-covered loaf"], pt-br: ["pão", "pão mofado", "pedaço de pão mofado", "pedaço de pão"] }
     takeable: true
     consumable: true
+    size: 2
     description: { en: "A small, mold-covered loaf.", pt-br: "Um pequeno pedaço de pão mofado." }
     images: ["images/items/tti-2026-05-23T23-26-32-610649206.png"]
     # on_ground_messages:
@@ -149,6 +154,7 @@ items:
     name: { en: "Charred Wood", pt-br: "Madeira Queimada" }
     synonyms: { en: ["charred wood", "wood"], pt-br: ["madeira queimada", "madeira"] }
     takeable: true
+    size: 2
     description: { en: "A piece of wood that has been burned.", pt-br: "Um pedaço de madeira que foi queimado." }
     images: ["images/items/tti-2026-05-25T22-56-49-992411015.png"]
     on_ground_messages:
@@ -159,6 +165,7 @@ items:
     name: { en: "Hearth Ashes", pt-br: "Cinzas da Lareira" }
     synonyms: { en: ["hearth ashes", "ashes"], pt-br: ["cinzas da lareira", "cinzas"] }
     takeable: true
+    size: 1
     description: { en: "Piles of ashes from the stone hearth.", pt-br: "Pilhas de cinzas da lareira de pedra." }
     images: ["images/items/tti-2026-05-25T23-26-53-1025784771.png"]
     on_ground_messages:

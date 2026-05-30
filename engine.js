@@ -459,7 +459,14 @@ class GameEngine {
         },
         container_count: (itemId) => {
           const c = engine.gameState.container_contents?.[String(itemId)];
-          return Array.isArray(c) ? c.length : 0;
+          if (!Array.isArray(c)) return 0;
+          return c.reduce((sum, childId) => {
+            const size = engine.definition.items?.[childId]?.size;
+            return sum + (typeof size === 'number' ? size : 1);
+          }, 0);
+        },
+        item_size: (itemId) => {
+          return engine.definition.items?.[String(itemId)]?.size ?? 1;
         }
       },
       locations: this.definition.locations || {},
@@ -566,18 +573,40 @@ class GameEngine {
     }
   }
 
+  _isContainerItemVisible(containerId, itemId) {
+    const contDef = this.definition.items?.[containerId];
+    const rule = contDef?.contents_visibility?.[itemId];
+    if (!rule) return true;
+    if (!rule.visible_when) return true;
+    return this.evaluateCondition(String(rule.visible_when));
+  }
+
+  _getContainerVisibleContents(containerId) {
+    const contents = this.gameState.container_contents?.[containerId];
+    if (!Array.isArray(contents)) return [];
+    return contents.filter(itemId => this._isContainerItemVisible(containerId, itemId));
+  }
+
   _itemExistsInLocationScope(itemId) {
     const id = String(itemId);
     const loc = this.getFullLocationData(this.gameState.current_location);
-    const queue = [...(Array.isArray(loc?.contents) ? loc.contents : [])];
+    const queue = [];
+    for (const c of (Array.isArray(loc?.contents) ? loc.contents : [])) {
+      queue.push([c, null]);
+    }
     const visited = new Set();
     while (queue.length) {
-      const childId = queue.shift();
+      const [childId, parentId] = queue.shift();
       if (childId === id) return true;
       if (visited.has(childId)) continue;
       visited.add(childId);
+      if (parentId && !this._isContainerItemVisible(parentId, childId)) continue;
       const sub = this.gameState.container_contents?.[childId];
-      if (Array.isArray(sub)) queue.push(...sub);
+      if (Array.isArray(sub)) {
+        for (const grandchild of sub) {
+          queue.push([grandchild, childId]);
+        }
+      }
     }
     return false;
   }
@@ -675,8 +704,10 @@ class GameEngine {
     if (!def) return '';
     const desc = def.description;
     if (!desc) return '';
-    if (typeof desc === 'string') return desc;
-    if (desc.base !== undefined || Array.isArray(desc.conditions)) {
+    let result;
+    if (typeof desc === 'string') {
+      result = desc;
+    } else if (desc.base !== undefined || Array.isArray(desc.conditions)) {
       const base = desc.base ? this._pickLang(desc.base) : this._pickLang(desc);
       const parts = [base].filter(Boolean);
       if (Array.isArray(desc.conditions)) {
@@ -685,9 +716,16 @@ class GameEngine {
             parts.push(this._pickLang(c?.message));
         }
       }
-      return parts.filter(Boolean).join('\n');
+      result = parts.filter(Boolean).join('\n');
+    } else {
+      result = this._pickLang(desc);
     }
-    return this._pickLang(desc);
+    const visible = this._getContainerVisibleContents(itemId);
+    if (visible.length > 0) {
+      const names = visible.map(id => this._pickLang(this.definition.items?.[id]?.name) || id);
+      result += '\nInside you see: ' + names.join(', ') + '.';
+    }
+    return result;
   }
 
   _getGroundItemMessages(locationId) {
