@@ -102,6 +102,7 @@ variables:
   husband_corpse_inspected_count:
     type: int
     value: 0
+    debug_variable: true
     description: "How many times the player has examined the corpse"
 
   husband_corpse_rolled:
@@ -117,6 +118,7 @@ variables:
 
   husband_hand_sickle_visible:
     type: bool
+    debug_variable: true
     value: false
 
   # husband_hand_opened:
