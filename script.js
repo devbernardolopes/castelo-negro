@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target?.id === 'adventure-modal-backdrop') setModalVisible(false);
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { setModalVisible(false); setThemeModalVisible(false); setLanguageModalVisible(false); const cb = document.getElementById('lang-confirm-backdrop'); if (cb) cb.style.display = 'none'; }
+    if (e.key === 'Escape') { setModalVisible(false); setThemeModalVisible(false); setLanguageModalVisible(false); setImageModalVisible(false); const cb = document.getElementById('lang-confirm-backdrop'); if (cb) cb.style.display = 'none'; }
   });
 
   const webPane = document.getElementById('adventure-web-pane');
@@ -660,6 +660,76 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('language-modal-backdrop')?.addEventListener('click', (e) => {
     if (e.target?.id === 'language-modal-backdrop') setLanguageModalVisible(false);
   });
+
+  // Image modal
+  function setImageModalVisible(visible) {
+    const el = document.getElementById('img-modal-backdrop');
+    if (el) el.style.display = visible ? 'flex' : 'none';
+  }
+
+  function showImageModal(src, title) {
+    if (!src) return;
+    const backdrop = document.getElementById('img-modal-backdrop');
+    const img = document.getElementById('img-modal-view');
+    const titleEl = document.getElementById('img-modal-title');
+    if (!backdrop || !img) return;
+
+    if (title && titleEl) titleEl.textContent = title;
+
+    img.style.transform = 'scale(1)';
+    img.src = src;
+
+    const body = document.querySelector('.img-modal-body');
+    if (body) { body.scrollTop = 0; body.scrollLeft = 0; }
+
+    setImageModalVisible(true);
+  }
+
+  document.getElementById('img-modal-close')?.addEventListener('click', () => setImageModalVisible(false));
+  document.getElementById('img-modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target?.id === 'img-modal-backdrop') setImageModalVisible(false);
+  });
+
+  document.getElementById('room-img')?.addEventListener('click', function () {
+    if (this.style.display === 'none' || !this.src) return;
+    showImageModal(this.src, 'Room Image');
+  });
+
+  document.getElementById('inventory-list')?.addEventListener('click', (e) => {
+    const img = e.target.closest('.inventory-item-img');
+    if (img && img.src) {
+      const li = img.closest('li');
+      const nameSpan = li?.querySelector('span');
+      const title = nameSpan?.textContent || '';
+      showImageModal(img.src, title);
+    }
+  });
+
+  {
+    const imgView = document.getElementById('img-modal-view');
+    let _imgLastTap = 0;
+    if (imgView) {
+      imgView.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        let scale = parseFloat(imgView.dataset.scale) || 1;
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        scale = Math.max(0.25, Math.min(5, scale + delta));
+        imgView.dataset.scale = String(scale);
+        imgView.style.transform = 'scale(' + scale + ')';
+      }, { passive: false });
+
+      imgView.addEventListener('click', function () {
+        const now = Date.now();
+        if (now - _imgLastTap < 300) {
+          _imgLastTap = 0;
+          this.dataset.scale = '1';
+          this.style.transform = 'scale(1)';
+        } else {
+          _imgLastTap = now;
+        }
+      });
+    }
+  }
 
   document.getElementById('lang-confirm-cancel')?.addEventListener('click', () => {
     const cb = document.getElementById('lang-confirm-backdrop');
