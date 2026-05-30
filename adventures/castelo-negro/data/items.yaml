@@ -91,7 +91,7 @@ items:
     name: { en: "Kitchen Table", pt-br: "Mesa da Cozinha" }
     synonyms: { en: ["table", "kitchen table"], pt-br: ["mesa", "mesa da cozinha"] }
     takeable: false
-    contents: [moldy_loaf_of_bread]
+    contents: [moldy_loaf_of_bread, leather_pouch]
     description:
       en: |
         A small, worn wooden table.
@@ -100,6 +100,21 @@ items:
       conditions:
         - if: "containerHas(cottage_kitchen_table, moldy_loaf_of_bread)"
           message: { en: "A small, mold-covered loaf lies on the table.", pt-br: "Um pequeno pedaço de pão mofado está sobre a mesa." }
+        - if: "containerHas(cottage_kitchen_table, leather_pouch)"
+          message: { en: "A small leather pouch sits on the table.", pt-br: "Uma pequena bolsa de couro está sobre a mesa." }
+
+  leather_pouch:
+    name: { en: "Leather Pouch", pt-br: "Bolsa de Couro" }
+    synonyms: { en: ["pouch", "leather pouch"], pt-br: ["bolsa", "bolsa de couro"] }
+    takeable: true
+    container_capacity: 1
+    contents: []
+    description:
+      en: |
+        A small leather pouch, empty and worn.
+      pt-br: |
+        Uma pequena bolsa de couro, vazia e desgastada.
+    images: ["images/items/tti-2026-05-30T19-40-34-455370821.png"]
 
   stone_hearth:
     name: { en: "Stone Hearth", pt-br: "Lareira de Pedra" }
@@ -126,9 +141,9 @@ items:
     consumable: true
     description: { en: "A small, mold-covered loaf.", pt-br: "Um pequeno pedaço de pão mofado." }
     images: ["images/items/tti-2026-05-23T23-26-32-610649206.png"]
-    on_ground_messages:
-      - condition: "true"
-        message: { en: "A moldy loaf of bread is on the ground.", pt-br: "Um pão mofado está no chão." }
+    # on_ground_messages:
+    #   - condition: "true"
+    #     message: { en: "A moldy loaf of bread is on the ground.", pt-br: "Um pão mofado está no chão." }
 
   charred_wood:
     name: { en: "Charred Wood", pt-br: "Madeira Queimada" }
