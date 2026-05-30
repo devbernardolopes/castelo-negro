@@ -23,7 +23,11 @@ document.addEventListener('click', (e) => {
     const direction = e.target.getAttribute('data-direction');
     const mapped = DIRECTION_MAP[direction];
     if (!mapped) return;
-    const prompt = `go ${mapped}`;
+    const goList = engine._pickLang(engine.definition.verbs?.go?.synonyms);
+    const dirList = engine._pickLang(engine.definition.directions?.[mapped]?.synonyms);
+    const goWord = Array.isArray(goList) ? String(goList[0]).toLowerCase() : 'go';
+    const dirWord = Array.isArray(dirList) ? String(dirList[0]).toLowerCase() : mapped;
+    const prompt = `${goWord} ${dirWord}`;
     savePromptToHistory(prompt);
     appendPlayerPrompt(prompt);
     engine.processPlayerCommand(prompt);
