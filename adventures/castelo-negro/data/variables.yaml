@@ -117,7 +117,7 @@ variables:
     debug_variable: true
     description: "Whether the belt is visible to the player"
 
-  husband_hand_opened:
+  husband_hand_open:
     type: bool
     value: false
     debug_variable: true
