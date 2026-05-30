@@ -18,8 +18,8 @@ actions:
     progressive_messages:
       # First inspection: realize husband is dead
       - condition: "husband_corpse_inspected_count == 1"
-        # effect:
-          # - "cottage_key_discovery_stage = 1"
+        effect:
+          - "husband_hand_sickle_visible = true"
         message:
           en: |
             Your husband lies still. Cold. His eyes stare blankly at nothing.
@@ -192,7 +192,6 @@ actions:
           en: "You can't lock the door while it's open. You need to close it first."
           pt-br: "Você não pode trancar a porta enquanto ela está aberta. Você precisa fechá-la primeiro."
 
-  
   open_cottage_front_door:
     pattern:
       - verb: ["open"]

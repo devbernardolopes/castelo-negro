@@ -98,18 +98,15 @@ variables:
     description: "0=unknown, 1=husband_dead, 2=suspected_on_body, 3=belt_spotted, 4=belt_accessible, 5=key_obtained"
     min_value: 0
     max_value: 5
-    debug_variable: true
 
   husband_corpse_inspected_count:
     type: int
     value: 0
-    debug_variable: true
     description: "How many times the player has examined the corpse"
 
   husband_corpse_rolled:
     type: bool
     value: false
-    debug_variable: true
     description: "Whether the player has rolled/flipped the corpse to access the belt back"
 
   husband_belt_visible:
@@ -118,8 +115,15 @@ variables:
     debug_variable: true
     description: "Whether the belt is visible to the player"
 
+  husband_hand_sickle_visible:
+    type: bool
+    value: false
+
+  husband_hand_opened:
+    type: bool
+    value: false
+  
   cottage_door_unlock_attempted:
     type: bool
     value: false
-    debug_variable: true
     description: "True if player has tried to leave via locked door at least once"

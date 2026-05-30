@@ -18,7 +18,7 @@ verbs:
   close:
     synonyms: { en: ["close"], pt-br: ["fechar"] }
   roll:
-    synonyms: { en: ["roll", "flip", "turn"], pt-br: ["virar", "girar"] }
+    synonyms: { en: ["roll", "flip", "turn"], pt-br: ["rolar", "virar", "girar"] }
   go:
     synonyms: { en: ["go", "walk", "move"], pt-br: ["ir", "andar", "mover"] }
   attack:

@@ -19,11 +19,28 @@ items:
     images: ["images/items/tti-2026-05-23T23-37-55-654889641.png"]
     description: { en: "A worn, curved sickle.", pt-br: "Uma foice desgastada e curvada." }
 
+  husband_hand:
+    name: { en: "Husband's Hand", pt-br: "Mão do Esposo" }
+    synonyms: { en: ["hand", "husband's hand"], pt-br: ["mão", "mão do marido"] }
+    openable: true
+    takeable: false
+    contents: [hand_sickle]
+    description:
+      en: |
+        The cold, stiff hand of your husband.
+      pt-br: |
+        A mão fria e rígida do seu marido.
+      conditions:
+        - if: "containerHas(husband_hand, hand_sickle) and !husband_hand_open"
+          message: { en: "Your husband's hand is clenched tightly, but you can see the handle of a sickle protruding from his grasp.", pt-br: "A mão do seu marido está fechada com força, mas você pode ver o cabo de uma foice saindo de sua mão." }
+        - if: "containerHas(husband_hand, hand_sickle) and husband_hand_open"
+          message: { en: "Your husband's hand is now open, and you can see the handle of a sickle protruding from his grasp.", pt-br: "A mão do seu marido está aberta, e você pode ver o cabo de uma foice saindo de sua mão." }
+
   husband_corpse:
     name: { en: "Husband's Corpse", pt-br: "Cadáver do Esposo" }
     synonyms: { en: ["husband", "corpse", "body"], pt-br: ["marido", "cadáver", "corpo"] }
     takeable: false
-    contents: [husband_belt, hand_sickle]
+    contents: [husband_belt, husband_hand]
     description:
       en: |
         The body of your husband, cold and still.
@@ -32,9 +49,7 @@ items:
     contents_visibility:
       husband_belt:
         visible_when: "husband_belt_visible"
-      hand_sickle:
-        visible_when: "husband_belt_visible"
-
+  
   husband_belt:
     name: { en: "Husband's Belt", pt-br: "Cinto do Esposo" }
     synonyms: { en: ["belt", "husband's belt"], pt-br: ["cinto", "cinto do marido"] }
