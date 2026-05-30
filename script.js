@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target?.id === 'adventure-modal-backdrop') setModalVisible(false);
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { setModalVisible(false); setThemeModalVisible(false); }
+    if (e.key === 'Escape') { setModalVisible(false); setThemeModalVisible(false); setLanguageModalVisible(false); const cb = document.getElementById('lang-confirm-backdrop'); if (cb) cb.style.display = 'none'; }
   });
 
   const webPane = document.getElementById('adventure-web-pane');
@@ -592,6 +592,110 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem(LS_KEY_FONT_SIZE, String(val));
     });
   }
+
+  const LANG_NAMES = {
+    en: 'English',
+    'pt-br': 'Português (Brasil)',
+    es: 'Español',
+    fr: 'Français',
+    de: 'Deutsch',
+    ja: '日本語',
+    'zh-cn': '简体中文',
+    'zh-tw': '繁體中文'
+  };
+
+  function setLanguageModalVisible(visible) {
+    const el = document.getElementById('language-modal-backdrop');
+    if (el) el.style.display = visible ? 'flex' : 'none';
+  }
+
+  function renderLanguageGrid() {
+    const grid = document.getElementById('language-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    if (!engine) return;
+    const languages = engine.definition.metadata.languages;
+    if (!Array.isArray(languages)) return;
+    const currentLang = engine.language;
+    for (const lang of languages) {
+      const card = document.createElement('button');
+      card.className = 'theme-card' + (lang === currentLang ? ' is-active' : '');
+      card.setAttribute('data-lang', lang);
+      const nameEl = document.createElement('div');
+      nameEl.className = 'theme-name';
+      nameEl.textContent = LANG_NAMES[lang] || lang;
+      card.appendChild(nameEl);
+      card.addEventListener('click', () => {
+        if (lang === currentLang) { setLanguageModalVisible(false); return; }
+        const cb = document.getElementById('lang-confirm-backdrop');
+        if (cb) {
+          cb.style.display = 'flex';
+          cb.setAttribute('data-selected-lang', lang);
+        }
+      });
+      grid.appendChild(card);
+    }
+  }
+
+  document.getElementById('language-modal-close')?.addEventListener('click', () => setLanguageModalVisible(false));
+  document.getElementById('language-modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target?.id === 'language-modal-backdrop') setLanguageModalVisible(false);
+  });
+
+  document.getElementById('lang-confirm-cancel')?.addEventListener('click', () => {
+    const cb = document.getElementById('lang-confirm-backdrop');
+    if (cb) cb.style.display = 'none';
+  });
+  document.getElementById('lang-confirm-backdrop')?.addEventListener('click', (e) => {
+    if (e.target?.id === 'lang-confirm-backdrop') {
+      const cb = document.getElementById('lang-confirm-backdrop');
+      if (cb) cb.style.display = 'none';
+    }
+  });
+  document.getElementById('lang-confirm-ok')?.addEventListener('click', () => {
+    const cb = document.getElementById('lang-confirm-backdrop');
+    const newLang = cb ? cb.getAttribute('data-selected-lang') : null;
+    if (cb) cb.style.display = 'none';
+    setLanguageModalVisible(false);
+    if (!engine || !newLang) return;
+    clearPromptHistory();
+    const def = engine.definition;
+    engine = new GameEngine(def, {
+      assetsBase: engine.assetsBase,
+      assetsResolver: engine.assetsResolver,
+      language: newLang,
+      onOutput: appendOutput,
+      onLocationNameRender: appendLocationName,
+      onRoomImageRender: renderRoomImage,
+      onInventoryRender: renderInventoryList,
+      onMindRender: renderMindPanel,
+      onMemoryRender: renderMemoryList,
+      onDebugRender: renderDebugPanel,
+      onMapRender: renderMap
+    });
+    resetUiForNewGame();
+    setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
+    setMapTabVisibility(true);
+    document.getElementById('tab-inventory').style.display = '';
+    document.getElementById('tab-memory').style.display = '';
+    setMenuButtonsEnabled(true);
+    setGameControlsEnabled(true);
+    setSidebarTabsEnabled(true);
+    setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
+    const textDisplay = document.getElementById('text-display');
+    if (textDisplay) textDisplay.innerHTML = '';
+    updateScrollBtnVisibility();
+    appendGameMetadata(engine?.definition?.metadata);
+    const intro = engine.getText('intro');
+    if (intro) appendOutput(intro);
+    engine.renderCurrentLocation();
+  });
+
+  document.getElementById('menu-btn-change-language')?.addEventListener('click', () => {
+    if (!engine) return;
+    renderLanguageGrid();
+    setLanguageModalVisible(true);
+  });
 
   document.getElementById('menu-btn-reset-game')?.addEventListener('click', () => {
     if (!engine) return;

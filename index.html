@@ -74,6 +74,31 @@
         </div>
       </div>
     </div>
+    <div id="language-modal-backdrop" class="modal-backdrop" style="display:none;">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="language-modal-title">
+        <div class="modal-header">
+          <div id="language-modal-title" class="modal-title">Choose Language</div>
+          <button id="language-modal-close" class="modal-close" title="Close" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="theme-grid" id="language-grid"></div>
+        </div>
+      </div>
+    </div>
+    <div id="lang-confirm-backdrop" class="modal-backdrop" style="display:none;">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="lang-confirm-title">
+        <div class="modal-header">
+          <div id="lang-confirm-title" class="modal-title">Change Language</div>
+        </div>
+        <div class="modal-body">
+          <div class="hint" id="lang-confirm-message">Changing the language will reset the game. Are you sure?</div>
+          <div class="actions-row">
+            <button id="lang-confirm-cancel" class="menu-btn" type="button">Cancel</button>
+            <button id="lang-confirm-ok" class="menu-btn" type="button" style="background:var(--accent);color:var(--accent-text);">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="game-area">
       <div id="text-display-wrapper">
         <div id="text-display"></div>

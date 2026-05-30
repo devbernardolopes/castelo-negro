@@ -51,15 +51,16 @@ class GameEngine {
    * @param {{
    *   assetsBase?: string,
    *   assetsResolver?: (relativePath:string)=>Promise<string>,
+   *   language?: LanguageCode,
    *   onOutput?: (text:string)=>void,
    *   onLocationNameRender?: (name:string)=>void,
    *   onLocationRender?: (locationId:string)=>void,
    *   onInventoryRender?: ()=>void,
- *   onRoomImageRender?: (url:string|null)=>void,
- *   onMindRender?: ()=>void,
- *   onMemoryRender?: ()=>void,
- *   onDebugRender?: ()=>void
- * }} hooks
+   *   onRoomImageRender?: (url:string|null)=>void,
+   *   onMindRender?: ()=>void,
+   *   onMemoryRender?: ()=>void,
+   *   onDebugRender?: ()=>void
+   * }} hooks
    */
   constructor(definition, hooks = {}) {
     validateDefinition(definition);
@@ -67,7 +68,7 @@ class GameEngine {
     this.hooks = hooks;
     this.assetsBase = hooks.assetsBase || '';
     this.assetsResolver = typeof hooks.assetsResolver === 'function' ? hooks.assetsResolver : null;
-    this.language = /** @type {LanguageCode} */ (definition.metadata.default_language || 'en');
+    this.language = /** @type {LanguageCode} */ (hooks.language || definition.metadata.default_language || 'en');
 
     this.gameState = this._createInitialState();
     this.inventory = new InventorySystem(this);
