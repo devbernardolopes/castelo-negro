@@ -465,29 +465,13 @@ GameEngine.prototype._expandTemplate = function(str, match) {
         }
       }
       
-      // Otherwise, return location description
+      // Otherwise, return location description (includes ground item messages)
       const locId = this.gameState.current_location;
       const loc = this.getFullLocationData(locId);
       if (loc) {
         const nameText = this._pickLang(loc.name);
         if (nameText) this.hooks.onLocationNameRender?.(nameText);
-
-        const baseDescript = this._pickLang(loc.description?.base);
-        const conditions = Array.isArray(loc.description?.conditions) 
-          ? loc.description.conditions 
-          : [];
-        
-        let fullDesc = baseDescript || '';
-        
-        for (const cond of conditions) {
-          const condExpanded = this._expandTemplate(String(cond.if || ''), match);
-          if (this.evaluateCondition(condExpanded)) {
-            const condText = this._pickLang(cond.message);
-            if (condText) fullDesc += '\n' + condText;
-          }
-        }
-        
-        return fullDesc;
+        return this.getLocationDescription(locId);
       }
       return '';
     }

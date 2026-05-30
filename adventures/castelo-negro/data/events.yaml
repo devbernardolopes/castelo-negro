@@ -1,6 +1,7 @@
 events:
   - id: newborn_daughter_crying
     type: recurring
+    interval: 1
     conditions:
       - "here.has('newborn_daughter')"
       - "!inventory.has(newborn_daughter)"
