@@ -233,13 +233,17 @@ class GameEngine {
     const vars = {};
     for (const [key, def] of Object.entries(this.definition.variables || {})) {
       const type = String(def?.type || 'any');
+      const rawVal = structuredClone(def?.value);
+      const value = rawVal && typeof rawVal === 'object' && !Array.isArray(rawVal)
+        ? this._pickLang(rawVal)
+        : rawVal;
       const base = {
         type,
         min_value: def?.min_value,
         max_value: def?.max_value,
         possible_values: def?.possible_values,
         max_capacity: def?.max_capacity,
-        value: structuredClone(def?.value)
+        value
       };
       vars[key] = base;
     }
