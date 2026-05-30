@@ -16,7 +16,7 @@ variables:
   protagonist_memory:
     type: list
     value:
-      en: ["look", "take", "open", "unlock", "give", "roll", "close", "lock", "sickle", "hand"]
+      en: ["look", "take", "open", "unlock", "give", "roll", "close", "lock"]
       pt-br: ["olhar", "pegar", "abrir", "destrancar", "dar", "rolar", "fechar", "trancar"]
 
   protagonist_memory_max_capacity:
