@@ -1343,7 +1343,7 @@ body {
 /* ===== PORTRAIT MOBILE (orientation: portrait) ===== */
 @media (orientation: portrait) and (max-width: 767px) {
   #sidebar-tabs .tabs-body {
-    /* flex: none; */
+    flex: auto;
     height: 256px;
     overflow-y: auto;
   }
