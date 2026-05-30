@@ -21,7 +21,7 @@ items:
 
   husband_hand:
     name: { en: "Husband's Hand", pt-br: "Mão do Esposo" }
-    synonyms: { en: ["hand", "husband's hand"], pt-br: ["mão", "mão do marido"] }
+    synonyms: { en: ["hand", "husband's hand", "husband's grasp", "grasp"], pt-br: ["mão", "mão do marido"] }
     openable: true
     takeable: false
     contents: [hand_sickle]

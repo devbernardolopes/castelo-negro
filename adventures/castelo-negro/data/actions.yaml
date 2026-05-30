@@ -1,4 +1,5 @@
 # conditional_messages are evaluated before effects
+# conditional_messages only runs on action failure
 # progressive_messages are evaluated after effects
 
 actions:
@@ -14,16 +15,12 @@ actions:
       en: "You look at the corpse."
       pt-br: "Você olha para o cadáver."
     
-    conditional_messages:
-      - if: "husband_hand_sickle_visible"
-        message: { en: "You can see the handle of a sickle protruding from your husband's grasp.", pt-br: "Você pode ver o cabo de uma foice saindo da mão do seu marido." }
-
     # Progressive messages based on discovery stage
     progressive_messages:
       # First inspection: realize husband is dead
       - condition: "husband_corpse_inspected_count == 1"
-        effect:
-          - "husband_hand_sickle_visible = true"
+        # effect:
+        #   - "husband_hand_sickle_visible = true"
         message:
           en: |
             Your husband lies still. Cold. His eyes stare blankly at nothing.
@@ -79,6 +76,9 @@ actions:
           en: "You've already examined the corpse thoroughly."
           pt-br: "Você já examinou o cadáver completamente."
 
+      - condition: "husband_corpse_inspected_count >= 2 and containerHas(husband_hand, hand_sickle)"
+        message: { en: "You can see the handle of a sickle protruding from your husband's grasp.", pt-br: "Você pode ver o cabo de uma foice saindo da mão do seu marido." }
+
   roll_husband_corpse:
     pattern:
       - verb: ["roll"]
@@ -115,9 +115,10 @@ actions:
       - verb: ["take"]
       - object: ["hand_sickle"]
     conditions:
-      - "here.has('hand_sickle')"
+      - "here.has('husband_corpse')"
+      - "containerHas(husband_corpse, husband_hand)"
+      - "containerHas(husband_hand, hand_sickle)"
       - "husband_hand_open"
-      - "husband_hand_sickle_visible"
       - "!inventory.has('hand_sickle')"
     effect:
       - "inventory.add('hand_sickle')"
