@@ -2,7 +2,7 @@ let engine = null;
 let fileInput;
 let _isMobileLayout = false;
 
-const DIRECTION_MAP = { up: 'north', down: 'south', left: 'west', right: 'east' };
+const DIRECTION_MAP = { n: 'north', s: 'south', w: 'west', e: 'east', nw: 'northwest', ne: 'northeast', sw: 'southwest', se: 'southeast' };
 const LS_KEY_THEME = 'adventure_theme';
 const LS_KEY_FONT_FAMILY = 'adventure_font_family';
 const LS_KEY_FONT_SIZE = 'adventure_font_size';
