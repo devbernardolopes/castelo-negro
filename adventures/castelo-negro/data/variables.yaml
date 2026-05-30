@@ -95,7 +95,7 @@ variables:
   cottage_key_discovery_stage:
     type: int
     value: 0
-    debug_variable: true
+    # debug_variable: true
     description: "0=unknown, 1=husband_dead, 2=suspected_on_body, 3=belt_spotted, 4=belt_accessible, 5=key_obtained"
     min_value: 0
     max_value: 5
@@ -103,7 +103,7 @@ variables:
   husband_corpse_inspected_count:
     type: int
     value: 0
-    debug_variable: true
+    # debug_variable: true
     description: "How many times the player has examined the corpse"
 
   husband_corpse_rolled:
@@ -126,3 +126,8 @@ variables:
     type: bool
     value: false
     description: "True if player has tried to leave via locked door at least once"
+
+  ice_tested:
+    type: bool
+    value: false
+    # debug_variable: true

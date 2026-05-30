@@ -324,6 +324,23 @@ actions:
       en: "From here, you can see the wooden porch of your cottage to the south, with its weathered planks and hanging lantern."
       pt-br: "Daqui, você pode ver a varanda de madeira do seu chalé ao sul, com seus degraus desgastados e lanterna pendurada."
 
+  test_ice_with_sickle:
+    pattern:
+      - verb: ["test"]
+      - object: ["hand_sickle"]
+      - target: ["stream_ice"]
+    conditions:
+      - "current_location == 'frozen_stream'"
+      - "inventory.has('hand_sickle')"
+      - "!ice_tested"
+    effect:
+      - "ice_tested = true"
+    message:
+      en: |
+        You gently tap the ice with your sickle. A hairline crack spreads, but holds.
+      pt-br: |
+        Você bate suavemente no gelo com sua foice. Uma rachadura fina se espalha, mas o gelo aguenta.
+
   open:
     pattern:
       - verb: ["open"]

@@ -98,6 +98,13 @@ items:
         A simple stone hearth for cooking and warmth.
       pt-br: |
         Uma lareira de pedra simples para cozinhar e aquecer.
+      conditions:
+        - if: "containerHas(stone_hearth, charred_wood) and containerHas(stone_hearth, hearth_ashes)"
+          message: { en: "There are piles of ashes and charred wood in the hearth.", pt-br: "Há pilhas de cinzas e madeira queimada na lareira." }
+        - if: "containerHas(stone_hearth, charred_wood) and !containerHas(stone_hearth, hearth_ashes)"
+          message: { en: "There are pieces of charred wood in the hearth.", pt-br: "Há pedaços de madeira queimada na lareira." }
+        - if: "!containerHas(stone_hearth, charred_wood) and containerHas(stone_hearth, hearth_ashes)"
+          message: { en: "There are piles of ashes in the hearth.", pt-br: "Há pilhas de cinzas na lareira." }
 
   moldy_loaf_of_bread:
     name: { en: "Moldy Loaf of Bread", pt-br: "Pão Mofado" }

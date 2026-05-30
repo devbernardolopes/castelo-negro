@@ -125,9 +125,9 @@ locations:
       north: 
         location: path_to_black_castle_02
         conditions:
-          - if: "stream_crossed"
+          - if: "ice_tested"
             allow: true
-          - if: "!stream_crossed"
+          - if: "!ice_tested"
             allow: false
             message: 
               en: "The ice looks too thin to cross safely. You need to find another way."
