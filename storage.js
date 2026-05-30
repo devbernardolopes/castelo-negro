@@ -194,6 +194,7 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
   setMenuButtonsEnabled(true);
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
+  _focusOnGameTab();
   setDebugTabVisibility(!!parsed?.metadata?.debug);
   setMapTabVisibility(true);
   document.getElementById('tab-inventory').style.display = '';
@@ -247,6 +248,7 @@ async function loadAdventureFromUrl(yamlUrl) {
   setMenuButtonsEnabled(true);
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
+  _focusOnGameTab();
   setDebugTabVisibility(!!parsed?.metadata?.debug);
   setMapTabVisibility(true);
   document.getElementById('tab-inventory').style.display = '';
@@ -307,4 +309,13 @@ async function pickAdventureFile() {
   }
   const file = await handle.getFile();
   await loadAdventureFromFile(file, handle, dirHandle);
+}
+
+function _focusOnGameTab() {
+  const roomTab = document.getElementById('tab-room');
+  if (roomTab && window.setSidebarTab) {
+    window.setSidebarTab('room');
+  } else if (window.setSidebarTab) {
+    window.setSidebarTab('memory');
+  }
 }

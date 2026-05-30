@@ -86,6 +86,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedBtn = buttons[tabName];
     if (selectedBtn) selectedBtn.classList.remove('has-update');
   }
+  window.setSidebarTab = setSidebarTab;
+
+  function _focusGameTab() {
+    const roomTab = document.getElementById('tab-room');
+    if (roomTab) {
+      setSidebarTab('room');
+    } else {
+      setSidebarTab('memory');
+    }
+  }
 
   document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => setSidebarTab(btn.getAttribute('data-tab')));
@@ -686,6 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setMenuButtonsEnabled(true);
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);
+    _focusGameTab();
     setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
     const textDisplay = document.getElementById('text-display');
     if (textDisplay) textDisplay.innerHTML = '';
@@ -723,6 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
       roomTab.setAttribute('data-tab', 'room');
       roomTab.textContent = 'Room';
       roomTab.addEventListener('click', () => setSidebarTab('room'));
+      if (!engine) roomTab.disabled = true;
 
       const systemTab = document.getElementById('tab-system');
       if (systemTab && systemTab.parentNode) {
@@ -781,6 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setMenuButtonsEnabled(true);
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);
+    _focusGameTab();
     setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
     const textDisplay = document.getElementById('text-display');
     if (textDisplay) textDisplay.innerHTML = '';
@@ -791,3 +804,4 @@ document.addEventListener('DOMContentLoaded', () => {
     engine.renderCurrentLocation();
   });
 });
+
