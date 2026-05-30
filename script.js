@@ -703,7 +703,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function _updateMobileLayout() {
-    const isMobile = window.innerWidth <= 767;
+    const isMobile = window.innerWidth <= 767 || window.innerHeight <= 500;
     if (isMobile === _isMobileLayout) return;
     _isMobileLayout = isMobile;
 
