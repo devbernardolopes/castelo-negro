@@ -194,14 +194,82 @@ function escapeHtml(text) {
     .replace(/'/g, '&#39;');
 }
 
-function formatBracketBoldToHtml(text) {
-  return String(text).replace(/\[([^\]]+)\]/g, (_m, inner) => `<strong>${inner}</strong>`);
-}
+function formatMarkupToHtml(text) {
+  const TAG_HANDLERS = {
+    b: () => ({ open: '<strong>', close: '</strong>' }),
+    i: () => ({ open: '<em>', close: '</em>' }),
+    color: (value) => {
+      if (!value) return null;
+      const cssValue = value.startsWith('#') ? value : 'var(--' + value + ')';
+      return { open: '<span style="color:' + cssValue + '">', close: '</span>' };
+    },
+    shake: () => ({ open: '<span class="effect-shake">', close: '</span>' }),
+    blink: () => ({ open: '<span class="effect-blink">', close: '</span>' }),
+    glow: () => ({ open: '<span class="effect-glow">', close: '</span>' }),
+    pulse: () => ({ open: '<span class="effect-pulse">', close: '</span>' }),
+    wiggle: () => ({ open: '<span class="effect-wiggle">', close: '</span>' }),
+    grow: () => ({ open: '<span class="effect-grow">', close: '</span>' }),
+    shrink: () => ({ open: '<span class="effect-shrink">', close: '</span>' })
+  };
 
-function textToHtmlWithBoldBrackets(text) {
-  const escaped = escapeHtml(String(text ?? '').replace(/\r\n/g, '\n'));
-  const bolded = formatBracketBoldToHtml(escaped);
-  return bolded.replace(/\n/g, '<br>');
+  const s = String(text ?? '').replace(/\r\n/g, '\n');
+  const out = [];
+  const stack = [];
+  let i = 0;
+
+  while (i < s.length) {
+    if (s[i] === '\\' && i + 1 < s.length) {
+      out.push(escapeHtml(s[i + 1]));
+      i += 2;
+      continue;
+    }
+
+    if (s[i] === '[') {
+      const closeIdx = s.indexOf(']', i + 1);
+      if (closeIdx !== -1) {
+        const tagContent = s.slice(i + 1, closeIdx);
+
+        if (tagContent.startsWith('/')) {
+          const tagName = tagContent.slice(1).trim().toLowerCase();
+          if (stack.length > 0 && stack[stack.length - 1].name === tagName) {
+            out.push(stack.pop().close);
+          }
+          i = closeIdx + 1;
+          continue;
+        }
+
+        const eqIdx = tagContent.indexOf('=');
+        let tagName, tagValue;
+        if (eqIdx !== -1) {
+          tagName = tagContent.slice(0, eqIdx).trim().toLowerCase();
+          tagValue = tagContent.slice(eqIdx + 1).trim();
+        } else {
+          tagName = tagContent.trim().toLowerCase();
+          tagValue = null;
+        }
+
+        const handler = TAG_HANDLERS[tagName];
+        if (handler) {
+          const tag = handler(tagValue);
+          if (tag) {
+            stack.push({ name: tagName, close: tag.close });
+            out.push(tag.open);
+          }
+        }
+        i = closeIdx + 1;
+        continue;
+      }
+    }
+
+    out.push(escapeHtml(s[i]));
+    i++;
+  }
+
+  while (stack.length > 0) {
+    out.push(stack.pop().close);
+  }
+
+  return out.join('').replace(/\n/g, '<br>');
 }
 
 function _doAppendOutput(text) {
@@ -209,7 +277,7 @@ function _doAppendOutput(text) {
   if (!el) return;
   const entry = document.createElement('div');
   entry.className = 'log-entry';
-  entry.innerHTML = textToHtmlWithBoldBrackets(text);
+  entry.innerHTML = formatMarkupToHtml(text);
   makeWordsClickable(entry);
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
   el.appendChild(entry);
