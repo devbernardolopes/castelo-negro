@@ -1,5 +1,6 @@
 let engine = null;
 let fileInput;
+let _isMobileLayout = false;
 
 const DIRECTION_MAP = { up: 'north', down: 'south', left: 'west', right: 'east' };
 const LS_KEY_THEME = 'adventure_theme';
@@ -52,6 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
     textDisplayEl.setAttribute('data-font-size', FONT_SIZE_MAP[parseInt(savedFontSize)] || 'regular');
   }
 
+  _updateMobileLayout();
+
   // Sidebar tabs wiring (Mind / Inventory / Memory / Debug / etc).
   function setSidebarTab(tabName) {
     const panels = {
@@ -60,7 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
       inventory: document.getElementById('tab-panel-inventory'),
       memory: document.getElementById('tab-panel-memory'),
       debug: document.getElementById('tab-panel-debug'),
-      map: document.getElementById('tab-panel-map')
+      map: document.getElementById('tab-panel-map'),
+      room: document.getElementById('tab-panel-room')
     };
     const buttons = {
       system: document.getElementById('tab-system'),
@@ -68,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
       inventory: document.getElementById('tab-inventory'),
       memory: document.getElementById('tab-memory'),
       debug: document.getElementById('tab-debug'),
-      map: document.getElementById('tab-map')
+      map: document.getElementById('tab-map'),
+      room: document.getElementById('tab-room')
     };
     for (const [name, panel] of Object.entries(panels)) {
       if (panel) panel.style.display = name === tabName ? 'flex' : 'none';
@@ -696,6 +701,61 @@ document.addEventListener('DOMContentLoaded', () => {
     renderLanguageGrid();
     setLanguageModalVisible(true);
   });
+
+  function _updateMobileLayout() {
+    const isMobile = window.innerWidth <= 767;
+    if (isMobile === _isMobileLayout) return;
+    _isMobileLayout = isMobile;
+
+    const rightPanel = document.getElementById('right-panel');
+    const roomImage = document.getElementById('room-image');
+    const sidebarTabs = document.getElementById('sidebar-tabs');
+    if (!rightPanel || !roomImage || !sidebarTabs) return;
+
+    if (isMobile) {
+      const roomTab = document.createElement('button');
+      roomTab.className = 'tab-btn';
+      roomTab.type = 'button';
+      roomTab.role = 'tab';
+      roomTab.setAttribute('aria-selected', 'false');
+      roomTab.setAttribute('aria-controls', 'tab-panel-room');
+      roomTab.id = 'tab-room';
+      roomTab.setAttribute('data-tab', 'room');
+      roomTab.textContent = 'Room';
+      roomTab.addEventListener('click', () => setSidebarTab('room'));
+
+      const systemTab = document.getElementById('tab-system');
+      if (systemTab && systemTab.parentNode) {
+        systemTab.parentNode.insertBefore(roomTab, systemTab.nextSibling);
+      }
+
+      const tabsBody = sidebarTabs.querySelector('.tabs-body');
+      if (tabsBody) {
+        const roomPanel = document.createElement('div');
+        roomPanel.className = 'tab-panel';
+        roomPanel.role = 'tabpanel';
+        roomPanel.id = 'tab-panel-room';
+        roomPanel.setAttribute('aria-labelledby', 'tab-room');
+        roomPanel.style.display = 'none';
+        tabsBody.insertBefore(roomPanel, tabsBody.firstChild);
+        roomPanel.appendChild(roomImage);
+      }
+    } else {
+      const roomPanel = document.getElementById('tab-panel-room');
+      const roomTab = document.getElementById('tab-room');
+      if (roomPanel && roomImage) {
+        rightPanel.insertBefore(roomImage, sidebarTabs);
+      }
+      if (roomPanel) roomPanel.remove();
+      if (roomTab) {
+        const wasActive = roomTab.getAttribute('aria-selected') === 'true';
+        roomTab.remove();
+        if (wasActive) setSidebarTab('system');
+      }
+    }
+  }
+
+  window.addEventListener('resize', _updateMobileLayout);
 
   document.getElementById('menu-btn-reset-game')?.addEventListener('click', () => {
     if (!engine) return;
