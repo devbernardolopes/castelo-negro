@@ -11,6 +11,11 @@ items:
     takeable: true
     description: { en: "A tarnished brass key.", pt-br: "Uma chave de latão oxidada." }
     images: ["images/items/tti-2026-05-23T23-26-04-394045010.png"]
+    on_ground_messages:
+      - condition: "husband_corpse_rolled"
+        message: { en: "A tarnished brass key glints on the floor.", pt-br: "Uma chave de latão oxidada brilha no chão." }
+      - condition: "true"
+        message: { en: "A key lies on the ground.", pt-br: "Uma chave está no chão." }
 
   hand_sickle:
     name: { en: "Hand Sickle", pt-br: "Foice de Mão" }
@@ -18,12 +23,18 @@ items:
     takeable: true
     images: ["images/items/tti-2026-05-23T23-37-55-654889641.png"]
     description: { en: "A worn, curved sickle.", pt-br: "Uma foice desgastada e curvada." }
+    on_ground_messages:
+      - condition: "husband_corpse_rolled"
+        message: { en: "A sickle lies on the floor, near the body.", pt-br: "Uma foice está no chão, perto do corpo." }
+      - condition: "true"
+        message: { en: "A sickle lies on the ground.", pt-br: "Uma foice está no chão." }
 
   husband_hand:
     name: { en: "Husband's Hand", pt-br: "Mão do Esposo" }
     synonyms: { en: ["hand", "husband's hand", "husband's grasp", "grasp"], pt-br: ["mão", "mão do marido"] }
     openable: true
     takeable: false
+    container_capacity: 1
     contents: [hand_sickle]
     description:
       en: |
@@ -115,6 +126,9 @@ items:
     consumable: true
     description: { en: "A small, mold-covered loaf.", pt-br: "Um pequeno pedaço de pão mofado." }
     images: ["images/items/tti-2026-05-23T23-26-32-610649206.png"]
+    on_ground_messages:
+      - condition: "true"
+        message: { en: "A moldy loaf of bread is on the ground.", pt-br: "Um pão mofado está no chão." }
 
   charred_wood:
     name: { en: "Charred Wood", pt-br: "Madeira Queimada" }
@@ -122,6 +136,9 @@ items:
     takeable: true
     description: { en: "A piece of wood that has been burned.", pt-br: "Um pedaço de madeira que foi queimado." }
     images: ["images/items/tti-2026-05-25T22-56-49-992411015.png"]
+    on_ground_messages:
+      - condition: "true"
+        message: { en: "Some charred wood lies on the ground.", pt-br: "Pedaços de madeira queimada estão no chão." }
   
   hearth_ashes:
     name: { en: "Hearth Ashes", pt-br: "Cinzas da Lareira" }
@@ -129,6 +146,9 @@ items:
     takeable: true
     description: { en: "Piles of ashes from the stone hearth.", pt-br: "Pilhas de cinzas da lareira de pedra." }
     images: ["images/items/tti-2026-05-25T23-26-53-1025784771.png"]
+    on_ground_messages:
+      - condition: "true"
+        message: { en: "A pile of ashes sits on the ground.", pt-br: "Uma pilha de cinzas está no chão." }
 
   cottage_front_door:
     name: { en: "Cottage Front Door", pt-br: "Porta da Frente do Chalé" }

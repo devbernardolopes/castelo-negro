@@ -62,7 +62,7 @@ verbs:
   test:
     synonyms: { en: ["test", "probe", "check"], pt-br: ["testar", "provar", "verificar"] }
   put:
-    synonyms: { en: ["put", "place"], pt-br: ["colocar", "pôr"] }
+    synonyms: { en: ["put", "place", "insert"], pt-br: ["colocar", "pôr", "inserir"] }
 
 directions:
   north:

@@ -448,7 +448,19 @@ class GameEngine {
       items: {
         ...this.definition.items,
         takeable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.takeable),
-        openable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.openable)
+        openable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.openable),
+        droppable: (itemId) => {
+          const def = engine.definition.items?.[String(itemId)];
+          if (def?.droppable !== undefined) return Boolean(def.droppable);
+          return def?.takeable === true;
+        },
+        container_capacity: (itemId) => {
+          return engine.definition.items?.[String(itemId)]?.container_capacity ?? Infinity;
+        },
+        container_count: (itemId) => {
+          const c = engine.gameState.container_contents?.[String(itemId)];
+          return Array.isArray(c) ? c.length : 0;
+        }
       },
       locations: this.definition.locations || {},
       actors: this.definition.actors || {}
@@ -485,14 +497,54 @@ class GameEngine {
       if (!line) continue;
 
       // Support simple engine-affecting calls used by v1.3 actions.
-      const call = line.match(/^(inventory)\.(add|remove)\(\s*(['"])(.+?)\3\s*\)\s*$/);
+      const call = line.match(/^(inventory|here)\.(add|remove)\(\s*(['"])(.+?)\3\s*\)\s*$/);
       if (call) {
-        const [, , method, , arg] = call;
-        if (method === 'add') {
-          this.inventory.add(String(arg));
-          this._removeItemFromWorld(String(arg));
+        const [, scope, method, , arg] = call;
+        if (scope === 'inventory') {
+          if (method === 'add') {
+            this.inventory.add(String(arg));
+            this._removeItemFromWorld(String(arg));
+          }
+          if (method === 'remove') this.inventory.remove(String(arg));
+        } else if (scope === 'here') {
+          const loc = this.getFullLocationData(this.gameState.current_location);
+          if (!loc) { console.warn('[engine] here.add/remove: no current location'); continue; }
+          if (!Array.isArray(loc.contents)) loc.contents = [];
+          if (method === 'add') loc.contents.push(String(arg));
+          if (method === 'remove') {
+            const idx = loc.contents.indexOf(String(arg));
+            if (idx !== -1) loc.contents.splice(idx, 1);
+          }
         }
-        if (method === 'remove') this.inventory.remove(String(arg));
+        continue;
+      }
+
+      // containerAdd('id','item') / containerRemove('id','item') / putInTarget('t','i')
+      const containerCall = line.match(/^(containerAdd|containerRemove|putInTarget)\(\s*(['"])(.+?)\2\s*,\s*(['"])(.+?)\4\s*\)\s*$/);
+      if (containerCall) {
+        const [, func, , arg1, , arg2] = containerCall;
+        const id1 = String(arg1);
+        const id2 = String(arg2);
+        if (func === 'containerAdd') {
+          const contents = this.gameState.container_contents[id1] || (this.gameState.container_contents[id1] = []);
+          contents.push(id2);
+        } else if (func === 'containerRemove') {
+          const contents = this.gameState.container_contents[id1];
+          if (Array.isArray(contents)) {
+            const idx = contents.indexOf(id2);
+            if (idx !== -1) contents.splice(idx, 1);
+          }
+        } else if (func === 'putInTarget') {
+          if (id1 === '__location__') {
+            const loc = this.getFullLocationData(this.gameState.current_location);
+            if (!loc) { console.warn('[engine] putInTarget: no current location'); continue; }
+            if (!Array.isArray(loc.contents)) loc.contents = [];
+            loc.contents.push(id2);
+          } else {
+            const contents = this.gameState.container_contents[id1] || (this.gameState.container_contents[id1] = []);
+            contents.push(id2);
+          }
+        }
         continue;
       }
 
@@ -612,6 +664,8 @@ class GameEngine {
         if (ok) parts.push(this._pickLang(c?.message));
       }
     }
+    const groundMsgs = this._getGroundItemMessages(locationId);
+    if (groundMsgs) parts.push(groundMsgs);
     return parts.filter(Boolean).join('\n');
   }
 
@@ -634,6 +688,32 @@ class GameEngine {
       return parts.filter(Boolean).join('\n');
     }
     return this._pickLang(desc);
+  }
+
+  _getGroundItemMessages(locationId) {
+    const loc = this.getFullLocationData(locationId);
+    if (!loc) return '';
+    const contents = Array.isArray(loc.contents) ? loc.contents : [];
+    const lines = [];
+    for (const itemId of contents) {
+      const item = this.definition.items?.[itemId];
+      if (!item) continue;
+      const isDroppable = item.droppable !== undefined ? !!item.droppable : item.takeable === true;
+      if (!isDroppable) continue;
+      const groundMsgs = item.on_ground_messages;
+      if (Array.isArray(groundMsgs)) {
+        for (const msgDef of groundMsgs) {
+          if (this.evaluateCondition(String(msgDef.condition || 'true'))) {
+            const msg = this._pickLang(msgDef.message);
+            if (msg) { lines.push(msg); break; }
+          }
+        }
+      } else {
+        const name = this._pickLang(item.name) || itemId;
+        lines.push(`There is a ${name} here.`);
+      }
+    }
+    return lines.join('\n');
   }
 
   async renderCurrentLocation() {

@@ -421,7 +421,10 @@ actions:
       - object: ["*"]
     conditions:
       - "inventory.has('{object}')"
-    effect: "inventory.remove('{object}')"
+      - "items.droppable('{object}')"
+    effect:
+      - "inventory.remove('{object}')"
+      - "here.add('{object}')"
     message:
       en: "You drop the {object_name}."
       pt-br: "Você solta o {object_name}."
@@ -430,6 +433,10 @@ actions:
         message:
           en: "You don't have the {object_name}."
           pt-br: "Você não tem o {object_name}."
+      - condition: "!items.droppable('{object}')"
+        message:
+          en: "You can't drop the {object_name}."
+          pt-br: "Você não pode soltar o {object_name}."
 
   put:
     patterns:
@@ -443,10 +450,26 @@ actions:
         - object: ["*"]
     conditions:
       - "inventory.has('{object}')"
-    effect: "inventory.remove('{object}')"
-    # message:
-    #   en: "You break off a piece and feed your daughter."
-    #   pt-br: "Você quebra um pedaço e alimenta sua filha."
+      - "'{target}' == '__location__' or here.has('{target}') or inventory.has('{target}')"
+    effect:
+      - "inventory.remove('{object}')"
+      - "putInTarget('{target}', '{object}')"
+    message:
+      en: "You place the {object_name} in the {target_name}."
+      pt-br: "Você coloca o {object_name} no {target_name}."
+    conditional_messages:
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: "You don't have the {object_name}."
+          pt-br: "Você não tem o {object_name}."
+      - condition: "'{target}' != '__location__' and !here.has('{target}') and !inventory.has('{target}')"
+        message:
+          en: "There's no {target_name} here."
+          pt-br: "Não há {target_name} aqui."
+      - condition: "'{target}' != '__location__' and items.container_count('{target}') >= items.container_capacity('{target}')"
+        message:
+          en: "The {target_name} is full. You can't put anything else in it."
+          pt-br: "O {target_name} está cheio. Você não pode colocar mais nada nele."
 
   take_item:
     pattern:
