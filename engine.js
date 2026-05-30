@@ -912,11 +912,11 @@ class GameEngine {
       this.gameState.game_turn += 1;
     }
 
+    // Render first so event messages appear after the location description
+    this.renderCurrentLocation();
+
     // Location-enter + recurring + time-based
     this._runEventsForAction(action);
-
-    // Render and end checks
-    this.renderCurrentLocation();
     this._checkEndConditions();
   }
 }
