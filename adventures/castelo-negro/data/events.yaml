@@ -1,4 +1,16 @@
 events:
+  - id: newborn_daughter_crying
+    type: recurring
+    conditions:
+      - "here.has('newborn_daughter')"
+      - "!inventory.has(newborn_daughter)"
+      - "newborn_daughter_health > 0"
+    message:
+      en: |
+        You can hear your baby crying desperately on the floor.
+      pt-br: |
+        Você pode ouvir sua bebê chorando desesperadamente no chão.
+
   - id: door_unlock_hint_level_1
     type: recurring
     trigger_on: "action_failed"

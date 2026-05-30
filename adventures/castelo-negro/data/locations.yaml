@@ -23,8 +23,6 @@ locations:
           message: { en: "Both windows are open, letting in the cold winter air.", pt-br: "Ambas as janelas estão abertas, deixando entrar o ar frio do inverno." }
         - if: "here.has('husband_corpse')"
           message: { en: "Your husband lies on the floor, motionless.", pt-br: "Seu marido está no chão, imóvel." }
-        - if: "!inventory.has(newborn_daughter)"
-          message: { en: "You can hear your baby crying desperately on the floor.", pt-br: "Você pode ouvir sua bebê chorando desesperadamente no chão." }
     contents: [husband_corpse, newborn_daughter, cottage_front_door, cottage_living_room_walls, cottage_living_room_left_window, cottage_living_room_right_window]
     exits:
       north: cottage_kitchen
