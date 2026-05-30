@@ -61,6 +61,8 @@ verbs:
     synonyms: { en: ["call", "shout"], pt-br: ["chamar", "gritar"] }
   test:
     synonyms: { en: ["test", "probe", "check"], pt-br: ["testar", "provar", "verificar"] }
+  put:
+    synonyms: { en: ["put", "place"], pt-br: ["colocar", "pôr"] }
 
 directions:
   north:

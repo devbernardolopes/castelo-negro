@@ -54,6 +54,8 @@ items:
     name: { en: "Husband's Belt", pt-br: "Cinto do Esposo" }
     synonyms: { en: ["belt", "husband's belt"], pt-br: ["cinto", "cinto do marido"] }
     takeable: false
+    wearable: true
+    # droppable: true
     contents: [cottage_key]
     description: 
       en: |

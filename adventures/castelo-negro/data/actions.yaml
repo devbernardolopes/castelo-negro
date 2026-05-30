@@ -431,38 +431,22 @@ actions:
           en: "You don't have the {object_name}."
           pt-br: "Você não tem o {object_name}."
 
-  take_item:
-    pattern:
-      - verb: ["take"]
-      - object: ["*"]
+  put:
+    patterns:
+      obj_then_target:
+        - verb: ["put"]
+        - object: ["*"]
+        - target: ["*"]
+      target_then_obj:
+        - verb: ["put"]
+        - target: ["*"]
+        - object: ["*"]
     conditions:
-      - "items.takeable('{object}')"
-      - "here.has('{object}')"
-      - "inventory.length < inventory.max_capacity"
-      - "!inventory.has('{object}')"
-    effect: "inventory.add('{object}')"
-    message:
-      en: "You take the {object_name}."
-      pt-br: "Você pega o {object_name}."
-
-    # Failure branches - evaluated in order, first match wins
-    conditional_messages:
-      - condition: "inventory.has('{object}')"
-        message:
-          en: "You already have the {object_name}."
-          pt-br: "Você já tem o {object_name}."
-      - condition: "!here.has('{object}')"
-        message:
-          en: "There's no {object_name} here."
-          pt-br: "Não há {object_name} aqui."
-      - condition: "!items.takeable('{object}')"
-        message:
-          en: "You can't take the {object_name}."
-          pt-br: "Você não pode pegar o {object_name}."
-      - condition: "inventory.length >= inventory.max_capacity"
-        message:
-          en: "You can't carry any more items."
-          pt-br: "Você não pode carregar mais itens."
+      - "inventory.has('{object}')"
+    effect: "inventory.remove('{object}')"
+    # message:
+    #   en: "You break off a piece and feed your daughter."
+    #   pt-br: "Você quebra um pedaço e alimenta sua filha."
 
   take_item:
     pattern:
