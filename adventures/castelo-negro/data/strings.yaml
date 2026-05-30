@@ -1,7 +1,7 @@
 strings:
   intro:
     en: |
-      The famine in New England during the 1630s was a period of severe food scarcity and hardship caused by inadequate farming practices, long cold winters, and the settlers' initial dependence on trade with Native Americans or supply ships from England.
+      The famine in [b][i]New England[/i][/b] during the 1630s was a period of severe food scarcity and hardship caused by inadequate farming practices, long cold winters, and the settlers' initial dependence on trade with Native Americans or supply ships from England.
 
       ...
       >>>>
@@ -9,15 +9,15 @@ strings:
       	
       You can't take it anymore. Your body starts to give out.
 
-      You drop to your knees, clutching your crying daughter.
+      You drop to your knees, clutching your [shake]crying daughter[/shake].
       
       You collapse.
       
       ...
       >>>>
-      You wake up.
+      You [pulse]wake up[/pulse].
       
-      Not dead. Not yet.
+      Not [blink]dead[/blink]. Not yet.
 
       You look around...
       >>>>

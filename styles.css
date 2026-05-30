@@ -431,7 +431,7 @@ body {
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  min-height: 28px;
+  min-height: 44px;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.4s ease;
 }
@@ -1135,7 +1135,7 @@ body {
     padding: 8px 0;
     font-size: 12px;
     letter-spacing: 1px;
-    min-height: 36px;
+    min-height: 44px;
   }
 
   #text-display-wrapper {
@@ -1256,7 +1256,7 @@ body {
   }
 
   .menu-btn {
-    min-height: 32px;
+    min-height: 44px;
     font-size: 11px;
   }
 
@@ -1286,7 +1286,7 @@ body {
   #sidebar-tabs .tab-btn {
     padding: 4px 4px;
     font-size: 16px;
-    min-height: 28px;
+    min-height: 44px;
   }
   
   #text-display-wrapper {
@@ -1321,7 +1321,7 @@ body {
   .input-btn {
     width: auto;
     order: 1;
-    min-height: 32px;
+    min-height: 44px;
     padding: 4px 0;
     font-size: 12px;
   }
