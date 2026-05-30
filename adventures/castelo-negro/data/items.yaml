@@ -132,7 +132,7 @@ items:
 
   charred_wood:
     name: { en: "Charred Wood", pt-br: "Madeira Queimada" }
-    synonyms: { en: ["charred wood"], pt-br: ["madeira queimada"] }
+    synonyms: { en: ["charred wood", "wood"], pt-br: ["madeira queimada", "madeira"] }
     takeable: true
     description: { en: "A piece of wood that has been burned.", pt-br: "Um pedaço de madeira que foi queimado." }
     images: ["images/items/tti-2026-05-25T22-56-49-992411015.png"]
