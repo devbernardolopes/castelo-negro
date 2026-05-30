@@ -1028,7 +1028,7 @@ body {
 
 .word-token-text {
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 18px;
 }
 
 .word-token-remove {
@@ -1171,7 +1171,7 @@ body {
   }
 
   .word-token-text {
-    font-size: 12px;
+    font-size: 18px;
   }
 
   .word-token-remove {
@@ -1343,7 +1343,7 @@ body {
   }
 
   .word-token-text {
-    font-size: 10px;
+    font-size: 18px;
   }
 
   .word-token-remove {
