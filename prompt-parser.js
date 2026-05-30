@@ -69,14 +69,15 @@ GameEngine.prototype._executeActionSuccess = function(actionId, actionDef, match
   }
 
   if (Array.isArray(actionDef.progressive_messages)) {
+    const matching = [];
     for (const pm of actionDef.progressive_messages) {
       const expanded = this._expandTemplate(String(pm.condition || ''), match);
-      if (this.evaluateCondition(expanded)) {
-        if (pm.effect) this._applyActionEffects(pm.effect, match);
-        const msg = this._pickLang(pm.message);
-        if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
-        break;
-      }
+      if (this.evaluateCondition(expanded)) matching.push(pm);
+    }
+    for (const pm of matching) {
+      if (pm.effect) this._applyActionEffects(pm.effect, match);
+      const msg = this._pickLang(pm.message);
+      if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
     }
   }
 
