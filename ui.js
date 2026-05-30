@@ -244,6 +244,12 @@ function appendOutput(text) {
   _doAppendOutput(text);
 }
 
+function _showContinueMessage() {
+  if (!engine?.definition?.metadata?.show_continue_message) return;
+  const msg = engine._pickLang(engine.definition.metadata.continue_message);
+  if (msg) _doAppendOutput(msg);
+}
+
 function _enterPauseState() {
   if (_isPausedForSend) return;
   _isPausedForSend = true;
@@ -272,6 +278,8 @@ function _enterPauseState() {
 
   const sendBtn = document.getElementById('input-btn-send');
   if (sendBtn) sendBtn.disabled = false;
+
+  _showContinueMessage();
 }
 
 function resumeFromPause() {
@@ -288,6 +296,7 @@ function resumeFromPause() {
       const parts = String(item.text).split('>>>>');
       if (parts.length > 1) {
         _doAppendOutput(parts[0]);
+        _showContinueMessage();
         for (let i = parts.length - 1; i >= 1; i--) {
           const trimmed = parts[i].trim();
           if (trimmed) _outputQueue.unshift({ type: 'text', text: trimmed });
