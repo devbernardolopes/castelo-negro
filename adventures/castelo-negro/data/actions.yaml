@@ -137,6 +137,7 @@ actions:
       - "here.has('husband_corpse')"
       - "husband_corpse_rolled"
       - "husband_belt_visible"
+      - "inventory.length < inventory.max_capacity"
       - "!inventory.has('cottage_key')"
     effect:
       - "inventory.add('cottage_key')"
@@ -147,6 +148,10 @@ actions:
     conditional_messages:
       - condition: "inventory.has('cottage_key')"
         message: { en: "You already have the key.", pt-br: "Você já tem a chave." }
+      - condition: "inventory.length >= inventory.max_capacity"
+        message:
+          en: "You can't carry any more items."
+          pt-br: "Você não pode carregar mais itens."
       - condition: "!husband_corpse_rolled"
         message: { en: "The key is hidden behind the body. You need to move him first.", pt-br: "A chave está escondida atrás do corpo. Você precisa movê-lo primeiro." }
 
@@ -409,6 +414,55 @@ actions:
         message:
           en: "There's no {object_name} here."
           pt-br: "Não há {object_name} aqui."
+
+  drop:
+    pattern:
+      - verb: ["drop"]
+      - object: ["*"]
+    conditions:
+      - "inventory.has('{object}')"
+    effect: "inventory.remove('{object}')"
+    message:
+      en: "You drop the {object_name}."
+      pt-br: "Você solta o {object_name}."
+    conditional_messages:
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: "You don't have the {object_name}."
+          pt-br: "Você não tem o {object_name}."
+
+  take_item:
+    pattern:
+      - verb: ["take"]
+      - object: ["*"]
+    conditions:
+      - "items.takeable('{object}')"
+      - "here.has('{object}')"
+      - "inventory.length < inventory.max_capacity"
+      - "!inventory.has('{object}')"
+    effect: "inventory.add('{object}')"
+    message:
+      en: "You take the {object_name}."
+      pt-br: "Você pega o {object_name}."
+
+    # Failure branches - evaluated in order, first match wins
+    conditional_messages:
+      - condition: "inventory.has('{object}')"
+        message:
+          en: "You already have the {object_name}."
+          pt-br: "Você já tem o {object_name}."
+      - condition: "!here.has('{object}')"
+        message:
+          en: "There's no {object_name} here."
+          pt-br: "Não há {object_name} aqui."
+      - condition: "!items.takeable('{object}')"
+        message:
+          en: "You can't take the {object_name}."
+          pt-br: "Você não pode pegar o {object_name}."
+      - condition: "inventory.length >= inventory.max_capacity"
+        message:
+          en: "You can't carry any more items."
+          pt-br: "Você não pode carregar mais itens."
 
   take_item:
     pattern:
