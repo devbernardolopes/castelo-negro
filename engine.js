@@ -720,10 +720,12 @@ class GameEngine {
     } else {
       result = this._pickLang(desc);
     }
-    const visible = this._getContainerVisibleContents(itemId);
-    if (visible.length > 0) {
-      const names = visible.map(id => this._pickLang(this.definition.items?.[id]?.name) || id);
-      result += '\nInside you see: ' + names.join(', ') + '.';
+    if (this.definition.metadata?.auto_container_description) {
+      const visible = this._getContainerVisibleContents(itemId);
+      if (visible.length > 0) {
+        const names = visible.map(id => this._pickLang(this.definition.items?.[id]?.name) || id);
+        result += '\nInside you see: ' + names.join(', ') + '.';
+      }
     }
     return result;
   }
