@@ -19,8 +19,6 @@ actions:
     progressive_messages:
       # First inspection: realize husband is dead
       - condition: "husband_corpse_inspected_count == 1"
-        # effect:
-        #   - "husband_hand_sickle_visible = true"
         message:
           en: |
             Your husband lies still. Cold. His eyes stare blankly at nothing.

@@ -31,9 +31,9 @@ items:
       pt-br: |
         A mão fria e rígida do seu marido.
       conditions:
-        - if: "containerHas(husband_hand, hand_sickle) and !husband_hand_open"
+        - if: "containerHas(husband_hand, hand_sickle) and !husband_hand_opened"
           message: { en: "Your husband's hand is clenched tightly, but you can see the handle of a sickle protruding from his grasp.", pt-br: "A mão do seu marido está fechada com força, mas você pode ver o cabo de uma foice saindo de sua mão." }
-        - if: "containerHas(husband_hand, hand_sickle) and husband_hand_open"
+        - if: "containerHas(husband_hand, hand_sickle) and husband_hand_opened"
           message: { en: "Your husband's hand is now open, and you can see the handle of a sickle protruding from his grasp.", pt-br: "A mão do seu marido está aberta, e você pode ver o cabo de uma foice saindo de sua mão." }
 
   husband_corpse:
