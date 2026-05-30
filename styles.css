@@ -438,6 +438,7 @@ body {
 
 #sidebar-tabs .tab-btn.has-update {
   background: var(--accent);
+  color: var(--accent-text);
 }
 
 #sidebar-tabs .tab-btn:hover {
