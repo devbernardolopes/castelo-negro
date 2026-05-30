@@ -419,17 +419,7 @@ class GameEngine {
     const engine = this;
     const vars = {};
     for (const [k, v] of Object.entries(this.gameState.variables)) vars[k] = v.value;
-    const currentLoc = this.getFullLocationData(this.gameState.current_location);
-    const locationHas = (itemId) => {
-      const id = String(itemId);
-      const contents = Array.isArray(currentLoc?.contents) ? currentLoc.contents : [];
-      if (contents.includes(id)) return true;
-      for (const childId of contents) {
-        const sub = engine.gameState.container_contents?.[childId];
-        if (Array.isArray(sub) && sub.includes(id)) return true;
-      }
-      return false;
-    };
+    const locationHas = (itemId) => engine._itemExistsInLocationScope(itemId);
     const inventoryObj = {
       ...this._evalContext.inventory,
       add: (itemId) => this.inventory.add(String(itemId)),
@@ -522,6 +512,22 @@ class GameEngine {
       const [, varName, op, rhs] = m;
       this._applyAssignment(varName, op, rhs);
     }
+  }
+
+  _itemExistsInLocationScope(itemId) {
+    const id = String(itemId);
+    const loc = this.getFullLocationData(this.gameState.current_location);
+    const queue = [...(Array.isArray(loc?.contents) ? loc.contents : [])];
+    const visited = new Set();
+    while (queue.length) {
+      const childId = queue.shift();
+      if (childId === id) return true;
+      if (visited.has(childId)) continue;
+      visited.add(childId);
+      const sub = this.gameState.container_contents?.[childId];
+      if (Array.isArray(sub)) queue.push(...sub);
+    }
+    return false;
   }
 
   _removeItemFromWorld(itemId) {

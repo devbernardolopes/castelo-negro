@@ -612,23 +612,10 @@ GameEngine.prototype._takeItemByName = function(query) {
     this._afterTurn({ kind: 'take' });
     return false;
   }
-  const loc = this.getFullLocationData(this.gameState.current_location);
-  const contents = Array.isArray(loc?.contents) ? loc.contents : [];
-  if (!contents.includes(itemId)) {
-    // Not directly in location — search inside containers at this location
-    let foundInContainer = false;
-    for (const childId of contents) {
-      const sub = this.gameState.container_contents?.[childId];
-      if (Array.isArray(sub) && sub.includes(itemId)) {
-        foundInContainer = true;
-        break;
-      }
-    }
-    if (!foundInContainer) {
-      this.hooks.onOutput?.("You don't see that here.");
-      this._afterTurn({ kind: 'take' });
-      return false;
-    }
+  if (!this._itemExistsInLocationScope(itemId)) {
+    this.hooks.onOutput?.("You don't see that here.");
+    this._afterTurn({ kind: 'take' });
+    return false;
   }
   if (!this.inventory.canAdd(itemId)) {
     this.hooks.onOutput?.('You cannot carry any more.');
