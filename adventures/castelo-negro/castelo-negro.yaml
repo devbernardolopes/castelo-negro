@@ -9,3 +9,5 @@ metadata:
   data_files: ["items.yaml", "locations.yaml", "end_conditions.yaml", "actions.yaml", "events.yaml", "actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml"]
   allow_direct_input: false
   debug: true # Show the value of the variables that have `debug_variable` set to `true`
+  highlight_color_verbs: "#FF0000"
+  highlight_color_items: "#0000FF"
