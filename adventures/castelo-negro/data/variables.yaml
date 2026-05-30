@@ -119,9 +119,9 @@ variables:
     type: bool
     value: false
 
-  husband_hand_opened:
-    type: bool
-    value: false
+  # husband_hand_opened:
+  #   type: bool
+  #   value: false
   
   cottage_door_unlock_attempted:
     type: bool

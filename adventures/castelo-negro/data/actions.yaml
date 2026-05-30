@@ -14,6 +14,10 @@ actions:
       en: "You look at the corpse."
       pt-br: "Você olha para o cadáver."
     
+    conditional_messages:
+      - if: "husband_hand_sickle_visible"
+        message: { en: "You can see the handle of a sickle protruding from your husband's grasp.", pt-br: "Você pode ver o cabo de uma foice saindo da mão do seu marido." }
+
     # Progressive messages based on discovery stage
     progressive_messages:
       # First inspection: realize husband is dead
@@ -106,6 +110,26 @@ actions:
           en: "The body is already rolled over."
           pt-br: "O corpo já está virado."
   
+  take_hand_sickle_from_husband_corpse:
+    pattern:
+      - verb: ["take"]
+      - object: ["hand_sickle"]
+    conditions:
+      - "here.has('hand_sickle')"
+      - "husband_hand_open"
+      - "husband_hand_sickle_visible"
+      - "!inventory.has('hand_sickle')"
+    effect:
+      - "inventory.add('hand_sickle')"
+    message:
+      en: "You take the hand sickle from your husband's grasp."
+      pt-br: "Você pega a foice da mão do seu marido."
+    conditional_messages:
+      - condition: "inventory.has('hand_sickle')"
+        message: { en: "You already have the sickle.", pt-br: "Você já tem a foice." }
+      - condition: "!husband_hand_open"
+        message: { en: "The sickle is firmly in your husband's hand. You need to open his hand first.", pt-br: "A foice está firmemente na mão do seu marido. Você precisa abrir a mão dele primeiro." }
+
   take_cottage_key_from_belt:
     pattern:
       - verb: ["take"]
