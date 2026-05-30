@@ -118,7 +118,7 @@ actions:
       - "here.has('husband_corpse')"
       - "containerHas(husband_corpse, husband_hand)"
       - "containerHas(husband_hand, hand_sickle)"
-      - "husband_hand_open"
+      - "husband_hand_opened"
       - "!inventory.has('hand_sickle')"
     effect:
       - "inventory.add('hand_sickle')"
@@ -128,7 +128,7 @@ actions:
     conditional_messages:
       - condition: "inventory.has('hand_sickle')"
         message: { en: "You already have the sickle.", pt-br: "Você já tem a foice." }
-      - condition: "!husband_hand_open"
+      - condition: "!husband_hand_opened"
         message: { en: "The sickle is firmly in your husband's hand. You need to open his hand first.", pt-br: "A foice está firmemente na mão do seu marido. Você precisa abrir a mão dele primeiro." }
 
   take_cottage_key_from_belt:

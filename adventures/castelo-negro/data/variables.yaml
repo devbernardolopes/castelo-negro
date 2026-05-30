@@ -122,10 +122,11 @@ variables:
   #   debug_variable: true
   #   value: false
 
-  # husband_hand_opened:
-  #   type: bool
-  #   value: false
-  
+  husband_hand_opened:
+    type: bool
+    value: false
+    debug_variable: true
+    
   cottage_door_unlock_attempted:
     type: bool
     value: false
