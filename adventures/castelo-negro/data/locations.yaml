@@ -43,7 +43,7 @@ locations:
     name: { en: "Cottage - Kitchen", pt-br: "Chalé - Cozinha" }
     synonyms: { en: ["kitchen", "cottage kitchen"], pt-br: ["cozinha", "cozinha do chalé"] }
     description:
-      base: { en: "A simple kitchen with a stone hearth.", pt-br: "Uma cozinha simples com uma lareira de pedra." }
+      base: { en: "A simple kitchen with a stone hearth and a table.", pt-br: "Uma cozinha simples com uma lareira de pedra e uma mesa." }
       conditions:
         - if: "containerHas(cottage_kitchen_table, moldy_loaf_of_bread)"
           message: { en: "A small, mold-covered loaf lies on the kitchen table.", pt-br: "Um pequeno pedaço de pão mofado está sobre a mesa da cozinha." }
