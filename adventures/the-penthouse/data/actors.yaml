@@ -29,6 +29,8 @@ actors:
     name:
       en: |
         Sabine
+    synonyms:
+      en: ["sabine", "her", "girl", "sabine bernardes"]
     playable: false
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room]
@@ -50,11 +52,72 @@ actors:
       dana:
         affinity: -10
         relationship_level: "strangers"
+    dialogue:
+      entry_nodes:
+        - id: greeting
+          conditions: []
+      nodes:
+        greeting:
+          message:
+            en: "Hey, Bernie. I'm glad you're here. What's up?"
+          options:
+            - text:
+                en: "How are you feeling?"
+              next: feeling
+            - text:
+                en: "We should visit your brother in Brooklyn soon."
+              next: brooklyn
+            - text:
+                en: "See you later."
+              next: null
+        feeling:
+          message:
+            en: "A bit anxious, honestly. Work has been piling up."
+          options:
+            - text:
+                en: "Want to talk about it?"
+              effects:
+                - "setRelationship(current_player_actor, 'sabine', 'affinity', getRelationship('sabine', 'affinity') + 3)"
+              next: talk_about_work
+            - text:
+                en: "I'm sure you'll handle it."
+              next: greeting
+            - text:
+                en: "See you later."
+              next: null
+        talk_about_work:
+          message:
+            en: "Thanks, Bernie. Just knowing you're around helps."
+          options:
+            - text:
+                en: "Anytime, Sabine."
+              effects:
+                - "setRelationship(current_player_actor, 'sabine', 'affinity', getRelationship('sabine', 'affinity') + 5)"
+              next: null
+            - text:
+                en: "That's what friends are for."
+              effects:
+                - "setRelationship(current_player_actor, 'sabine', 'affinity', getRelationship('sabine', 'affinity') + 5)"
+              next: null
+        brooklyn:
+          message:
+            en: "Oh, I'd love that! It's been too long."
+          options:
+            - text:
+                en: "I'll text him."
+              effects:
+                - "setRelationship(current_player_actor, 'sabine', 'affinity', getRelationship('sabine', 'affinity') + 5)"
+              next: null
+            - text:
+                en: "Let's plan it for next weekend."
+              next: greeting
 
   dana:
     name:
       en: |
         Dana
+    synonyms:
+      en: ["dana", "her", "dana lopes"]
     playable: true
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room, penthouse_master_bedroom, penthouse_master_ensuite]
@@ -75,3 +138,35 @@ actors:
       sabine:
         affinity: -21
         relationship_level: "strangers"
+    dialogue:
+      entry_nodes:
+        - id: friendly_greeting
+          conditions:
+            - "getRelationship(current_player_actor, 'dana', 'affinity') > 50"
+        - id: neutral_greeting
+          conditions: []
+      nodes:
+        friendly_greeting:
+          message:
+            en: "Bernie! Always good to see you."
+          options:
+            - text:
+                en: "Good to see you too."
+              effects:
+                - "setRelationship(current_player_actor, 'dana', 'affinity', getRelationship('dana', 'affinity') + 3)"
+              next: null
+            - text:
+                en: "See you around."
+              next: null
+        neutral_greeting:
+          message:
+            en: "Hey."
+          options:
+            - text:
+                en: "Hey, Dana."
+              effects:
+                - "setRelationship(current_player_actor, 'dana', 'affinity', getRelationship('dana', 'affinity') + 1)"
+              next: null
+            - text:
+                en: "..."
+              next: null

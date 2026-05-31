@@ -34,7 +34,11 @@ verbs:
   jump:
     synonyms: { en: ["jump", "leap"], pt-br: ["pular", "saltar"] }
   talk:
-    synonyms: { en: ["talk", "speak"], pt-br: ["falar", "conversar"] }
+    synonyms: { en: ["talk", "speak", "converse"], pt-br: ["falar", "conversar"] }
+  ask:
+    synonyms: { en: ["ask", "question", "inquire"], pt-br: ["perguntar", "questionar"] }
+  tell:
+    synonyms: { en: ["tell", "say"], pt-br: ["dizer", "falar"] }
   pull:
     synonyms: { en: ["pull"], pt-br: ["puxar"] }
   push:

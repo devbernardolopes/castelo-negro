@@ -275,7 +275,12 @@ class GameEngine {
       game_turn: Number(vars.game_turn?.value ?? 0),
       flags: {},
       story: {},
-      container_contents: this._initContainerContents()
+      container_contents: this._initContainerContents(),
+      conversation: {
+        active: false,
+        actorId: null,
+        nodeId: null
+      }
     };
   }
 
@@ -691,6 +696,21 @@ class GameEngine {
         continue;
       }
 
+      // startConversation('actorId') or startConversation(actorId)
+      const startConvMatch = line.match(/^startConversation\(\s*(.+)\s*\)\s*$/);
+      if (startConvMatch) {
+        const actorId = String(this._evalExpression(startConvMatch[1]) ?? '');
+        if (actorId) this._startConversation(actorId);
+        continue;
+      }
+
+      // endConversation()
+      const endConvMatch = line.match(/^endConversation\(\)\s*$/);
+      if (endConvMatch) {
+        this._endConversation();
+        continue;
+      }
+
       const m = line.match(/^([A-Za-z_]\w*)\s*([+\-*/]?=)\s*(.+)$/);
       if (!m) {
         console.warn('[engine] Unrecognized effect line:', line);
@@ -828,6 +848,90 @@ class GameEngine {
     const data = this.gameState.actors_data?.[actorId];
     if (!data) return;
     data.contained_by = null;
+  }
+
+  _startConversation(actorId) {
+    this._endConversation();
+    const actorDef = this.definition.actors?.[actorId];
+    const dialogue = actorDef?.dialogue;
+    if (!dialogue?.nodes) return;
+
+    const entryNodes = Array.isArray(dialogue.entry_nodes) ? dialogue.entry_nodes : [{ id: 'greeting', conditions: [] }];
+    let entryId = null;
+    for (const entry of entryNodes) {
+      const conds = Array.isArray(entry.conditions) ? entry.conditions : [];
+      const allOk = conds.length === 0 || conds.every(c => this.evaluateCondition(String(c)));
+      if (allOk) { entryId = entry.id; break; }
+    }
+    if (!entryId || !dialogue.nodes[entryId]) return;
+
+    this.gameState.conversation = { active: true, actorId, nodeId: entryId };
+    this._renderDialogueNode(entryId);
+  }
+
+  _endConversation() {
+    if (!this.gameState.conversation?.active) return;
+    this.gameState.conversation = { active: false, actorId: null, nodeId: null };
+  }
+
+  _renderDialogueNode(nodeId) {
+    const conv = this.gameState.conversation;
+    if (!conv?.active) return;
+    const actorDef = this.definition.actors?.[conv.actorId];
+    const node = actorDef?.dialogue?.nodes?.[nodeId];
+    if (!node) { this._endConversation(); return; }
+
+    const actorName = this._pickLang(actorDef.name) || conv.actorId;
+    const msg = this._pickLang(node.message);
+    if (msg) this.hooks.onOutput?.(`${actorName}: "${msg}"`);
+
+    if (Array.isArray(node.options) && node.options.length > 0) {
+      const lines = [];
+      for (let i = 0; i < node.options.length; i++) {
+        const opt = node.options[i];
+        const conds = Array.isArray(opt.conditions) ? opt.conditions : [];
+        if (conds.length > 0 && !conds.every(c => this.evaluateCondition(String(c)))) continue;
+        const text = this._pickLang(opt.text);
+        if (text) lines.push(`[${i + 1}] ${text}`);
+      }
+      if (lines.length) this.hooks.onOutput?.(lines.join('\n'));
+    }
+
+    this.hooks.onInventoryRender?.();
+  }
+
+  _selectDialogueOption(index) {
+    const conv = this.gameState.conversation;
+    if (!conv?.active) return false;
+    const actorDef = this.definition.actors?.[conv.actorId];
+    const node = actorDef?.dialogue?.nodes?.[conv.nodeId];
+    if (!node) return false;
+
+    const visibleOptions = [];
+    for (let i = 0; i < (node.options || []).length; i++) {
+      const opt = node.options[i];
+      const conds = Array.isArray(opt.conditions) ? opt.conditions : [];
+      if (conds.length === 0 || conds.every(c => this.evaluateCondition(String(c)))) {
+        visibleOptions.push(opt);
+      }
+    }
+
+    const chosen = visibleOptions[index];
+    if (!chosen) return false;
+
+    if (chosen.effects) this.applyEffect(chosen.effects);
+    if (chosen.next) {
+      conv.nodeId = chosen.next;
+      this._renderDialogueNode(chosen.next);
+    } else {
+      const prevActorId = conv.actorId;
+      const prevNodeId = conv.nodeId;
+      this._endConversation();
+      this._afterTurn({ kind: 'dialogue_end', actorId: prevActorId, nodeId: prevNodeId });
+      return true;
+    }
+    this._afterTurn({ kind: 'dialogue', actorId: conv.actorId, nodeId: conv.nodeId });
+    return true;
   }
 
   _applyAssignment(varName, op, rhsExpr) {

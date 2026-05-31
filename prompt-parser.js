@@ -30,6 +30,11 @@ GameEngine.prototype.processPlayerCommand = function(input) {
     this._pendingAmbiguity = null;
   }
 
+  // If conversation is active, try dialogue options first
+  if (this.gameState.conversation?.active) {
+    if (this._tryDialogueInput(cmd)) return true;
+  }
+
   const dir = this._resolveDirection(cmd);
   if (dir) return this.go(/** @type {any} */ (dir));
 
@@ -304,6 +309,29 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       continue;
     }
 
+    if (slotName === 'actor') {
+      const actorIds = Array.isArray(slotDef) ? slotDef.map(id => String(id)) : [];
+      const actorMatch = this._matchActorSlotAt(tokens, i, actorIds.length ? actorIds : '*');
+      if (!actorMatch) {
+        if (isOptional) { out[slotName] = ''; optionalSkipped = true; continue; }
+        return null;
+      }
+      if (actorMatch.ambiguous) {
+        return {
+          _ambiguous: true,
+          slotName,
+          candidates: actorMatch.candidates,
+          phrase: actorMatch.phrase,
+          len: actorMatch.len,
+          partialMatch: out
+        };
+      }
+      out[slotName] = actorMatch.actorId;
+      out[`${slotName}_name`] = this._pickLang(this.definition.actors?.[actorMatch.actorId]?.name) || actorMatch.actorId;
+      i += actorMatch.len;
+      continue;
+    }
+
     // Unknown slot types not supported in v1.
     return null;
   }
@@ -340,6 +368,129 @@ GameEngine.prototype._expandVerbSynonyms = function(verbIds) {
     }
   }
   return Array.from(expanded);
+};
+
+GameEngine.prototype._buildActorIndex = function() {
+  const index = new Map();
+  if (!this.definition.actors) return index;
+  for (const [actorId, actorDef] of Object.entries(this.definition.actors)) {
+    index.set(actorId.toLowerCase(), actorId);
+    const name = this._pickLang(actorDef.name);
+    if (name) index.set(String(name).trim().toLowerCase(), actorId);
+    const syn = actorDef.synonyms;
+    if (syn && typeof syn === 'object') {
+      const list = syn[this.language];
+      if (Array.isArray(list)) {
+        for (const s of list) index.set(String(s).trim().toLowerCase(), actorId);
+      }
+    }
+  }
+  return index;
+};
+
+GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef) {
+  const isWildcard = slotDef === '*' || (Array.isArray(slotDef) && slotDef.includes('*'));
+
+  let candidates;
+  if (isWildcard) {
+    candidates = Object.keys(this.definition.actors || {});
+  } else if (Array.isArray(slotDef)) {
+    candidates = slotDef.map(String);
+  } else {
+    return null;
+  }
+
+  for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
+    const phrase = tokens.slice(idx, idx + len).join(' ');
+    let p = String(phrase).trim().toLowerCase();
+    p = this._stripPossessive(p);
+    if (!p) continue;
+
+    const matched = [];
+    for (const actorId of candidates) {
+      if (p === actorId.toLowerCase()) { matched.push(actorId); continue; }
+      if (p === actorId.replace(/_/g, ' ').toLowerCase()) { matched.push(actorId); continue; }
+
+      const actorDef = this.definition.actors?.[actorId];
+      if (!actorDef) continue;
+      const name = this._pickLang(actorDef.name);
+      if (name && p === String(name).trim().toLowerCase()) { matched.push(actorId); continue; }
+
+      const syn = actorDef.synonyms;
+      if (syn && typeof syn === 'object') {
+        const langList = syn[this.language];
+        if (Array.isArray(langList)) {
+          for (const s of langList) {
+            if (p === String(s).trim().toLowerCase()) { matched.push(actorId); break; }
+          }
+        }
+      }
+    }
+
+    if (matched.length === 1) return { actorId: matched[0], len, phrase };
+    if (matched.length > 1) return { ambiguous: true, candidates: matched, len, phrase };
+  }
+  return null;
+};
+
+GameEngine.prototype._tryDialogueInput = function(input) {
+  const conv = this.gameState.conversation;
+  if (!conv?.active) return false;
+
+  const cmd = String(input || '').trim().toLowerCase();
+  if (!cmd) return false;
+
+  const actorDef = this.definition.actors?.[conv.actorId];
+  const node = actorDef?.dialogue?.nodes?.[conv.nodeId];
+  if (!node) return false;
+
+  const visibleOptions = [];
+  for (let i = 0; i < (node.options || []).length; i++) {
+    const opt = node.options[i];
+    const conds = Array.isArray(opt.conditions) ? opt.conditions : [];
+    if (conds.length === 0 || conds.every(c => this.evaluateCondition(String(c)))) {
+      visibleOptions.push(opt);
+    }
+  }
+
+  // Try number match
+  const num = parseInt(cmd, 10);
+  if (!isNaN(num) && num >= 1 && num <= visibleOptions.length) {
+    this._selectDialogueOption(num - 1);
+    return true;
+  }
+
+  // Try text match (exact after normalization)
+  const matching = [];
+  for (let i = 0; i < visibleOptions.length; i++) {
+    const optText = this._pickLang(visibleOptions[i].text);
+    if (optText) {
+      const normalized = String(optText).trim().toLowerCase().replace(/[.!?]+$/, '');
+      if (cmd === normalized) matching.push(i);
+    }
+  }
+  if (matching.length === 1) {
+    this._selectDialogueOption(matching[0]);
+    return true;
+  }
+
+  // Try partial text match (input is a substring of exactly one option)
+  if (cmd.length >= 2) {
+    const partialMatches = [];
+    for (let i = 0; i < visibleOptions.length; i++) {
+      const optText = this._pickLang(visibleOptions[i].text);
+      if (optText) {
+        const normalized = String(optText).trim().toLowerCase().replace(/[.!?]+$/, '');
+        if (normalized.includes(cmd)) partialMatches.push(i);
+      }
+    }
+    if (partialMatches.length === 1) {
+      this._selectDialogueOption(partialMatches[0]);
+      return true;
+    }
+  }
+
+  return false;
 };
 
 GameEngine.prototype._matchVerbAt = function(tokens, idx, verbIds) {
@@ -787,19 +938,21 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
 GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase) {
   const labels = candidates.map(id => {
     const item = this.definition.items?.[id];
-    if (!item) return id;
-    const name = this._pickLang(item.name) || id;
-    const syns = item.synonyms?.[this.language] || [];
+    const actor = this.definition.actors?.[id];
+    const def = item || actor;
+    if (!def) return id;
+    const name = this._pickLang(def.name) || id;
+    const syns = def.synonyms?.[this.language] || [];
 
     const allTerms = [...syns.map(s => s.trim().toLowerCase()), name.trim().toLowerCase(), id.replace(/_/g, ' ')];
     const sharedTerms = new Set();
     if (candidates.length > 1) {
       for (const otherId of candidates) {
         if (otherId === id) continue;
-        const otherItem = this.definition.items?.[otherId];
-        if (!otherItem) continue;
-        const otherName = this._pickLang(otherItem.name) || '';
-        const otherSyns = otherItem.synonyms?.[this.language] || [];
+        const otherDef = this.definition.items?.[otherId] || this.definition.actors?.[otherId];
+        if (!otherDef) continue;
+        const otherName = this._pickLang(otherDef.name) || '';
+        const otherSyns = otherDef.synonyms?.[this.language] || [];
         const otherTerms = [...otherSyns.map(s => s.trim().toLowerCase()), otherName.trim().toLowerCase(), otherId.replace(/_/g, ' ')];
         for (const t of allTerms) {
           if (otherTerms.includes(t)) sharedTerms.add(t);
