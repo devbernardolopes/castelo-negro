@@ -255,7 +255,9 @@ class GameEngine {
     for (const [actorId, actorDef] of Object.entries(this.definition.actors || {})) {
       actorsData[actorId] = {
         inventory: Array.isArray(actorDef.inventory) ? [...actorDef.inventory] : [],
-        known_locations: Array.isArray(actorDef.known_locations) ? [...actorDef.known_locations] : []
+        known_locations: Array.isArray(actorDef.known_locations) ? [...actorDef.known_locations] : [],
+        properties: this._initActorProperties(actorDef.properties || {}),
+        relationships: structuredClone(actorDef.relationships || {})
       };
     }
 
@@ -277,6 +279,23 @@ class GameEngine {
       if (Array.isArray(def.contents)) map[id] = [...def.contents];
     }
     return map;
+  }
+
+  _initActorProperties(actorPropsDef) {
+    const result = {};
+    for (const [propName, propDef] of Object.entries(this.definition.properties || {})) {
+      const rawVal = actorPropsDef?.[propName] ?? propDef.default;
+      result[propName] = this._coerceAndClamp({
+        type: propDef.type || 'any',
+        min_value: propDef.min_value,
+        max_value: propDef.max_value,
+        possible_values: propDef.possible_values
+      }, rawVal);
+    }
+    for (const [key, val] of Object.entries(actorPropsDef || {})) {
+      if (!(key in result)) result[key] = val;
+    }
+    return result;
   }
 
   /** @param {string} relOrUrl */
@@ -436,8 +455,12 @@ class GameEngine {
         return Number(actorDef?.max_capacity ?? 9999);
       }
     };
+    const playerActorId = this._getPlayerActorId();
+    const playerData = engine.gameState.actors_data?.[playerActorId] || {};
+
     return {
       ...vars,
+      ...(playerData.properties || {}),
       current_location: this.gameState.current_location,
       game_turn: this.gameState.game_turn,
       inventory: inventoryObj,
@@ -471,7 +494,14 @@ class GameEngine {
         }
       },
       locations: this.definition.locations || {},
-      actors: this.definition.actors || {}
+      actors: this.definition.actors || {},
+      getActor: (id) => engine.gameState.actors_data?.[id],
+      getActorProp: (actorId, propName) =>
+        engine.gameState.actors_data?.[actorId]?.properties?.[propName],
+      getRelationship: (otherActorId, propName) =>
+        playerData.relationships?.[otherActorId]?.[propName],
+      getRelationshipBetween: (actorId1, actorId2, propName) =>
+        engine.gameState.actors_data?.[actorId1]?.relationships?.[actorId2]?.[propName]
     };
   }
 
@@ -564,13 +594,25 @@ class GameEngine {
         continue;
       }
 
+      // relationship('otherActorId', 'propName') += value
+      const relMatch = line.match(/^relationship\(\s*['"](.+?)['"]\s*,\s*['"](.+?)['"]\s*\)\s*([+\-*/]?=)\s*(.+)$/);
+      if (relMatch) {
+        const [, otherActorId, propName, op, rhs] = relMatch;
+        this._applyRelationshipAssignment(otherActorId, propName, op, rhs);
+        continue;
+      }
+
       const m = line.match(/^([A-Za-z_]\w*)\s*([+\-*/]?=)\s*(.+)$/);
       if (!m) {
         console.warn('[engine] Unrecognized effect line:', line);
         continue;
       }
       const [, varName, op, rhs] = m;
-      this._applyAssignment(varName, op, rhs);
+      if (this.definition.properties?.[varName]) {
+        this._applyActorPropAssignment(varName, op, rhs);
+      } else {
+        this._applyAssignment(varName, op, rhs);
+      }
     }
   }
 
@@ -653,6 +695,70 @@ class GameEngine {
 
     variable.value = this._coerceAndClamp(variable, next);
     if (varName === 'game_turn') this.gameState.game_turn = Number(variable.value) || 0;
+  }
+
+  _applyActorPropAssignment(propName, op, rhsExpr) {
+    const actorId = this._getPlayerActorId();
+    const actorData = this.gameState.actors_data?.[actorId];
+    if (!actorData) return;
+    if (!actorData.properties) actorData.properties = {};
+
+    const ctx = this._buildEvalContext();
+    let rhsValue;
+    try {
+      const jsRhs = this._translateConditionToJs(String(rhsExpr));
+      const fn = new Function('ctx', `with (ctx) { return (${jsRhs}); }`);
+      rhsValue = fn(ctx);
+    } catch (err) {
+      console.warn('[engine] Failed to evaluate property RHS:', rhsExpr, err);
+      rhsValue = parseScalar(String(rhsExpr));
+    }
+
+    const prev = actorData.properties[propName] ?? 0;
+    let next = rhsValue;
+    if (op === '+=') next = Number(prev) + Number(rhsValue);
+    if (op === '-=') next = Number(prev) - Number(rhsValue);
+    if (op === '*=') next = Number(prev) * Number(rhsValue);
+    if (op === '/=') next = Number(prev) / Number(rhsValue);
+
+    const propDef = this.definition.properties?.[propName];
+    actorData.properties[propName] = this._coerceAndClamp({
+      type: propDef?.type || 'any',
+      min_value: propDef?.min_value,
+      max_value: propDef?.max_value,
+      possible_values: propDef?.possible_values
+    }, next);
+  }
+
+  _applyRelationshipAssignment(otherActorId, propName, op, rhsExpr) {
+    const actorId = this._getPlayerActorId();
+    const actorData = this.gameState.actors_data?.[actorId];
+    if (!actorData) return;
+    if (!actorData.relationships) actorData.relationships = {};
+    if (!actorData.relationships[otherActorId]) actorData.relationships[otherActorId] = {};
+
+    const ctx = this._buildEvalContext();
+    let rhsValue;
+    try {
+      const jsRhs = this._translateConditionToJs(String(rhsExpr));
+      const fn = new Function('ctx', `with (ctx) { return (${jsRhs}); }`);
+      rhsValue = fn(ctx);
+    } catch (err) {
+      console.warn('[engine] Failed to evaluate relationship RHS:', rhsExpr, err);
+      rhsValue = parseScalar(String(rhsExpr));
+    }
+
+    const prev = actorData.relationships[otherActorId][propName] ?? 0;
+    let next = rhsValue;
+    if (op === '+=') next = Number(prev) + Number(rhsValue);
+    if (op === '-=') next = Number(prev) - Number(rhsValue);
+    if (op === '*=') next = Number(prev) * Number(rhsValue);
+    if (op === '/=') next = Number(prev) / Number(rhsValue);
+
+    const propDef = this.definition.properties?.[propName];
+    actorData.relationships[otherActorId][propName] = propDef
+      ? this._coerceAndClamp({ type: propDef.type, min_value: propDef.min_value, max_value: propDef.max_value, possible_values: propDef.possible_values }, next)
+      : next;
   }
 
   _coerceAndClamp(variable, value) {

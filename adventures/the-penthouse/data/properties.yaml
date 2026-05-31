@@ -1,0 +1,32 @@
+properties:
+  age:
+    type: int
+    min_value: 0
+    default: 25
+  mood:
+    type: string
+    possible_values: ["neutral", "happy", "sad", "anxious", "nervous", "angry"]
+    default: "neutral"
+  stamina:
+    type: int
+    min_value: 0
+    max_value: 100
+    default: 100
+  health:
+    type: int
+    min_value: 0
+    max_value: 100
+    default: 100
+  amount_of_vacations:
+    type: int
+    min_value: 0
+    default: 0
+  relationship_level:
+    type: string
+    possible_values: ["strangers", "acquaintances", "partners", "enemies"]
+    default: "strangers"
+  affinity:
+    type: int
+    min_value: -100
+    max_value: 100
+    default: 0

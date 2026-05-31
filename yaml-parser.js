@@ -279,6 +279,14 @@ function validateDefinition(def) {
       console.warn(`[engine] Actor '${actorId}' has no max_capacity.`);
     }
   }
+
+  // Validate properties section
+  if (def.properties && typeof def.properties === 'object') {
+    for (const [propName, propDef] of Object.entries(def.properties)) {
+      assertSection(propDef?.type, `Property '${propName}' must have a type`);
+    }
+  }
+
   if (!def.strings || typeof def.strings !== 'object') console.warn('[engine] `strings` missing; intro/death messages may not render.');
   if (def.verbs && typeof def.verbs !== 'object') console.warn('[engine] `verbs` should be an object map.');
   if (def.actions && typeof def.actions !== 'object') console.warn('[engine] `actions` should be an object map.');

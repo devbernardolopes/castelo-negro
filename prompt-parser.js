@@ -479,7 +479,30 @@ GameEngine.prototype._expandTemplate = function(str, match) {
     const v = match?.[key];
     // __location__ sentinel acts as empty string in condition templates
     if (key === 'object' && v === '__location__') return '';
-    return v == null ? '' : String(v);
+    if (v != null) return String(v);
+
+    // Fallback: current player's own properties
+    const pActorId = this._getPlayerActorId();
+    const pData = this.gameState.actors_data?.[pActorId];
+    if (pData?.properties?.[key] !== undefined) {
+      return String(pData.properties[key]);
+    }
+
+    // Fallback: relationship_<otherId>_<propName>
+    const relMatch = key.match(/^relationship_(\w+)_(\w+)$/);
+    if (relMatch) {
+      const val = pData?.relationships?.[relMatch[1]]?.[relMatch[2]];
+      if (val !== undefined) return String(val);
+    }
+
+    // Fallback: actor_<actorId>_<propName>
+    const actorMatch = key.match(/^actor_(\w+)_(\w+)$/);
+    if (actorMatch) {
+      const val = this.gameState.actors_data?.[actorMatch[1]]?.properties?.[actorMatch[2]];
+      if (val !== undefined) return String(val);
+    }
+
+    return '';
   });
 };
 

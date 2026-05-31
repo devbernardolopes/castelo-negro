@@ -8,9 +8,16 @@ actors:
     known_locations: [penthouse_living_room, penthouse_master_bedroom, penthouse_master_ensuite]
     inventory: []
     max_capacity: 2
-    # memory:
-    #   words_variable: protagonist_memory
-    #   max_capacity_variable: protagonist_memory_max_capacity
+    properties:
+      age: 30
+      mood: "neutral"
+      stamina: 100
+      health: 100
+      amount_of_vacations: 5
+    relationships:
+      sabine:
+        affinity: 0
+        relationship_level: "strangers"
 
   sabine:
     name:
@@ -21,10 +28,16 @@ actors:
     known_locations: [penthouse_living_room]
     inventory: []
     max_capacity: 2
-    # dialogue:
-    #   default:
-    #     en: |
-    #       Hehehe... what a delicious little family you have...
+    properties:
+      age: 25
+      mood: "anxious"
+      stamina: 80
+      health: 80
+      amount_of_vacations: 0
+    relationships:
+      protagonist:
+        affinity: 0
+        relationship_level: "strangers"
 
 
 
