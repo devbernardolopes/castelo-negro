@@ -253,10 +253,12 @@ class GameEngine {
 
     const actorsData = {};
     for (const [actorId, actorDef] of Object.entries(this.definition.actors || {})) {
+      const { values: props, overrides } = this._initActorProperties(actorDef.properties || {});
       actorsData[actorId] = {
         inventory: Array.isArray(actorDef.inventory) ? [...actorDef.inventory] : [],
         known_locations: Array.isArray(actorDef.known_locations) ? [...actorDef.known_locations] : [],
-        properties: this._initActorProperties(actorDef.properties || {}),
+        properties: props,
+        property_overrides: overrides,
         relationships: structuredClone(actorDef.relationships || {})
       };
     }
@@ -282,20 +284,35 @@ class GameEngine {
   }
 
   _initActorProperties(actorPropsDef) {
-    const result = {};
+    const values = {};
+    const overrides = {};
     for (const [propName, propDef] of Object.entries(this.definition.properties || {})) {
-      const rawVal = actorPropsDef?.[propName] ?? propDef.default;
-      result[propName] = this._coerceAndClamp({
+      const rawVal = actorPropsDef?.[propName];
+      let value, overrideData;
+      if (rawVal !== null && typeof rawVal === 'object' && !Array.isArray(rawVal)) {
+        value = rawVal.value ?? propDef.default;
+        overrideData = {};
+        if ('min_value' in rawVal) overrideData.min_value = rawVal.min_value;
+        if ('max_value' in rawVal) overrideData.max_value = rawVal.max_value;
+        if ('possible_values' in rawVal) overrideData.possible_values = rawVal.possible_values;
+      } else {
+        value = rawVal ?? propDef.default;
+        overrideData = {};
+      }
+      values[propName] = this._coerceAndClamp({
         type: propDef.type || 'any',
-        min_value: propDef.min_value,
-        max_value: propDef.max_value,
-        possible_values: propDef.possible_values
-      }, rawVal);
+        min_value: overrideData.min_value ?? propDef.min_value,
+        max_value: overrideData.max_value ?? propDef.max_value,
+        possible_values: overrideData.possible_values ?? propDef.possible_values
+      }, value);
+      if (Object.keys(overrideData).length > 0) {
+        overrides[propName] = overrideData;
+      }
     }
     for (const [key, val] of Object.entries(actorPropsDef || {})) {
-      if (!(key in result)) result[key] = val;
+      if (!(key in values)) values[key] = val;
     }
-    return result;
+    return { values, overrides };
   }
 
   /** @param {string} relOrUrl */
@@ -594,11 +611,24 @@ class GameEngine {
         continue;
       }
 
-      // relationship('otherActorId', 'propName') += value
-      const relMatch = line.match(/^relationship\(\s*['"](.+?)['"]\s*,\s*['"](.+?)['"]\s*\)\s*([+\-*/]?=)\s*(.+)$/);
-      if (relMatch) {
-        const [, otherActorId, propName, op, rhs] = relMatch;
-        this._applyRelationshipAssignment(otherActorId, propName, op, rhs);
+      // setActorProp('actorId', 'propName', value)
+      const setActorPropMatch = line.match(/^setActorProp\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*(.+)\s*\)$/);
+      if (setActorPropMatch) {
+        this._applySetActorProp(setActorPropMatch[1], setActorPropMatch[2], setActorPropMatch[3]);
+        continue;
+      }
+
+      // setRelationship('actorId1', 'actorId2', 'propName', value)
+      const setRelMatch = line.match(/^setRelationship\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*(.+)\s*\)$/);
+      if (setRelMatch) {
+        this._applySetRelationship(setRelMatch[1], setRelMatch[2], setRelMatch[3], setRelMatch[4]);
+        continue;
+      }
+
+      // setPlayerActor('actorId')
+      const setPlayerMatch = line.match(/^setPlayerActor\(\s*(.+)\s*\)$/);
+      if (setPlayerMatch) {
+        this._applySetPlayerActor(setPlayerMatch[1]);
         continue;
       }
 
@@ -608,11 +638,7 @@ class GameEngine {
         continue;
       }
       const [, varName, op, rhs] = m;
-      if (this.definition.properties?.[varName]) {
-        this._applyActorPropAssignment(varName, op, rhs);
-      } else {
-        this._applyAssignment(varName, op, rhs);
-      }
+      this._applyAssignment(varName, op, rhs);
     }
   }
 
@@ -697,69 +723,6 @@ class GameEngine {
     if (varName === 'game_turn') this.gameState.game_turn = Number(variable.value) || 0;
   }
 
-  _applyActorPropAssignment(propName, op, rhsExpr) {
-    const actorId = this._getPlayerActorId();
-    const actorData = this.gameState.actors_data?.[actorId];
-    if (!actorData) return;
-    if (!actorData.properties) actorData.properties = {};
-
-    const ctx = this._buildEvalContext();
-    let rhsValue;
-    try {
-      const jsRhs = this._translateConditionToJs(String(rhsExpr));
-      const fn = new Function('ctx', `with (ctx) { return (${jsRhs}); }`);
-      rhsValue = fn(ctx);
-    } catch (err) {
-      console.warn('[engine] Failed to evaluate property RHS:', rhsExpr, err);
-      rhsValue = parseScalar(String(rhsExpr));
-    }
-
-    const prev = actorData.properties[propName] ?? 0;
-    let next = rhsValue;
-    if (op === '+=') next = Number(prev) + Number(rhsValue);
-    if (op === '-=') next = Number(prev) - Number(rhsValue);
-    if (op === '*=') next = Number(prev) * Number(rhsValue);
-    if (op === '/=') next = Number(prev) / Number(rhsValue);
-
-    const propDef = this.definition.properties?.[propName];
-    actorData.properties[propName] = this._coerceAndClamp({
-      type: propDef?.type || 'any',
-      min_value: propDef?.min_value,
-      max_value: propDef?.max_value,
-      possible_values: propDef?.possible_values
-    }, next);
-  }
-
-  _applyRelationshipAssignment(otherActorId, propName, op, rhsExpr) {
-    const actorId = this._getPlayerActorId();
-    const actorData = this.gameState.actors_data?.[actorId];
-    if (!actorData) return;
-    if (!actorData.relationships) actorData.relationships = {};
-    if (!actorData.relationships[otherActorId]) actorData.relationships[otherActorId] = {};
-
-    const ctx = this._buildEvalContext();
-    let rhsValue;
-    try {
-      const jsRhs = this._translateConditionToJs(String(rhsExpr));
-      const fn = new Function('ctx', `with (ctx) { return (${jsRhs}); }`);
-      rhsValue = fn(ctx);
-    } catch (err) {
-      console.warn('[engine] Failed to evaluate relationship RHS:', rhsExpr, err);
-      rhsValue = parseScalar(String(rhsExpr));
-    }
-
-    const prev = actorData.relationships[otherActorId][propName] ?? 0;
-    let next = rhsValue;
-    if (op === '+=') next = Number(prev) + Number(rhsValue);
-    if (op === '-=') next = Number(prev) - Number(rhsValue);
-    if (op === '*=') next = Number(prev) * Number(rhsValue);
-    if (op === '/=') next = Number(prev) / Number(rhsValue);
-
-    const propDef = this.definition.properties?.[propName];
-    actorData.relationships[otherActorId][propName] = propDef
-      ? this._coerceAndClamp({ type: propDef.type, min_value: propDef.min_value, max_value: propDef.max_value, possible_values: propDef.possible_values }, next)
-      : next;
-  }
 
   _coerceAndClamp(variable, value) {
     const type = String(variable.type || 'any');
@@ -780,6 +743,80 @@ class GameEngine {
       }
     }
     return v;
+  }
+
+  _evalExpression(expr) {
+    const ctx = this._buildEvalContext();
+    try {
+      const js = this._translateConditionToJs(String(expr).trim());
+      const fn = new Function('ctx', `with (ctx) { return (${js}); }`);
+      return fn(ctx);
+    } catch (err) {
+      console.warn('[engine] Failed to evaluate expression:', expr, err);
+      return undefined;
+    }
+  }
+
+  _getPropConstraints(actorId, propName) {
+    const global = this.definition.properties?.[propName] || {};
+    const overrides = this.gameState.actors_data?.[actorId]?.property_overrides?.[propName] || {};
+    return { ...global, ...overrides };
+  }
+
+  _applySetActorProp(actorIdExpr, propNameExpr, rhsValueExpr) {
+    const actorId = String(this._evalExpression(actorIdExpr) ?? '');
+    const propName = String(this._evalExpression(propNameExpr) ?? '');
+    if (!actorId || !propName) return;
+    const actorData = this.gameState.actors_data?.[actorId];
+    if (!actorData) return;
+    if (!actorData.properties) actorData.properties = {};
+    let rhsValue = this._evalExpression(rhsValueExpr);
+    if (rhsValue === undefined) rhsValue = parseScalar(String(rhsValueExpr));
+    const constraints = this._getPropConstraints(actorId, propName);
+    actorData.properties[propName] = this._coerceAndClamp({
+      type: constraints.type || 'any',
+      min_value: constraints.min_value,
+      max_value: constraints.max_value,
+      possible_values: constraints.possible_values
+    }, rhsValue);
+  }
+
+  _applySetRelationship(actorId1Expr, actorId2Expr, propNameExpr, rhsValueExpr) {
+    const actorId1 = String(this._evalExpression(actorId1Expr) ?? '');
+    const actorId2 = String(this._evalExpression(actorId2Expr) ?? '');
+    const propName = String(this._evalExpression(propNameExpr) ?? '');
+    if (!actorId1 || !actorId2 || !propName) return;
+    const actorData = this.gameState.actors_data?.[actorId1];
+    if (!actorData) return;
+    if (!actorData.relationships) actorData.relationships = {};
+    if (!actorData.relationships[actorId2]) actorData.relationships[actorId2] = {};
+    let rhsValue = this._evalExpression(rhsValueExpr);
+    if (rhsValue === undefined) rhsValue = parseScalar(String(rhsValueExpr));
+    const constraints = this._getPropConstraints(actorId1, propName);
+    actorData.relationships[actorId2][propName] = constraints.type
+      ? this._coerceAndClamp({
+          type: constraints.type,
+          min_value: constraints.min_value,
+          max_value: constraints.max_value,
+          possible_values: constraints.possible_values
+        }, rhsValue)
+      : rhsValue;
+  }
+
+  _applySetPlayerActor(actorIdExpr) {
+    const actorId = String(this._evalExpression(actorIdExpr) ?? '');
+    if (!actorId || !this.definition.actors?.[actorId]) return;
+    const variable = this.gameState.variables.current_player_actor;
+    if (!variable) return;
+    variable.value = this._coerceAndClamp(variable, actorId);
+    const actorDef = this.definition.actors[actorId];
+    if (actorDef.starting_location) {
+      this.gameState.current_location = actorDef.starting_location;
+      this.gameState.previous_location = null;
+    }
+    this.hooks.onInventoryRender?.();
+    this.hooks.onLocationRender?.(this.gameState.current_location);
+    this.hooks.onMindRender?.();
   }
 
   /** @param {string} locationId */

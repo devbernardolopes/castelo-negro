@@ -1,13 +1,17 @@
 # Usage examples
 # Conditions:
-# - health < 50 — player's health
-# - mood == "sad" — player's mood
-# - getActorProp('sabine', 'health') > 0 — Sabine's health
+# - health < 50 — current player's health (spread into eval context)
+# - mood == "sad" — current player's mood
+# - getActorProp('sabine', 'health') > 0 — any actor's property
 # - getRelationship('sabine', 'affinity') >= 50 — affinity toward Sabine
-# Effects:
-# - health += 10 — add to player's health (clamped to 0-100)
-# - mood = "happy" — set player's mood (validated against possible_values)
-# - relationship('sabine', 'affinity') += 20 — modify affinity (clamped to -100..100)
+# - getRelationshipBetween('protagonist', 'sabine', 'affinity') >= 50
+# Effects (actor-neutral — explicit actorId required):
+# - setActorProp(current_player_actor, 'health', 90) — clamp to global constraints
+# - setActorProp('protagonist', 'health', 90) — literal actor ID
+# - setActorProp('sabine', 'mood', 'happy') — any actor's property
+# - setRelationship(current_player_actor, 'sabine', 'affinity', 20)
+# - setRelationship('protagonist', 'sabine', 'affinity', 20)
+# - setPlayerActor('sabine') — switch who you control mid-game
 # Messages:
 # - Your health is {health}.
 # - Sabine looks {actor_sabine_mood}.
