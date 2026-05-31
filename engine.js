@@ -84,8 +84,9 @@ class GameEngine {
   }
 
   _getPlayerActorId() {
-    const list = this.gameState.variables.current_player_actor?.value;
-    if (Array.isArray(list) && list.length) return String(list[0]);
+    const val = this.gameState.variables.current_player_actor?.value;
+    if (Array.isArray(val) && val.length) return String(val[0]);
+    if (typeof val === 'string') return val;
     return 'protagonist';
   }
 
