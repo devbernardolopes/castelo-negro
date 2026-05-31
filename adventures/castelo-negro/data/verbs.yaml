@@ -63,6 +63,18 @@ verbs:
     synonyms: { en: ["test", "probe", "check"], pt-br: ["testar", "provar", "verificar"] }
   put:
     synonyms: { en: ["put", "place", "insert"], pt-br: ["colocar", "pôr", "inserir"] }
+  empty:
+    synonyms: { en: ["empty"], pt-br: ["esvaziar"] }
+  fill:
+    synonyms: { en: ["fill"], pt-br: ["encher"] }
+  tie:
+    synonyms: { en: ["tie", "bind"], pt-br: ["amarrar", "prender"] }
+  untie:
+    synonyms: { en: ["untie", "unbind"], pt-br: ["desamarrar", "liberar"] }
+  light:
+    synonyms: { en: ["light", "ignite"], pt-br: ["acender", "igniar"] }
+  extinguish:
+    synonyms: { en: ["extinguish", "douse"], pt-br: ["extinguir", "apagar"] }
 
 directions:
   north:

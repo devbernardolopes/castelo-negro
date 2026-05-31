@@ -471,7 +471,7 @@ actions:
           en: "The {target_name} is full. You can't put anything else in it."
           pt-br: "O {target_name} está cheio. Você não pode colocar mais nada nele."
 
-  take_item:
+  take:
     pattern:
       - verb: ["take"]
       - object: ["*"]
