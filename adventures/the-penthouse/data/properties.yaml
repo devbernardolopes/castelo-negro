@@ -1,3 +1,18 @@
+# Usage examples
+# Conditions:
+# - health < 50 — player's health
+# - mood == "sad" — player's mood
+# - getActorProp('sabine', 'health') > 0 — Sabine's health
+# - getRelationship('sabine', 'affinity') >= 50 — affinity toward Sabine
+# Effects:
+# - health += 10 — add to player's health (clamped to 0-100)
+# - mood = "happy" — set player's mood (validated against possible_values)
+# - relationship('sabine', 'affinity') += 20 — modify affinity (clamped to -100..100)
+# Messages:
+# - Your health is {health}.
+# - Sabine looks {actor_sabine_mood}.
+# - Relationship affinity: {relationship_sabine_affinity}%
+
 properties:
   age:
     type: int
@@ -30,3 +45,4 @@ properties:
     min_value: -100
     max_value: 100
     default: 0
+
