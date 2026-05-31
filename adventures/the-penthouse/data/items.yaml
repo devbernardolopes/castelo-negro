@@ -59,6 +59,8 @@ items:
       en: ["couch", "sofa", "living room sofa"]
     takeable: false
     size: 5
+    sittable: true
+    actor_capacity: 3
     description:
       en: |
         A large, comfortable couch.

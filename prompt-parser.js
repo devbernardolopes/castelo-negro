@@ -509,6 +509,18 @@ GameEngine.prototype._expandTemplate = function(str, match) {
       if (val !== undefined) return String(val);
     }
 
+    // Fallback: contained_by_name (item name of what the player is sitting on)
+    if (key === 'contained_by_name') {
+      const pActorId = this._getPlayerActorId();
+      const pData = this.gameState.actors_data?.[pActorId];
+      const containedBy = pData?.contained_by;
+      if (containedBy) {
+        const itemDef = this.definition.items?.[containedBy];
+        return this._pickLang(itemDef?.name) || containedBy;
+      }
+      return '';
+    }
+
     return '';
   });
 };

@@ -259,6 +259,7 @@ class GameEngine {
         inventory: Array.isArray(actorDef.inventory) ? [...actorDef.inventory] : [],
         wearing: Array.isArray(actorDef.wearing) ? [...actorDef.wearing] : [],
         current_location: actorDef.starting_location,
+        contained_by: actorDef.starting_contained_by || null,
         known_locations: Array.isArray(actorDef.known_locations) ? [...actorDef.known_locations] : [],
         properties: props,
         property_overrides: overrides,
@@ -511,7 +512,9 @@ class GameEngine {
         },
         item_size: (itemId) => {
           return engine.definition.items?.[String(itemId)]?.size ?? 1;
-        }
+        },
+        sittable: (itemId) => Boolean(engine.definition.items?.[String(itemId)]?.sittable),
+        actor_capacity: (itemId) => engine.definition.items?.[String(itemId)]?.actor_capacity ?? Infinity
       },
       locations: this.definition.locations || {},
       actors: this.definition.actors || {},
@@ -533,6 +536,30 @@ class GameEngine {
       getActorWearing: (actorId) => {
         const ad = engine.gameState.actors_data?.[actorId];
         return ad && Array.isArray(ad.wearing) ? [...ad.wearing] : [];
+      },
+      isSeated: (actorId) => {
+        const data = engine.gameState.actors_data?.[String(actorId)];
+        return data ? data.contained_by != null : false;
+      },
+      getContainedBy: (actorId) => {
+        const data = engine.gameState.actors_data?.[String(actorId)];
+        return data ? data.contained_by : null;
+      },
+      getContainerOccupants: (itemId) => {
+        const id = String(itemId);
+        const occupants = [];
+        for (const [actorId, data] of Object.entries(engine.gameState.actors_data || {})) {
+          if (data.contained_by === id) occupants.push(actorId);
+        }
+        return occupants;
+      },
+      getContainerOccupantsCount: (itemId) => {
+        const id = String(itemId);
+        let count = 0;
+        for (const data of Object.values(engine.gameState.actors_data || {})) {
+          if (data.contained_by === id) count++;
+        }
+        return count;
       }
     };
   }
@@ -644,6 +671,20 @@ class GameEngine {
       const setPlayerMatch = line.match(/^setPlayerActor\(\s*(.+)\s*\)$/);
       if (setPlayerMatch) {
         this._applySetPlayerActor(setPlayerMatch[1]);
+        continue;
+      }
+
+      // containActor('actorId', 'containerId')
+      const containMatch = line.match(/^containActor\(\s*(['"])(.+?)\1\s*,\s*(['"])(.+?)\3\s*\)\s*$/);
+      if (containMatch) {
+        this._containActor(containMatch[2], containMatch[4]);
+        continue;
+      }
+
+      // releaseActor('actorId')
+      const releaseMatch = line.match(/^releaseActor\(\s*(['"])(.+?)\1\s*\)\s*$/);
+      if (releaseMatch) {
+        this._releaseActor(releaseMatch[2]);
         continue;
       }
 
@@ -767,6 +808,23 @@ class GameEngine {
       if (!seen.has(id)) { seen.add(id); combined.push(id); }
     }
     return combined;
+  }
+
+  _isActorContained(actorId) {
+    const data = this.gameState.actors_data?.[actorId];
+    return data ? data.contained_by : null;
+  }
+
+  _containActor(actorId, containerId) {
+    const data = this.gameState.actors_data?.[actorId];
+    if (!data) return;
+    data.contained_by = containerId;
+  }
+
+  _releaseActor(actorId) {
+    const data = this.gameState.actors_data?.[actorId];
+    if (!data) return;
+    data.contained_by = null;
   }
 
   _applyAssignment(varName, op, rhsExpr) {
@@ -1057,6 +1115,16 @@ class GameEngine {
       this.hooks.onOutput?.(`You can't go ${direction}.`);
       return false;
     }
+
+    const movingActorId = this._getPlayerActorId();
+    const movingData = this.gameState.actors_data?.[movingActorId];
+    if (movingData?.contained_by) {
+      const containerDef = this.definition.items?.[movingData.contained_by];
+      const containerName = containerDef ? this._pickLang(containerDef.name) : movingData.contained_by;
+      this.hooks.onOutput?.(`You need to stand up from the ${containerName} first.`);
+      return false;
+    }
+
     this.gameState.current_location = targetLocation;
     const movedActorId = this._getPlayerActorId();
     const movedData = this.gameState.actors_data?.[movedActorId];

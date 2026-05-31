@@ -1,4 +1,8 @@
 verbs:
+  stand:
+    synonyms: { en: ["stand", "stand up", "get up"], pt-br: ["levantar"] }
+  sit:
+    synonyms: { en: ["sit", "sit down"], pt-br: ["sentar"] }
   take:
     synonyms: { en: ["take", "pick up", "grab"], pt-br: ["pegar", "apanhar"] }
   give:

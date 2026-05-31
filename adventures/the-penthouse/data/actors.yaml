@@ -7,6 +7,7 @@ actors:
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room, penthouse_master_bedroom, penthouse_master_ensuite]
     inventory: []
+    starting_contained_by: living_room_couch
     max_capacity: 2
     properties:
       age: 44
@@ -30,6 +31,7 @@ actors:
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room]
     inventory: []
+    starting_contained_by: living_room_couch
     wearing: [sabine_jeans_pants]
     max_capacity: 2
     properties:
@@ -54,6 +56,7 @@ actors:
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room, penthouse_master_bedroom, penthouse_master_ensuite]
     inventory: []
+    starting_contained_by: living_room_couch
     max_capacity: 2
     properties:
       age: 29

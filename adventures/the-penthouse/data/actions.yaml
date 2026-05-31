@@ -159,6 +159,52 @@ actions:
           en: |
             You can't carry any more items.
 
+  stand:
+    pattern:
+      - verb: ["stand", "stand up", "get up"]
+    conditions:
+      - "isSeated(current_player_actor)"
+    effect: "releaseActor(current_player_actor)"
+    message:
+      en: |
+        You stand up from the {contained_by_name}.
+    conditional_messages:
+      - condition: "!isSeated(current_player_actor)"
+        message:
+          en: |
+            You're already standing.
+
+  sit:
+    pattern:
+      - verb: ["sit", "sit down"]
+      - target: ["*"]
+    conditions:
+      - "!isSeated(current_player_actor)"
+      - "items.sittable('{target}')"
+      - "here.has('{target}')"
+      - "getContainerOccupantsCount('{target}') < items.actor_capacity('{target}')"
+    effect: "containActor(current_player_actor, '{target}')"
+    message:
+      en: |
+        You sit down on the {target_name}.
+    conditional_messages:
+      - condition: "isSeated(current_player_actor)"
+        message:
+          en: |
+            You're already sitting.
+      - condition: "'{target}' != '' and !items.sittable('{target}')"
+        message:
+          en: |
+            You can't sit on that.
+      - condition: "'{target}' != '' and !here.has('{target}')"
+        message:
+          en: |
+            There's no {target_name} here.
+      - condition: "getContainerOccupantsCount('{target}') >= items.actor_capacity('{target}')"
+        message:
+          en: |
+            There's no room on the {target_name}.
+
   fallback_generic:
     message_pool:
       en:
