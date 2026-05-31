@@ -8,6 +8,8 @@ locations:
     description:
       en: |
         A high-end living room with modern furniture and elegant decor. Floor to ceiling windows offer a stunning view of the city. A large sectional sofa is positioned centrally, providing a comfortable seating area for guests.
+
+        To the north is a long and dimly lit hallway that leads to the master bedroom of the penthouse.
     contents: [living_room_couch]
     exits:
       north: penthouse_master_bedroom
