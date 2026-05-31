@@ -939,6 +939,179 @@ class GameEngine {
     data.contained_by = null;
   }
 
+  _getRelationshipLevel(fromActorId, toActorId) {
+    const rel = this.gameState.actors_data?.[fromActorId]?.relationships?.[toActorId];
+    return rel?.relationship_level || 'strangers';
+  }
+
+  _isActorHidden(actorId) {
+    const data = this.gameState.actors_data?.[actorId];
+    if (!data || !data.contained_by) return false;
+    const containerId = data.contained_by;
+    const containerDef = this.definition.items?.[containerId];
+    if (!containerDef) return false;
+    if (containerDef.sittable || containerDef.sleepable) return false;
+    if (containerDef.openable) {
+      const openVar = this.gameState.variables?.[`${containerId}_open`];
+      const isOpen = openVar?.value === true;
+      if (!isOpen) return true;
+    }
+    return false;
+  }
+
+  _getVisibleActorsInLocation(locationId) {
+    const playerId = this._getPlayerActorId();
+    const visible = [];
+    for (const [actorId, data] of Object.entries(this.gameState.actors_data || {})) {
+      if (data.current_location !== locationId) continue;
+      if (actorId === playerId) continue;
+      if (this._isActorHidden(actorId)) continue;
+      visible.push(actorId);
+    }
+    return visible;
+  }
+
+  _getAppearanceDescription(actorId) {
+    const props = this.gameState.actors_data?.[actorId]?.properties || {};
+    const hair = props.hair || '';
+    const gender = props.gender || 'other';
+    const age = typeof props.age === 'number' ? props.age : null;
+
+    const HAIR_MAP = {
+      black: 'black-haired', brown: 'brunette', blonde: 'blonde',
+      red: 'red-haired', gray: 'gray-haired', white: 'white-haired', bald: 'bald'
+    };
+    const hairAdj = HAIR_MAP[hair] || '';
+
+    const GENDER_MAP = { male: 'man', female: 'woman' };
+    const genderLabel = GENDER_MAP[gender] || 'person';
+
+    const POSSESSIVE_MAP = { male: 'his', female: 'her' };
+    const poss = POSSESSIVE_MAP[gender] || 'their';
+
+    let ageRange = '';
+    if (age !== null) {
+      if (age <= 12) {
+        ageRange = 'child';
+      } else if (age <= 17) {
+        ageRange = `teenage`;
+      } else if (age <= 19) {
+        ageRange = `in ${poss} late teens`;
+      } else {
+        const decade = Math.floor(age / 10) * 10;
+        ageRange = `in ${poss} ${decade}s`;
+      }
+    }
+
+    const parts = [hairAdj, genderLabel, ageRange].filter(Boolean);
+    return `a ${parts.join(' ')}`;
+  }
+
+  _getActorReference(actorId, fromPlayerId) {
+    const relLevel = this._getRelationshipLevel(fromPlayerId, actorId);
+    const actorName = this._pickLang(this.definition.actors?.[actorId]?.name) || actorId;
+
+    if (relLevel === 'strangers' || !relLevel) {
+      return this._getAppearanceDescription(actorId);
+    }
+
+    if (relLevel === 'friends') {
+      return `your friend ${actorName}`;
+    }
+
+    return actorName;
+  }
+
+  _getContainerPosture(containerId) {
+    if (!containerId) return 'here';
+    const def = this.definition.items?.[containerId];
+    if (!def) return 'here';
+    const shortName = this._getItemDisplayShortName(containerId)
+      || this._getItemDisplayName(containerId)
+      || containerId;
+    if (def.sleepable) return `lying on the ${shortName}`;
+    if (def.sittable) return `seated on the ${shortName}`;
+    return `inside the ${shortName}`;
+  }
+
+  _getPosturePhrase(actorId) {
+    const data = this.gameState.actors_data?.[actorId];
+    return this._getContainerPosture(data?.contained_by || null);
+  }
+
+  _formatList(items) {
+    if (items.length === 1) return items[0];
+    if (items.length === 2) return `${items[0]} and ${items[1]}`;
+    return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+  }
+
+  _buildActorPresenceDescription(locationId) {
+    const playerId = this._getPlayerActorId();
+    const playerData = this.gameState.actors_data?.[playerId];
+    const visibleActors = this._getVisibleActorsInLocation(locationId);
+
+    const sentences = [];
+
+    const groups = {};
+    for (const actorId of visibleActors) {
+      const containerId = this.gameState.actors_data?.[actorId]?.contained_by || null;
+      const key = containerId || '__standing__';
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(actorId);
+    }
+
+    const playerContainer = playerData?.contained_by || null;
+    const sameContainerGroup = playerContainer !== null ? groups[playerContainer] : null;
+
+    if (playerContainer && !sameContainerGroup) {
+      const posture = this._getPosturePhrase(playerId);
+      sentences.push(`You are ${posture}.`);
+    }
+
+    for (const [key, actorIds] of Object.entries(groups)) {
+      const containerId = key === '__standing__' ? null : key;
+      const isSameContainer = playerContainer && containerId === playerContainer;
+
+      const posture = containerId
+        ? this._getContainerPosture(containerId)
+        : null;
+
+      const references = actorIds.map(id => this._getActorReference(id, playerId));
+      const hasStranger = actorIds.some(id => {
+        const rel = this._getRelationshipLevel(playerId, id);
+        return !rel || rel === 'strangers';
+      });
+
+      const containerShortName = containerId
+        ? (this._getItemDisplayShortName(containerId) || this._getItemDisplayName(containerId) || containerId)
+        : null;
+
+      if (isSameContainer) {
+        const allRefs = this._formatList(references);
+        const verb = actorIds.length === 1 ? 'is' : 'are';
+        sentences.push(`Alongside you on the ${containerShortName} ${verb} ${allRefs}.`);
+      } else if (containerId === null) {
+        const allRefs = this._formatList(references);
+        if (hasStranger) {
+          sentences.push(`You can see ${allRefs} here.`);
+        } else {
+          const verb = actorIds.length === 1 ? 'is' : 'are';
+          sentences.push(`${allRefs} ${verb} here.`);
+        }
+      } else {
+        const allRefs = this._formatList(references);
+        if (hasStranger) {
+          sentences.push(`You can see ${allRefs} ${posture}.`);
+        } else {
+          const verb = actorIds.length === 1 ? 'is' : 'are';
+          sentences.push(`${allRefs} ${verb} ${posture}.`);
+        }
+      }
+    }
+
+    return sentences.join('\n');
+  }
+
   _startConversation(actorId) {
     this._endConversation();
     const actorDef = this.definition.actors?.[actorId];
@@ -1180,6 +1353,10 @@ class GameEngine {
     }
     const groundMsgs = this._getGroundItemMessages(locationId);
     if (groundMsgs) parts.push(groundMsgs);
+
+    const presence = this._buildActorPresenceDescription(locationId);
+    if (presence) parts.push(presence);
+
     return parts.filter(Boolean).join('\n');
   }
 
