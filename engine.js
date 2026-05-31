@@ -1034,6 +1034,17 @@ class GameEngine {
     return `inside the ${shortName}`;
   }
 
+  _getContainerSimplePosture(containerId) {
+    if (!containerId) return 'here';
+    const def = this.definition.items?.[containerId];
+    if (!def) return 'here';
+    const shortName = this._getItemDisplayShortName(containerId)
+      || this._getItemDisplayName(containerId)
+      || containerId;
+    if (def.sleepable || def.sittable) return `on the ${shortName}`;
+    return `in the ${shortName}`;
+  }
+
   _getPosturePhrase(actorId) {
     const data = this.gameState.actors_data?.[actorId];
     return this._getContainerPosture(data?.contained_by || null);
@@ -1355,7 +1366,7 @@ class GameEngine {
     if (groundMsgs) parts.push(groundMsgs);
 
     const presence = this._buildActorPresenceDescription(locationId);
-    if (presence) parts.push(presence);
+    if (presence) parts.push('\n' + presence);
 
     return parts.filter(Boolean).join('\n');
   }
@@ -1390,6 +1401,24 @@ class GameEngine {
         result += '\nInside you see: ' + names.join(', ') + '.';
       }
     }
+
+    const occupantActors = [];
+    const playerIdForContainer = this._getPlayerActorId();
+    for (const [actorId, data] of Object.entries(this.gameState.actors_data || {})) {
+      if (data.contained_by === itemId
+          && data.current_location === this.gameState.current_location
+          && actorId !== playerIdForContainer
+          && !this._isActorHidden(actorId)) {
+        occupantActors.push(actorId);
+      }
+    }
+    if (occupantActors.length > 0) {
+      const isPlayerOnSame = this.gameState.actors_data?.[playerIdForContainer]?.contained_by === itemId;
+      const refs = occupantActors.map(id => this._getActorReference(id, playerIdForContainer));
+      const verb = occupantActors.length === 1 ? 'is' : 'are';
+      result += `\nCurrently, ${this._formatList(refs)} ${verb} ${this._getContainerSimplePosture(itemId)}${isPlayerOnSame ? ' with you' : ''}.`;
+    }
+
     return this._expandItemText(itemId, result);
   }
 
@@ -1492,9 +1521,10 @@ class GameEngine {
     const movingActorId = this._getPlayerActorId();
     const movingData = this.gameState.actors_data?.[movingActorId];
     if (movingData?.contained_by) {
-      const containerDef = this.definition.items?.[movingData.contained_by];
-      const containerName = containerDef ? this._pickLang(containerDef.name) : movingData.contained_by;
-      this.hooks.onOutput?.(`You need to stand up from the ${containerName} first.`);
+      const shortName = this._getItemDisplayShortName(movingData.contained_by)
+        || this._getItemDisplayName(movingData.contained_by)
+        || movingData.contained_by;
+      this.hooks.onOutput?.(`You need to stand up from the ${shortName} first.`);
       return false;
     }
 
