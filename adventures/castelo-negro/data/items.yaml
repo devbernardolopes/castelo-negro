@@ -107,6 +107,8 @@ items:
           message: { en: "A small, mold-covered loaf lies on the table.", pt-br: "Um pequeno pedaço de pão mofado está sobre a mesa." }
         - if: "containerHas(cottage_kitchen_table, leather_pouch)"
           message: { en: "A small leather pouch sits on the table.", pt-br: "Uma pequena bolsa de couro está sobre a mesa." }
+        - if: "containerHas(cottage_kitchen_table, '{object}')"
+          message: { en: "A {object_name} is on the table.", pt-br: "Um {object_name} está sobre a mesa." }
 
   leather_pouch:
     name: { en: "Leather Pouch", pt-br: "Bolsa de Couro" }

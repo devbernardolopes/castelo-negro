@@ -7,10 +7,16 @@ events:
       - "!inventory.has(newborn_daughter)"
       - "newborn_daughter_health > 0"
     message:
+      # en: |
+      #   You can hear your baby crying desperately on the floor.
+      #   You can hear your baby crying desperately.
+      # pt-br: |
+      #   Você pode ouvir sua bebê chorando desesperadamente no chão.
+      #   Você pode ouvir sua bebê chorando desesperadamente.
       en: |
-        You can hear your baby crying desperately on the floor.
+        You can hear your baby crying desperately.
       pt-br: |
-        Você pode ouvir sua bebê chorando desesperadamente no chão.
+        Você pode ouvir sua bebê chorando desesperadamente.
 
   - id: door_unlock_hint_level_1
     type: recurring
