@@ -9,7 +9,7 @@ metadata:
   data_files: ["items.yaml", "locations.yaml", "end_conditions.yaml", "actions.yaml", "events.yaml", "actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml"]
   allow_direct_input: true
   debug: true # Show the value of the variables that have `debug_variable` set to `true`
-  auto_container_description: false
+  auto_container_description: true
   show_continue_message: true
   continue_message:
     en: "Press any key to continue..."
