@@ -269,9 +269,11 @@ function validateDefinition(def) {
   assertSection(def.variables && typeof def.variables === 'object', 'Missing `variables` section');
   assertSection(def.locations && typeof def.locations === 'object', 'Missing `locations` section');
   assertSection(def.actors && typeof def.actors === 'object', 'Missing `actors` section');
-  assertSection(def.actors.protagonist && typeof def.actors.protagonist === 'object', 'Missing `actors.protagonist`');
-  assertSection(typeof def.actors.protagonist.starting_location === 'string', '`actors.protagonist.starting_location` is required');
-  assertSection(def.locations[def.actors.protagonist.starting_location], 'Starting location not found in `locations`');
+  const initialActorId = def.variables?.current_player_actor?.value || 'protagonist';
+  assertSection(typeof initialActorId === 'string', '`current_player_actor` must be a string or `protagonist` must exist');
+  assertSection(def.actors[initialActorId] && typeof def.actors[initialActorId] === 'object', `Missing \`actors.${initialActorId}\``);
+  assertSection(typeof def.actors[initialActorId].starting_location === 'string', `\`actors.${initialActorId}.starting_location\` is required`);
+  assertSection(def.locations[def.actors[initialActorId].starting_location], 'Starting location not found in `locations`');
 
   // Check actors have inventory capacity defined
   for (const [actorId, actorDef] of Object.entries(def.actors || {})) {

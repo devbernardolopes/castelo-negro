@@ -249,7 +249,8 @@ class GameEngine {
       vars[key] = base;
     }
 
-    const startLoc = this.definition.actors.protagonist.starting_location;
+    const initActorId = vars.current_player_actor?.value || 'protagonist';
+    const startLoc = this.definition.actors[initActorId]?.starting_location;
 
     const actorsData = {};
     for (const [actorId, actorDef] of Object.entries(this.definition.actors || {})) {
