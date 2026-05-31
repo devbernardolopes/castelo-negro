@@ -60,29 +60,41 @@ GameEngine.prototype.processPlayerCommand = function(input) {
 };
 
 GameEngine.prototype._executeActionSuccess = function(actionId, actionDef, match) {
-  if (actionDef.effect) this._applyActionEffects(actionDef.effect, match);
+  // Pre-resolve contained_by_name (with short name) before effects run,
+  // since the stand action's releaseActor clears contained_by from state.
+  const resolvedMatch = { ...match };
+  const pid = this._getPlayerActorId();
+  const pdata = this.gameState.actors_data?.[pid];
+  const cb = pdata?.contained_by;
+  if (cb) {
+    resolvedMatch.contained_by_name = this._getItemDisplayShortName(cb)
+      || this._getItemDisplayName(cb)
+      || cb;
+  }
+
+  if (actionDef.effect) this._applyActionEffects(actionDef.effect, resolvedMatch);
 
   if (actionDef.message_pool) {
     const pool = this._pickLang(actionDef.message_pool);
     if (Array.isArray(pool) && pool.length) {
       const msg = pool[Math.floor(Math.random() * pool.length)];
-      if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+      if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, resolvedMatch));
     }
   } else {
     const msg = this._pickLang(actionDef.message);
-    if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+    if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, resolvedMatch));
   }
 
   if (Array.isArray(actionDef.progressive_messages)) {
     const matching = [];
     for (const pm of actionDef.progressive_messages) {
-      const expanded = this._expandTemplate(String(pm.condition || ''), match);
+      const expanded = this._expandTemplate(String(pm.condition || ''), resolvedMatch);
       if (this.evaluateCondition(expanded)) matching.push(pm);
     }
     for (const pm of matching) {
-      if (pm.effect) this._applyActionEffects(pm.effect, match);
+      if (pm.effect) this._applyActionEffects(pm.effect, resolvedMatch);
       const msg = this._pickLang(pm.message);
-      if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+      if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, resolvedMatch));
     }
   }
 
