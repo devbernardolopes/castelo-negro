@@ -77,6 +77,32 @@ actions:
           en: |
             The {object_name} is already closed.
 
+  examine_actor:
+    pattern:
+      - verb: ["examine"]
+      - actor: ["*"]
+    conditions:
+      - "'{actor}' != '' and getActor('{actor}') != null"
+      - "getActor('{actor}').current_location == current_location"
+      - "'{actor}' != current_player_actor"
+      - "!isActorHidden('{actor}')"
+    message:
+      en: |
+        {actor_examine_output}
+    conditional_messages:
+      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+        message:
+          en: |
+            You don't see anyone like that here.
+      - condition: "isActorHidden('{actor}')"
+        message:
+          en: |
+            You don't see anyone like that here.
+      - condition: "getActor('{actor}') != null and getActor('{actor}').current_location != current_location"
+        message:
+          en: |
+            {actor_name} isn't here.
+
   examine:
     pattern:
       - verb: ["examine"]

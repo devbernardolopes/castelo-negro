@@ -616,6 +616,7 @@ class GameEngine {
         const data = engine.gameState.actors_data?.[String(actorId)];
         return data ? data.contained_by != null : false;
       },
+      isActorHidden: (actorId) => engine._isActorHidden(String(actorId)),
       getContainedBy: (actorId) => {
         const data = engine.gameState.actors_data?.[String(actorId)];
         return data ? data.contained_by : null;
@@ -1054,6 +1055,96 @@ class GameEngine {
     if (items.length === 1) return items[0];
     if (items.length === 2) return `${items[0]} and ${items[1]}`;
     return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+  }
+
+  _getActorVisualDescriptors(actorId) {
+    const props = this.gameState.actors_data?.[actorId]?.properties || {};
+    const descriptors = new Set();
+
+    const GENDER_DESC = { male: ['man', 'guy', 'male'], female: ['woman', 'lady', 'female'] };
+    const gender = props.gender || 'other';
+    for (const d of (GENDER_DESC[gender] || ['person'])) descriptors.add(d);
+
+    const HAIR_DESC = {
+      black: ['black-haired', 'black haired'], brown: ['brunette'],
+      blonde: ['blonde'], red: ['red-haired', 'red haired', 'ginger'],
+      gray: ['gray-haired', 'gray haired'], white: ['white-haired', 'white haired'],
+      bald: ['bald']
+    };
+    const hair = props.hair || '';
+    for (const d of (HAIR_DESC[hair] || [])) descriptors.add(d);
+
+    const age = typeof props.age === 'number' ? props.age : null;
+    if (age !== null) {
+      if (age <= 12) descriptors.add('child');
+      else if (age <= 17) descriptors.add('teen');
+      else if (age <= 25) descriptors.add('young');
+      else if (age >= 60) descriptors.add('elderly');
+      else if (age >= 40) descriptors.add('middle-aged');
+    }
+
+    const genderLabel = GENDER_DESC[gender]?.[0] || 'person';
+    for (const hairDesc of (HAIR_DESC[hair] || [])) {
+      descriptors.add(`${hairDesc} ${genderLabel}`);
+    }
+
+    return descriptors;
+  }
+
+  _isActorStrangerToPlayer(actorId) {
+    const playerId = this._getPlayerActorId();
+    return this._getRelationshipLevel(playerId, actorId) === 'strangers';
+  }
+
+  _moodToDescription(mood) {
+    if (!mood) return '';
+    const map = {
+      neutral: 'looks neutral', happy: 'looks happy', sad: 'looks sad',
+      anxious: 'looks anxious', curious: 'looks curious', angry: 'looks angry',
+      tired: 'looks tired'
+    };
+    return map[mood] || `looks ${mood}`;
+  }
+
+  _getActorExamineOutput(actorId) {
+    const playerId = this._getPlayerActorId();
+    const actorData = this.gameState.actors_data?.[actorId];
+    const actorDef = this.definition.actors?.[actorId];
+    if (!actorData || !actorDef) return '';
+
+    const parts = [];
+    const relLevel = this._getRelationshipLevel(playerId, actorId);
+    const isStranger = !relLevel || relLevel === 'strangers';
+
+    const customDesc = actorDef.description
+      ? (typeof actorDef.description === 'string' ? actorDef.description : this._pickLang(actorDef.description))
+      : null;
+    if (customDesc) parts.push(customDesc);
+
+    let subject;
+    if (isStranger) {
+      const appearance = this._getAppearanceDescription(actorId);
+      subject = appearance.charAt(0).toUpperCase() + appearance.slice(1);
+    } else {
+      const ref = this._getActorReference(actorId, playerId);
+      subject = ref.charAt(0).toUpperCase() + ref.slice(1);
+    }
+
+    const posture = this._getPosturePhrase(actorId);
+    parts.push(`${subject} is ${posture}.`);
+
+    const wearing = actorData.wearing || [];
+    if (wearing.length > 0) {
+      const itemNames = wearing.map(id => this._getItemDisplayName(id) || id);
+      parts.push(`${subject} is wearing ${this._formatList(itemNames)}.`);
+    }
+
+    const mood = actorData.properties?.mood;
+    if (mood) {
+      parts.push(`${subject} ${this._moodToDescription(mood)}.`);
+    }
+
+    return parts.join('\n');
   }
 
   _buildActorPresenceDescription(locationId) {

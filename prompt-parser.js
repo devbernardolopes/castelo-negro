@@ -122,7 +122,6 @@ GameEngine.prototype._tryActions = function(cmd) {
     : null;
   if (!actions) return false;
 
-  let firstAmbiguity = null;
   let fallbackMatch = null;
 
   for (const [actionId, actionDef] of Object.entries(actions)) {
@@ -156,13 +155,26 @@ GameEngine.prototype._tryActions = function(cmd) {
         return true;
       }
 
-      if (!firstAmbiguity) {
-        firstAmbiguity = {
-          actionId, actionDef, match,
-          filteredCandidates: passingCandidates
-        };
+      this._pendingAmbiguity = {
+        actionId,
+        actionDef,
+        match: match.partialMatch,
+        slotName: match.slotName,
+        candidates: passingCandidates,
+        phrase: match.phrase
+      };
+      const msg = this._buildDisambiguationMessage(passingCandidates, match.phrase, match._isStrangerAmbiguity);
+      if (msg) this.hooks.onOutput?.(msg);
+      return true;
+    }
+
+    // Stranger blocked: player used a name for someone they don't know
+    if (match._strangerBlocked) {
+      if (actionId === 'examine_actor') {
+        this.hooks.onOutput?.("You don't know anyone by that name.");
+        this._afterTurn({ kind: 'action_failed', id: actionId });
+        return true;
       }
-      continue;
     }
 
     // Catch-all actions (no pattern, empty match) — defer to lowest priority
@@ -178,21 +190,6 @@ GameEngine.prototype._tryActions = function(cmd) {
     }
 
     if (this._executeActionFailure(actionId, actionDef, match)) return true;
-  }
-
-  if (firstAmbiguity) {
-    const { actionId, actionDef, match, filteredCandidates } = firstAmbiguity;
-    this._pendingAmbiguity = {
-      actionId,
-      actionDef,
-      match: match.partialMatch,
-      slotName: match.slotName,
-      candidates: filteredCandidates,
-      phrase: match.phrase
-    };
-    const msg = this._buildDisambiguationMessage(filteredCandidates, match.phrase);
-    if (msg) this.hooks.onOutput?.(msg);
-    return true;
   }
 
   if (fallbackMatch) {
@@ -331,7 +328,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
         return null;
       }
       if (actorMatch.ambiguous) {
-        return {
+        const result = {
           _ambiguous: true,
           slotName,
           candidates: actorMatch.candidates,
@@ -339,7 +336,11 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
           len: actorMatch.len,
           partialMatch: out
         };
+        if (actorMatch._isStrangerAmbiguity) result._isStrangerAmbiguity = true;
+        return result;
       }
+      if (actorMatch._strangerBlocked) out._strangerBlocked = true;
+      if (actorMatch._visualMatch) out._visualMatch = true;
       out[slotName] = actorMatch.actorId;
       out[`${slotName}_name`] = this._pickLang(this.definition.actors?.[actorMatch.actorId]?.name) || actorMatch.actorId;
       i += actorMatch.len;
@@ -441,9 +442,39 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef) {
       }
     }
 
-    if (matched.length === 1) return { actorId: matched[0], len, phrase };
-    if (matched.length > 1) return { ambiguous: true, candidates: matched, len, phrase };
+    if (matched.length === 1) {
+      const playerId = this._getPlayerActorId();
+      if (this._isActorStrangerToPlayer(matched[0])) {
+        return { _strangerBlocked: true, actorId: matched[0], len, phrase };
+      }
+      return { actorId: matched[0], len, phrase };
+    }
+    if (matched.length > 1) {
+      const playerId = this._getPlayerActorId();
+      const allStrangers = matched.every(id => this._isActorStrangerToPlayer(id));
+      return { ambiguous: true, candidates: matched, len, phrase, _isStrangerAmbiguity: allStrangers };
+    }
   }
+
+  // Fallback: try visual descriptor matching (no stranger blocking)
+  for (let len = Math.min(3, tokens.length - idx); len >= 1; len--) {
+    const phrase = tokens.slice(idx, idx + len).join(' ');
+    let p = String(phrase).trim().toLowerCase();
+    p = this._stripPossessive(p);
+    if (!p) continue;
+
+    const matched = [];
+    for (const actorId of candidates) {
+      const descriptors = this._getActorVisualDescriptors(actorId);
+      if (descriptors.has(p)) matched.push(actorId);
+    }
+
+    if (matched.length === 1) return { actorId: matched[0], len, phrase, _visualMatch: true };
+    if (matched.length > 1) {
+      return { ambiguous: true, candidates: matched, len, phrase, _isStrangerAmbiguity: true };
+    }
+  }
+
   return null;
 };
 
@@ -654,6 +685,12 @@ GameEngine.prototype._expandTemplate = function(str, match) {
         if (nameText) this.hooks.onLocationNameRender?.(nameText);
         return this.getLocationDescription(locId);
       }
+      return '';
+    }
+
+    if (key === 'actor_examine_output') {
+      const actorId = match?.actor;
+      if (actorId) return this._getActorExamineOutput(actorId);
       return '';
     }
 
@@ -954,24 +991,59 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
     }
   }
 
+  // Also try matching against actor names/synonyms
+  for (const candidateId of candidates) {
+    const actorDef = this.definition.actors?.[candidateId];
+    if (!actorDef) continue;
+    const actorName = this._pickLang(actorDef.name);
+    if (actorName && q === String(actorName).trim().toLowerCase()) {
+      return { itemId: candidateId, phrase: q };
+    }
+    const syns = actorDef.synonyms?.[this.language] || [];
+    for (const s of syns) {
+      if (q === String(s).trim().toLowerCase()) {
+        return { itemId: candidateId, phrase: q };
+      }
+    }
+  }
+
   const words = q.split(/\s+/);
   if (words.length === 1) {
     const singleWord = this._stripPossessive(words[0]);
     const scored = [];
     for (const candidateId of candidates) {
+      // Check items
       const item = this.definition.items?.[candidateId];
-      if (!item) continue;
-      const name = this._pickLang(item.name) || '';
-      const syns = item.synonyms?.[this.language] || [];
-      const allTerms = [
-        candidateId.replace(/_/g, ' '),
-        name.toLowerCase(),
-        ...syns.map(s => s.toLowerCase())
-      ];
-      for (const term of allTerms) {
-        if (term.split(/\s+/).includes(singleWord)) {
-          scored.push(candidateId);
-          break;
+      if (item) {
+        const name = this._pickLang(item.name) || '';
+        const syns = item.synonyms?.[this.language] || [];
+        const allTerms = [
+          candidateId.replace(/_/g, ' '),
+          name.toLowerCase(),
+          ...syns.map(s => s.toLowerCase())
+        ];
+        for (const term of allTerms) {
+          if (term.split(/\s+/).includes(singleWord)) {
+            scored.push(candidateId);
+            break;
+          }
+        }
+      }
+      // Check actors
+      const actor = this.definition.actors?.[candidateId];
+      if (actor) {
+        const name = this._pickLang(actor.name) || '';
+        const syns = actor.synonyms?.[this.language] || [];
+        const allTerms = [
+          candidateId.replace(/_/g, ' '),
+          name.toLowerCase(),
+          ...syns.map(s => s.toLowerCase())
+        ];
+        for (const term of allTerms) {
+          if (term.split(/\s+/).includes(singleWord)) {
+            if (!scored.includes(candidateId)) scored.push(candidateId);
+            break;
+          }
         }
       }
     }
@@ -983,8 +1055,13 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
   return null;
 };
 
-GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase) {
+GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase, isStrangerAmbiguity) {
   const labels = candidates.map(id => {
+    // When all candidates are strangers to the player, use appearance descriptions
+    if (isStrangerAmbiguity && this.definition.actors?.[id]) {
+      return this._getAppearanceDescription(id);
+    }
+
     const item = this.definition.items?.[id];
     const actor = this.definition.actors?.[id];
     const def = item || actor;

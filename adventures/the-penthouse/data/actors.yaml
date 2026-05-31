@@ -39,6 +39,9 @@ actors:
     starting_contained_by: living_room_couch
     wearing: [sabine_jeans_pants]
     max_capacity: 2
+    description:
+      en: |
+        Sabine is a young woman in her 20s. She looks anxious, her eyes darting around the room as she fidgets with the hem of her shirt.
     properties:
       age: 23
       gender: "female"
@@ -126,6 +129,9 @@ actors:
     inventory: []
     starting_contained_by: living_room_couch
     max_capacity: 2
+    description:
+      en: |
+        Dana is your friend. She looks curious, her gaze wandering as she takes in every detail of the room. There's a relaxed confidence in the way she carries herself.
     properties:
       age: 29
       gender: "female"
