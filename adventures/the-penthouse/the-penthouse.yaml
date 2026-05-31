@@ -12,7 +12,7 @@ metadata:
   auto_container_description: true
   show_continue_message: true
   continue_message:
-    en: "[i]\[Press any key to continue...\][/i]"
+    en: "[glow][i]\[Press any key to continue...\][/i][/glow]"
   highlight_color_verbs: "#FF0000"
   highlight_color_items: "#0000FF"
 
