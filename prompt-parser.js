@@ -325,6 +325,11 @@ GameEngine.prototype._getParserStopwords = function() {
   return new Set([...base, ...pt]);
 };
 
+GameEngine.prototype._stripPossessive = function(str) {
+  if (this.language !== 'en') return String(str);
+  return String(str).replace(/'s$/, '').replace(/'$/, '');
+};
+
 GameEngine.prototype._expandVerbSynonyms = function(verbIds) {
   const expanded = new Set();
   for (const vid of verbIds) {
@@ -395,7 +400,8 @@ GameEngine.prototype._matchSpecificItemAt = function(tokens, idx, itemIds) {
 };
 
 GameEngine.prototype._phraseMatchesItemId = function(phrase, itemId) {
-  const p = String(phrase || '').trim().toLowerCase();
+  let p = String(phrase || '').trim().toLowerCase();
+  p = this._stripPossessive(p);
   const id = String(itemId || '').trim();
   if (!p || !id) return false;
   if (p === id.toLowerCase()) return true;
@@ -428,7 +434,8 @@ GameEngine.prototype._matchLocationSlotAt = function(tokens, idx, locationIds) {
 };
 
 GameEngine.prototype._phraseMatchesLocationId = function(phrase, locId) {
-  const p = String(phrase || '').trim().toLowerCase();
+  let p = String(phrase || '').trim().toLowerCase();
+  p = this._stripPossessive(p);
   const id = String(locId || '').trim();
   if (!p || !id) return false;
   if (p === id.toLowerCase()) return true;
@@ -524,7 +531,8 @@ GameEngine.prototype._applyActionEffects = function(effect, match) {
 };
 
 GameEngine.prototype._findItemIdByName = function(query) {
-  const q = String(query || '').trim().toLowerCase();
+  let q = String(query || '').trim().toLowerCase();
+  q = this._stripPossessive(q);
   if (!q) return null;
   // Allow direct id
   if (this.definition.items?.[q]) return q;
@@ -536,7 +544,8 @@ GameEngine.prototype._findItemIdByName = function(query) {
 };
 
 GameEngine.prototype._findItemIdByNameOrSynonym = function(query) {
-  const q = String(query || '').trim().toLowerCase();
+  let q = String(query || '').trim().toLowerCase();
+  q = this._stripPossessive(q);
   if (!q) return null;
   // Allow direct id / id-as-phrase
   if (this.definition.items?.[q]) return q;
@@ -561,7 +570,8 @@ GameEngine.prototype._findItemIdByNameOrSynonym = function(query) {
 };
 
 GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
-  const q = String(query || '').trim().toLowerCase();
+  let q = String(query || '').trim().toLowerCase();
+  q = this._stripPossessive(q);
   if (!q) return [];
   const results = [];
   if (this.definition.items?.[q]) results.push(q);
@@ -592,7 +602,8 @@ GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
 };
 
 GameEngine.prototype._findLocationIdByNameOrSynonym = function(query) {
-  const q = String(query || '').trim().toLowerCase();
+  let q = String(query || '').trim().toLowerCase();
+  q = this._stripPossessive(q);
   if (!q) return null;
   if (this.definition.locations?.[q]) return q;
   const asId = q.replace(/\s+/g, '_');
@@ -710,7 +721,8 @@ GameEngine.prototype._verbItemByName = function(verb, query) {
 };
 
 GameEngine.prototype._resolveAmbiguity = function(input) {
-  const q = String(input || '').trim().toLowerCase();
+  let q = String(input || '').trim().toLowerCase();
+  q = this._stripPossessive(q);
   if (!q || !this._pendingAmbiguity) return null;
   const { candidates } = this._pendingAmbiguity;
 
@@ -722,7 +734,7 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
 
   const words = q.split(/\s+/);
   if (words.length === 1) {
-    const singleWord = words[0];
+    const singleWord = this._stripPossessive(words[0]);
     const scored = [];
     for (const candidateId of candidates) {
       const item = this.definition.items?.[candidateId];
