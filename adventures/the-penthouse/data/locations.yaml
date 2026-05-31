@@ -8,7 +8,7 @@ locations:
     description:
       en: |
         You're in the living room of your modest cottage.
-    contents: []
+    contents: [living_room_couch]
     exits:
       north: penthouse_master_bedroom
     images: ["images/locations/tti-2026-05-31T01-35-07-370740316.png"]

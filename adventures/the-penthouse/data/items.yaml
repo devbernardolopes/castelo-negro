@@ -10,9 +10,55 @@ items:
       en: |
         Sabine's Cell Phone
     synonyms:
-      en: ["sabine's cell phone", "cell phone", "phone", "sabine's phone"]
+      en: ["cell phone", "phone", "sabine's phone"]
     takeable: true
     size: 1
     description:
       en: |
         A sleek smartphone.
+
+  sabine_jeans_pants_pocket:
+    name:
+      en: |
+        Sabine's Jeans Pants Pocket
+    synonyms:
+      en: ["pocket", "sabine's pocket", "jeans pocket", "pants pocket", "sabine's jeans pocket", "sabine's pants pocket"]
+    contents: [sabine_cell_phone]
+    description:
+      en: |
+        The pocket of Sabine's jeans pants.
+      conditions:
+        - if: "containerHas('sabine_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor != 'sabine'"
+          message:
+            en: |
+              You can see the outline of Sabine's cell phone.
+        - if: "containerHas('sabine_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor == 'sabine'"
+          message:
+            en: |
+              You can see the outline of your cell phone.
+
+  sabine_jeans_pants:
+    name:
+      en: |
+        Sabine's Jeans Pants
+    synonyms:
+      en: ["jeans", "pants", "sabine's jeans", "sabine's pants"]
+    takeable: true
+    wearable: true
+    size: 2
+    contents: [sabine_jeans_pants_pocket]
+    description:
+      en: |
+        A pair of stylish jeans.
+
+  living_room_couch:
+    name:
+      en: |
+        Living Room Couch
+    synonyms:
+      en: ["couch", "sofa", "living room sofa"]
+    takeable: false
+    size: 5
+    description:
+      en: |
+        A large, comfortable couch.
