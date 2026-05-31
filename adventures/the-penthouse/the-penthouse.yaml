@@ -8,7 +8,7 @@ metadata:
   data_path: "data/"
   data_files: ["items.yaml", "locations.yaml", "actions.yaml", "actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml"]
   allow_direct_input: true
-  debug: true # Show the value of the variables that have `debug_variable` set to `true`
+  debug: false
   auto_container_description: true
   show_continue_message: true
   continue_message:
