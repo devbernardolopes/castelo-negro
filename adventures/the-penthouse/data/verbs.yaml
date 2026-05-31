@@ -1,0 +1,99 @@
+verbs:
+  take:
+    synonyms: { en: ["take", "pick up", "grab"], pt-br: ["pegar", "apanhar"] }
+  give:
+    synonyms: { en: ["give", "feed", "hand"], pt-br: ["dar", "alimentar"] }
+  examine:
+    synonyms: { en: ["examine", "look at", "inspect", "look"], pt-br: ["examinar", "olhar"] }
+  drop:
+    synonyms: { en: ["drop", "put down"], pt-br: ["soltar", "colocar"] }
+  use:
+    synonyms: { en: ["use"], pt-br: ["usar"] }
+  unlock:
+    synonyms: { en: ["unlock"], pt-br: ["destrancar"] }
+  lock:
+    synonyms: { en: ["lock"], pt-br: ["trancar"] }
+  open:
+    synonyms: { en: ["open"], pt-br: ["abrir"] }
+  close:
+    synonyms: { en: ["close"], pt-br: ["fechar"] }
+  roll:
+    synonyms: { en: ["roll", "flip", "turn"], pt-br: ["rolar", "virar", "girar"] }
+  go:
+    synonyms: { en: ["go", "walk", "move"], pt-br: ["ir", "andar", "mover"] }
+  attack:
+    synonyms: { en: ["attack", "hit", "strike"], pt-br: ["atacar", "bater", "golpear"] }
+  eat:
+    synonyms: { en: ["eat", "consume"], pt-br: ["comer", "consumir"] }
+  climb:
+    synonyms: { en: ["climb", "ascend"], pt-br: ["subir", "escalar"] }
+  jump:
+    synonyms: { en: ["jump", "leap"], pt-br: ["pular", "saltar"] }
+  talk:
+    synonyms: { en: ["talk", "speak"], pt-br: ["falar", "conversar"] }
+  pull:
+    synonyms: { en: ["pull"], pt-br: ["puxar"] }
+  push:
+    synonyms: { en: ["push"], pt-br: ["empurrar"] }
+  smell:
+    synonyms: { en: ["smell", "sniff"], pt-br: ["cheirar"] }
+  listen:
+    synonyms: { en: ["listen", "hear"], pt-br: ["ouvir", "escutar"] }
+  read:
+    synonyms: { en: ["read"], pt-br: ["ler"] }
+  throw:
+    synonyms: { en: ["throw", "toss"], pt-br: ["jogar", "arremessar"] }
+  wear:
+    synonyms: { en: ["wear", "put on"], pt-br: ["vestir", "colocar"] }
+  press:
+    synonyms: { en: ["press", "push"], pt-br: ["pressionar", "empurrar"] }
+  cut:
+    synonyms: { en: ["cut", "slice"], pt-br: ["cortar", "fatiar"] }
+  drink:
+    synonyms: { en: ["drink", "sip"], pt-br: ["beber", "tomar"] }
+  sleep:
+    synonyms: { en: ["sleep", "rest"], pt-br: ["dormir", "descansar"] }
+  lower:
+    synonyms: { en: ["lower", "descend"], pt-br: ["abaixar", "descer"] }
+  raise:
+    synonyms: { en: ["raise", "ascend"], pt-br: ["levantar", "subir"] }
+  call:
+    synonyms: { en: ["call", "shout"], pt-br: ["chamar", "gritar"] }
+  test:
+    synonyms: { en: ["test", "probe", "check"], pt-br: ["testar", "provar", "verificar"] }
+  put:
+    synonyms: { en: ["put", "place", "insert"], pt-br: ["colocar", "pôr", "inserir"] }
+  empty:
+    synonyms: { en: ["empty"], pt-br: ["esvaziar"] }
+  fill:
+    synonyms: { en: ["fill"], pt-br: ["encher"] }
+  tie:
+    synonyms: { en: ["tie", "bind"], pt-br: ["amarrar", "prender"] }
+  untie:
+    synonyms: { en: ["untie", "unbind"], pt-br: ["desamarrar", "liberar"] }
+  light:
+    synonyms: { en: ["light", "ignite"], pt-br: ["acender", "igniar"] }
+  extinguish:
+    synonyms: { en: ["extinguish", "douse"], pt-br: ["extinguir", "apagar"] }
+
+directions:
+  north:
+    synonyms: { en: ["north", "n", "forward"], pt-br: ["norte", "n", "frente"] }
+  northeast:
+    synonyms: { en: ["northeast", "ne"], pt-br: ["nordeste", "ne"] }
+  northwest:
+    synonyms: { en: ["northwest", "nw"], pt-br: ["noroeste", "nw"] }
+  south:
+    synonyms: { en: ["south", "s", "backward"], pt-br: ["sul", "s", "trás"] }
+  southeast:
+    synonyms: { en: ["southeast", "se"], pt-br: ["sudeste", "se"] }
+  southwest:
+    synonyms: { en: ["southwest", "sw"], pt-br: ["sudoeste", "sw"] }
+  east:
+    synonyms: { en: ["east", "e", "right"], pt-br: ["leste", "e", "direita"] }
+  west:
+    synonyms: { en: ["west", "w", "left"], pt-br: ["oeste", "o", "esquerda"] }
+  up:
+    synonyms: { en: ["up", "u"], pt-br: ["cima", "c"] }
+  down:
+    synonyms: { en: ["down", "d"], pt-br: ["baixo", "b"] }

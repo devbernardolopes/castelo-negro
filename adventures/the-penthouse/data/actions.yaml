@@ -1,0 +1,171 @@
+# conditional_messages are evaluated before effects
+# conditional_messages only runs on action failure
+# progressive_messages are evaluated after effects
+
+actions:
+  open:
+    pattern:
+      - verb: ["open"]
+      - object: ["*"]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "!{object}_open"
+    effect: "{object}_open = true"
+    message:
+      en: |
+        You open the {object_name}.
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't open the {object_name}.
+      - condition: "{object}_open"
+        message:
+          en: |
+            The {object_name} is already open.
+
+  close:
+    pattern:
+      - verb: ["close"]
+      - object: ["*"]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "{object}_open"
+    effect: "{object}_open = false"
+    message:
+      en: |
+        You close the {object_name}.
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't close the {object_name}.
+      - condition: "!{object}_open"
+        message:
+          en: |
+            The {object_name} is already closed.
+
+  examine:
+    pattern:
+      - verb: ["examine"]
+      - object: ["*"]
+        optional: true
+    conditions:
+      - "'{object}' == '' or here.has('{object}') or inventory.has('{object}')"
+    effect: []
+    message:
+      en: |
+        {location_or_object_description}
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+
+  drop:
+    pattern:
+      - verb: ["drop"]
+      - object: ["*"]
+    conditions:
+      - "inventory.has('{object}')"
+      - "items.droppable('{object}')"
+    effect:
+      - "inventory.remove('{object}')"
+      - "here.add('{object}')"
+    message:
+      en: |
+        You drop the {object_name}.
+    conditional_messages:
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: |
+            You don't have the {object_name}.
+      - condition: "!items.droppable('{object}')"
+        message:
+          en: |
+            You can't drop the {object_name}.
+
+  put:
+    patterns:
+      obj_then_target:
+        - verb: ["put"]
+        - object: ["*"]
+        - target: ["*"]
+      target_then_obj:
+        - verb: ["put"]
+        - target: ["*"]
+        - object: ["*"]
+    conditions:
+      - "inventory.has('{object}')"
+      - "'{target}' == '__location__' or here.has('{target}') or inventory.has('{target}')"
+    effect:
+      - "inventory.remove('{object}')"
+      - "putInTarget('{target}', '{object}')"
+    message:
+      en: |
+        You place the {object_name} in the {target_name}.
+    conditional_messages:
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: |
+            You don't have the {object_name}.
+      - condition: "'{target}' != '__location__' and !here.has('{target}') and !inventory.has('{target}')"
+        message:
+          en: |
+            There's no {target_name} here.
+      - condition: "'{target}' != '__location__' and items.container_count('{target}') >= items.container_capacity('{target}')"
+        message:
+          en: |
+            The {target_name} is full. You can't put anything else in it.
+
+  take:
+    pattern:
+      - verb: ["take"]
+      - object: ["*"]
+    conditions:
+      - "items.takeable('{object}')"
+      - "here.has('{object}')"
+      - "inventory.length < inventory.max_capacity"
+      - "!inventory.has('{object}')"
+    effect: "inventory.add('{object}')"
+    message:
+      en: |
+        You take the {object_name}.
+      conditional_messages:
+      - condition: "inventory.has('{object}')"
+        message:
+          en: |
+            You already have the {object_name}.
+      - condition: "!here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.takeable('{object}')"
+        message:
+          en: |
+            You can't take the {object_name}.
+      - condition: "inventory.length >= inventory.max_capacity"
+        message:
+          en: |
+            You can't carry any more items.
+
+  fallback_generic:
+    message_pool:
+      en:
+        - "I don't understand what you mean."
+        - "That makes no sense in this context."
+        - "You're not sure how to do that here."
+        - "That idea doesn't seem to lead anywhere."
+        - "You can't quite figure out how to make that work."
+    effect:
+      - "invalid_attempt_count += 1"

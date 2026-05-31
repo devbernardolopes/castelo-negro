@@ -1,0 +1,44 @@
+locations:
+  penthouse_living_room:
+    name:
+      en: |
+        Penthouse - Living Room
+    synonyms:
+      en: ["penthouse living room", "living room", "room"]
+    description:
+      en: |
+        You're in the living room of your modest cottage.
+      # conditions:
+      #   - if: "(cottage_living_room_left_window_open and !cottage_living_room_right_window_open) or (!cottage_living_room_left_window_open and cottage_living_room_right_window_open)"
+      #     message: { en: "One window is open, letting in the cold winter air.", pt-br: "Uma janela está aberta, deixando entrar o ar frio do inverno." }
+    contents: []
+    exits:
+      north: penthouse_master_bedroom
+      # west:
+      #   location: cottage_porch
+      #   conditions:
+      #     - if: "cottage_door_locked"
+      #       allow: false
+      #       message: { en: "The front door is locked. You can't go outside.", pt-br: "A porta da frente está trancada. Você não pode sair." }
+    images: ["images/locations/tti-2026-05-31T01-35-07-370740316.png"]
+
+  penthouse_master_bedroom:
+    name:
+      en: "Penthouse - Master Bedroom"
+    description:
+      en: "A luxurious master bedroom with a large bed and a balcony overlooking the city."
+    contents: []
+    exits:
+      south: penthouse_living_room
+      east: penthouse_master_ensuite
+    images: ["images/locations/tti-2026-05-31T01-45-19-418079304.png"]
+
+  penthouse_master_ensuite:
+    name:
+      en: "Penthouse - Master Ensuite"
+    description:
+      en: "A dark, opulent bathroom."
+    contents: []
+    exits:
+      west: penthouse_master_bedroom
+    images: ["images/locations/tti-2026-05-31T02-09-20-463353415.png"]

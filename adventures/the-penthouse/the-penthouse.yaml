@@ -1,0 +1,27 @@
+metadata:
+  title: The Penthouse
+  author: Bernardo Crivellaro Lopes
+  version: 1.0
+  languages: [en]
+  default_language: en
+  assets_path: "assets/"
+  data_path: "data/"
+  data_files: ["items.yaml", "locations.yaml", "end_conditions.yaml", "actions.yaml", "events.yaml", "actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml"]
+  allow_direct_input: true
+  debug: true # Show the value of the variables that have `debug_variable` set to `true`
+  auto_container_description: true
+  show_continue_message: true
+  continue_message:
+    en: "Press any key to continue..."
+  highlight_color_verbs: "#FF0000"
+  highlight_color_items: "#0000FF"
+
+# Syntax	                                                        Produces
+# [b]text[/b]	                                                    <strong>text</strong>
+# [i]text[/i]	                                                    <em>text</em>
+# [color=accent-text]text[/color]	                                <span style="color:var(--accent-text)">
+# [color=#FF0000]text[/color]	                                    <span style="color:#FF0000">
+# [shake], [blink], [glow], [pulse], [wiggle], [grow], [shrink]   <span class="effect-...">
+# \[ / \]	                                                        literal [ / ]
+# unknown tags	                                                  silently skipped
+# improper nesting	                                              gracefully handled (unmatched closes ignored, unclosed opens auto-closed)

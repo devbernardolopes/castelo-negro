@@ -1,0 +1,12 @@
+variables:
+  game_turn:
+    type: int
+    value: 0
+
+  invalid_attempt_count:
+    type: int
+    value: 0
+
+  current_player_actor:
+    type: object
+    value: [protagonist]
