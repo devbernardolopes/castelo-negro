@@ -411,6 +411,9 @@ GameEngine.prototype._phraseMatchesItemId = function(phrase, itemId) {
   const name = this._pickLang(item?.name);
   if (name && p === String(name).trim().toLowerCase()) return true;
 
+  const shortName = this._pickLang(item?.short_name);
+  if (shortName && p === String(shortName).trim().toLowerCase()) return true;
+
   const syn = item?.synonyms;
   if (syn && typeof syn === 'object') {
     const langList = syn?.[this.language];
@@ -568,6 +571,9 @@ GameEngine.prototype._findItemIdByNameOrSynonym = function(query) {
     const n = this._pickLang(item?.name);
     if (n && String(n).trim().toLowerCase() === q) return id;
 
+    const sn = this._pickLang(item?.short_name);
+    if (sn && String(sn).trim().toLowerCase() === q) return id;
+
     const syn = item?.synonyms;
     if (syn && typeof syn === 'object') {
       const langList = syn?.[this.language];
@@ -594,6 +600,11 @@ GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
     if (results.includes(id)) continue;
     const n = this._pickLang(item?.name);
     if (n && String(n).trim().toLowerCase() === q) {
+      results.push(id);
+      continue;
+    }
+    const sn = this._pickLang(item?.short_name);
+    if (sn && String(sn).trim().toLowerCase() === q) {
       results.push(id);
       continue;
     }

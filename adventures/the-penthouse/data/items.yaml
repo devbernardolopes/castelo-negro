@@ -24,6 +24,9 @@ items:
     name:
       en: |
         Sabine's Jeans Pants Pocket
+    short_name:
+      en: |
+        front pocket
     synonyms:
       en: ["pocket", "sabine's pocket", "jeans pocket", "pants pocket", "sabine's jeans pocket", "sabine's pants pocket"]
     contents: [sabine_cell_phone]
@@ -44,6 +47,9 @@ items:
     name:
       en: |
         Sabine's Jeans Pants
+    short_name:
+      en: |
+        jeans
     synonyms:
       en: ["jeans", "pants", "sabine's jeans", "sabine's pants"]
     takeable: true
@@ -97,6 +103,9 @@ items:
     name:
       en: |
         Bernie's Jeans Pants
+    short_name:
+      en: |
+        jeans
     synonyms:
       en: ["jeans", "pants", "bernie's jeans", "bernie's pants"]
     takeable: true

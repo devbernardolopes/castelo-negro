@@ -598,6 +598,26 @@ function renderInventoryList() {
   const playerActorId = engine._getPlayerActorId ? engine._getPlayerActorId() : null;
   const wearing = playerActorId ? (engine.gameState.actors_data?.[playerActorId]?.wearing || []) : [];
 
+  const parentMap = {};
+  for (const [containerId, children] of Object.entries(engine.gameState.container_contents || {})) {
+    for (const childId of children) {
+      parentMap[childId] = containerId;
+    }
+  }
+
+  const wornChain = new Set(wearing);
+  const queue = [...wearing];
+  while (queue.length) {
+    const id = queue.shift();
+    const children = engine.gameState.container_contents?.[id] || [];
+    for (const childId of children) {
+      if (!wornChain.has(childId)) {
+        wornChain.add(childId);
+        queue.push(childId);
+      }
+    }
+  }
+
   for (const itemId of items) {
     const item = engine.definition.items?.[itemId];
     if (item && item.show_in_inventory === false) continue;
@@ -618,7 +638,16 @@ function renderInventoryList() {
 
     const span = document.createElement('span');
     let name = item ? engine._pickLang(item.name) : itemId;
-    if (wearing.includes(itemId)) name += ' (wearing)';
+    if (wearing.includes(itemId)) {
+      name += ' (wearing)';
+    } else {
+      const parentId = parentMap[itemId];
+      if (parentId && wornChain.has(parentId)) {
+        const parentDef = engine.definition.items?.[parentId];
+        const tag = parentDef ? (engine._pickLang(parentDef.short_name) || engine._pickLang(parentDef.name) || parentId) : parentId;
+        name += ` (${tag})`;
+      }
+    }
     span.textContent = name;
     li.appendChild(span);
 
