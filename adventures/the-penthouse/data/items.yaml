@@ -177,6 +177,7 @@ items:
         Master Bedroom Door
     synonyms:
       en: ["door", "bedroom door"]
+    openable: true
     takeable: false
     size: 3
     description:
