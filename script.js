@@ -811,8 +811,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setMenuButtonsEnabled(true);
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);
-    _focusGameTab();
     setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
+    _focusGameTab();
     const textDisplay = document.getElementById('text-display');
     if (textDisplay) textDisplay.innerHTML = '';
     updateScrollBtnVisibility();
@@ -908,8 +908,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setMenuButtonsEnabled(true);
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);
-    _focusGameTab();
     setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
+    _focusGameTab();
     const textDisplay = document.getElementById('text-display');
     if (textDisplay) textDisplay.innerHTML = '';
     updateScrollBtnVisibility();

@@ -194,12 +194,12 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
   setMenuButtonsEnabled(true);
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
-  _focusOnGameTab();
   setDebugTabVisibility(!!parsed?.metadata?.debug);
   setMapTabVisibility(true);
   document.getElementById('tab-inventory').style.display = '';
   document.getElementById('tab-memory').style.display = '';
   setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
+  _focusOnGameTab();
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');
   if (textDisplay) textDisplay.innerHTML = '';
@@ -248,12 +248,12 @@ async function loadAdventureFromUrl(yamlUrl) {
   setMenuButtonsEnabled(true);
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
-  _focusOnGameTab();
   setDebugTabVisibility(!!parsed?.metadata?.debug);
   setMapTabVisibility(true);
   document.getElementById('tab-inventory').style.display = '';
   document.getElementById('tab-memory').style.display = '';
   setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
+  _focusOnGameTab();
   resetUiForNewGame();
   const textDisplay = document.getElementById('text-display');
   if (textDisplay) textDisplay.innerHTML = '';
@@ -315,6 +315,8 @@ function _focusOnGameTab() {
   const roomTab = document.getElementById('tab-room');
   if (roomTab && window.setSidebarTab) {
     window.setSidebarTab('room');
+  } else if (directInputMode && window.setSidebarTab) {
+    window.setSidebarTab('inventory');
   } else if (window.setSidebarTab) {
     window.setSidebarTab('memory');
   }
