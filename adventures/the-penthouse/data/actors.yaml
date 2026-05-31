@@ -1,15 +1,15 @@
 actors:
-  protagonist:
+  bernie:
     name:
       en: |
-        You
+        Bernie
     playable: true
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room, penthouse_master_bedroom, penthouse_master_ensuite]
     inventory: []
     max_capacity: 2
     properties:
-      age: 30
+      age: 44
       mood: "neutral"
       stamina: 100
       health: 100
@@ -17,7 +17,10 @@ actors:
     relationships:
       sabine:
         affinity: 0
-        relationship_level: "strangers"
+        relationship_level: "acquaintances"
+      dana:
+        affinity: 0
+        relationship_level: "acquaintances"
 
   sabine:
     name:
@@ -29,16 +32,38 @@ actors:
     inventory: []
     max_capacity: 2
     properties:
-      age: 25
+      age: 23
+      mood: "anxious"
+      stamina: 75
+      health: 80
+      amount_of_vacations: 0
+    relationships:
+      bernie:
+        affinity: 35
+        relationship_level: "acquaintances"
+      dana:
+        affinity: -10
+        relationship_level: "strangers"
+
+  dana:
+    name:
+      en: |
+        Dana
+    playable: false
+    starting_location: penthouse_living_room
+    known_locations: [penthouse_living_room, penthouse_master_bedroom, penthouse_master_ensuite]
+    inventory: []
+    max_capacity: 2
+    properties:
+      age: 29
       mood: "anxious"
       stamina: 80
       health: 80
       amount_of_vacations: 0
     relationships:
-      protagonist:
-        affinity: 0
+      bernie:
+        affinity: 52
+        relationship_level: "acquaintances"
+      sabine:
+        affinity: -21
         relationship_level: "strangers"
-
-
-
-

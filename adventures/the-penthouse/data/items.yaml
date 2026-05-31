@@ -5,15 +5,14 @@
 # {base: {en, pt-br}, conditions} (locations)	                        truthy    truthy          _pickLang(desc.base) via line 614 primary
 
 items:
-  cottage_key:
-    name: { en: "Cottage Key", pt-br: "Chave do Chalé" }
-    synonyms: { en: ["brass key", "key", "cottage key"], pt-br: ["chave de latão", "chave", "chave do chalé"] }
+  sabine_cell_phone:
+    name:
+      en: |
+        Sabine's Cell Phone
+    synonyms:
+      en: ["sabine's cell phone", "cell phone", "phone", "sabine's phone"]
     takeable: true
     size: 1
-    description: { en: "A tarnished brass key.", pt-br: "Uma chave de latão oxidada." }
-    images: ["images/items/tti-2026-05-23T23-26-04-394045010.png"]
-    on_ground_messages:
-      - condition: "husband_corpse_rolled"
-        message: { en: "A tarnished brass key glints on the floor.", pt-br: "Uma chave de latão oxidada brilha no chão." }
-      - condition: "true"
-        message: { en: "A key lies on the ground.", pt-br: "Uma chave está no chão." }
+    description:
+      en: |
+        A sleek smartphone.
