@@ -501,8 +501,8 @@ GameEngine.prototype._tryDialogueInput = function(input) {
   // Try number match
   const num = parseInt(cmd, 10);
   if (!isNaN(num) && num >= 1 && num <= visibleOptions.length) {
-    this._selectDialogueOption(num - 1);
-    return true;
+    const ok = this._selectDialogueOption(num - 1);
+    if (ok) return true;
   }
 
   // Try text match (exact after normalization)

@@ -191,7 +191,11 @@ function parseYaml(text) {
           if (rest === '') {
             const nextIsArray = next.text.startsWith('- ') && next.indent > indent;
             obj[k] = nextIsArray ? [] : {};
-            stack.push({ indent, container: obj[k], type: nextIsArray ? 'array' : 'object' });
+            // Push the item object so sibling keys (like `next:`) resolve to it.
+            stack.push({ indent, container: obj, type: 'object' });
+            // Push the value container at the key's column so children resolve to it,
+            // while sibling keys at the same column pop it and land on `obj`.
+            stack.push({ indent: indent + 2, container: obj[k], type: nextIsArray ? 'array' : 'object' });
           } else {
             stack.push({ indent, container: obj, type: 'object' });
           }

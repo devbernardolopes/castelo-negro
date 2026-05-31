@@ -1247,7 +1247,10 @@ class GameEngine {
 
     const actorName = this._pickLang(actorDef.name) || conv.actorId;
     const msg = this._pickLang(node.message);
-    if (msg) this.hooks.onOutput?.(`${actorName}: "${msg}"`);
+    if (msg) {
+      const output = `${actorName}: "${msg}"`;
+      this.hooks.onOutput?.(output);
+    }
 
     if (Array.isArray(node.options) && node.options.length > 0) {
       const lines = [];
