@@ -684,9 +684,18 @@ class GameEngine {
   getLocationDescription(locationId) {
     const loc = this.getFullLocationData(locationId);
     if (!loc) return '';
-    const base = this._pickLang(loc.description?.base);
+    const desc = loc.description;
+    if (!desc) return '';
+    let base;
+    if (typeof desc === 'string') {
+      base = desc;
+    } else if (desc.base !== undefined || Array.isArray(desc.conditions)) {
+      base = desc.base ? this._pickLang(desc.base) : this._pickLang(desc);
+    } else {
+      base = this._pickLang(desc);
+    }
     const parts = [base].filter(Boolean);
-    const conds = loc.description?.conditions;
+    const conds = desc.conditions;
     if (Array.isArray(conds)) {
       for (const c of conds) {
         const ok = this.evaluateCondition(c?.if || '');
