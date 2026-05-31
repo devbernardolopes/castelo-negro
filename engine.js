@@ -256,6 +256,8 @@ class GameEngine {
       const { values: props, overrides } = this._initActorProperties(actorDef.properties || {});
       actorsData[actorId] = {
         inventory: Array.isArray(actorDef.inventory) ? [...actorDef.inventory] : [],
+        wearing: Array.isArray(actorDef.wearing) ? [...actorDef.wearing] : [],
+        current_location: actorDef.starting_location,
         known_locations: Array.isArray(actorDef.known_locations) ? [...actorDef.known_locations] : [],
         properties: props,
         property_overrides: overrides,
@@ -518,7 +520,19 @@ class GameEngine {
       getRelationship: (otherActorId, propName) =>
         playerData.relationships?.[otherActorId]?.[propName],
       getRelationshipBetween: (actorId1, actorId2, propName) =>
-        engine.gameState.actors_data?.[actorId1]?.relationships?.[actorId2]?.[propName]
+        engine.gameState.actors_data?.[actorId1]?.relationships?.[actorId2]?.[propName],
+      isWorn: (itemId) => {
+        const loc = engine.gameState.current_location;
+        for (const ad of Object.values(engine.gameState.actors_data || {})) {
+          if (ad.current_location !== loc) continue;
+          if (Array.isArray(ad.wearing) && ad.wearing.includes(String(itemId))) return true;
+        }
+        return false;
+      },
+      getActorWearing: (actorId) => {
+        const ad = engine.gameState.actors_data?.[actorId];
+        return ad && Array.isArray(ad.wearing) ? [...ad.wearing] : [];
+      }
     };
   }
 
@@ -658,7 +672,8 @@ class GameEngine {
 
   _itemExistsInLocationScope(itemId) {
     const id = String(itemId);
-    const loc = this.getFullLocationData(this.gameState.current_location);
+    const currentLoc = this.gameState.current_location;
+    const loc = this.getFullLocationData(currentLoc);
     const queue = [];
     for (const c of (Array.isArray(loc?.contents) ? loc.contents : [])) {
       queue.push([c, null]);
@@ -677,6 +692,32 @@ class GameEngine {
         }
       }
     }
+
+    // Search inventory and wearing of actors co-located at the current location
+    for (const actorData of Object.values(this.gameState.actors_data || {})) {
+      if (actorData.current_location !== currentLoc) continue;
+      const roots = [
+        ...(Array.isArray(actorData.inventory) ? actorData.inventory : []),
+        ...(Array.isArray(actorData.wearing) ? actorData.wearing : [])
+      ];
+      for (const rootId of roots) {
+        const sq = [[rootId, null]];
+        while (sq.length) {
+          const [childId, parentId] = sq.shift();
+          if (childId === id) return true;
+          if (visited.has(childId)) continue;
+          visited.add(childId);
+          if (parentId && !this._isContainerItemVisible(parentId, childId)) continue;
+          const sub = this.gameState.container_contents?.[childId];
+          if (Array.isArray(sub)) {
+            for (const grandchild of sub) {
+              sq.push([grandchild, childId]);
+            }
+          }
+        }
+      }
+    }
+
     return false;
   }
 
@@ -691,6 +732,40 @@ class GameEngine {
       const idx = contents.indexOf(id);
       if (idx !== -1) { contents.splice(idx, 1); return; }
     }
+  }
+
+  /** Traverse container_contents to find all descendant items of given root IDs */
+  _flattenContainerChain(itemIds) {
+    const result = [];
+    const queue = Array.isArray(itemIds) ? [...itemIds] : [];
+    const visited = new Set();
+    while (queue.length) {
+      const id = queue.shift();
+      if (visited.has(id)) continue;
+      visited.add(id);
+      result.push(id);
+      const sub = this.gameState.container_contents?.[id];
+      if (Array.isArray(sub)) {
+        for (const child of sub) queue.push(child);
+      }
+    }
+    return result;
+  }
+
+  /** Union of direct inventory + items reachable from worn containers */
+  getVisibleInventoryItems() {
+    const actorId = this._getPlayerActorId();
+    const data = this.gameState.actors_data?.[actorId];
+    if (!data) return [];
+    const direct = Array.isArray(data.inventory) ? [...data.inventory] : [];
+    const wornItems = Array.isArray(data.wearing) ? data.wearing : [];
+    const fromWorn = this._flattenContainerChain(wornItems);
+    const seen = new Set(direct);
+    const combined = [...direct];
+    for (const id of fromWorn) {
+      if (!seen.has(id)) { seen.add(id); combined.push(id); }
+    }
+    return combined;
   }
 
   _applyAssignment(varName, op, rhsExpr) {
@@ -810,9 +885,11 @@ class GameEngine {
     if (!variable) return;
     variable.value = this._coerceAndClamp(variable, actorId);
     const actorDef = this.definition.actors[actorId];
+    const actorData = this.gameState.actors_data?.[actorId];
     if (actorDef.starting_location) {
       this.gameState.current_location = actorDef.starting_location;
       this.gameState.previous_location = null;
+      if (actorData) actorData.current_location = actorDef.starting_location;
     }
     this.hooks.onInventoryRender?.();
     this.hooks.onLocationRender?.(this.gameState.current_location);
@@ -980,7 +1057,10 @@ class GameEngine {
       return false;
     }
     this.gameState.current_location = targetLocation;
-    this._addKnownLocation(this._getPlayerActorId(), targetLocation);
+    const movedActorId = this._getPlayerActorId();
+    const movedData = this.gameState.actors_data?.[movedActorId];
+    if (movedData) movedData.current_location = targetLocation;
+    this._addKnownLocation(movedActorId, targetLocation);
     this._afterTurn({ kind: 'move', direction, location: targetLocation });
     return true;
   }

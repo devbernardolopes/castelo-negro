@@ -591,10 +591,11 @@ function renderInventoryList() {
   const inventoryList = document.getElementById('inventory-list');
   if (!inventoryList) return;
   if (!engine) return;
-  const contentKey = engine.inventory.items.join(',');
+  const items = engine.getVisibleInventoryItems ? engine.getVisibleInventoryItems() : engine.inventory.items;
+  const contentKey = items.join(',');
   while (inventoryList.firstChild) inventoryList.removeChild(inventoryList.firstChild);
 
-  for (const itemId of engine.inventory.items) {
+  for (const itemId of items) {
     const item = engine.definition.items?.[itemId];
     const li = document.createElement('li');
 
