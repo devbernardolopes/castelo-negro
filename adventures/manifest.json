@@ -1,13 +1,13 @@
 [
   {
-    "id": "castelo-negro",
-    "title": "Castelo Negro",
-    "yaml": "adventures/castelo-negro/castelo-negro.yaml"
-  },
-  {
     "id": "the-penthouse",
     "title": "The Penthouse",
     "yaml": "adventures/the-penthouse/the-penthouse.yaml"
+  },
+  {
+    "id": "castelo-negro",
+    "title": "Castelo Negro",
+    "yaml": "adventures/castelo-negro/castelo-negro.yaml"
   }
 ]
 
