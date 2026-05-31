@@ -79,6 +79,16 @@ verbs:
     synonyms: { en: ["light", "ignite"], pt-br: ["acender", "igniar"] }
   extinguish:
     synonyms: { en: ["extinguish", "douse"], pt-br: ["extinguir", "apagar"] }
+  kiss:
+    synonyms: { en: ["kiss"], pt-br: ["beijar"] }
+  hug:
+    synonyms: { en: ["hug"], pt-br: ["abraçar"] }
+  wave:
+    synonyms: { en: ["wave"], pt-br: ["acenar"] }
+  nod:
+    synonyms: { en: ["nod"], pt-br: ["acenar com a cabeça"] }
+  shake:
+    synonyms: { en: ["shake"], pt-br: ["sacudir"] }  
 
 directions:
   north:

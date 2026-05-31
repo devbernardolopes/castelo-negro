@@ -119,3 +119,53 @@ items:
     description:
       en: |
         A large sectional sofa that provides a comfortable seating area for guests. It is made of soft, plush fabric in a neutral color, complementing the modern decor of the living room. The couch has deep cushions and wide armrests, making it an inviting spot to relax and enjoy the stunning view of the city through the floor-to-ceiling windows.
+
+  master_bedroom_bed:
+    name:
+      en: |
+        Master Bedroom Bed
+    synonyms:
+      en: ["bed", "master bed", "bedroom bed"]
+    takeable: false
+    size: 5
+    sittable: true
+    actor_capacity: 2
+    description:
+      en: |
+        A luxurious king-sized bed with a plush headboard and high-quality linens. The bed is adorned with decorative pillows and a cozy duvet, creating an inviting and comfortable sleeping area in the master bedroom of the penthouse.
+  
+  master_ensuite_bathtub:
+    name:
+      en: |
+        Master Ensuite Bathtub
+    synonyms:
+      en: ["bathtub", "tub", "master tub"]
+    takeable: false
+    size: 5
+    description:
+      en: |
+        A luxurious bathtub in the master ensuite, perfect for a relaxing soak.
+  
+  master_ensuite_shower:
+    name:
+      en: |
+        Master Ensuite Shower
+    synonyms:
+      en: ["shower", "master shower"]
+    takeable: false
+    size: 5
+    description:
+      en: |
+        A spacious and modern shower in the master ensuite, featuring sleek glass doors and high-end fixtures for a refreshing bathing experience.
+  
+  master_bedroom_door:
+    name:
+      en: |
+        Master Bedroom Door
+    synonyms:
+      en: ["door", "bedroom door"]
+    takeable: false
+    size: 3
+    description:
+      en: |
+        A sturdy wooden door that leads to the master bedroom. It has a sleek design that complements the modern aesthetic of the penthouse, providing privacy and security for the occupants of the master bedroom.

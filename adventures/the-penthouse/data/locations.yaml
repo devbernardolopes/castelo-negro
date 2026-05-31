@@ -22,7 +22,7 @@ locations:
     description:
       en: |
         A luxurious master bedroom with a large bed and a balcony overlooking the city.
-    contents: []
+    contents: [master_bedroom_bed]
     exits:
       south: penthouse_living_room
       east: penthouse_master_ensuite
@@ -35,7 +35,7 @@ locations:
     description:
       en: |
         A dark, opulent bathroom.
-    contents: []
+    contents: [master_ensuite_bathtub, master_ensuite_shower]
     exits:
       west: penthouse_master_bedroom
     images: ["images/locations/tti-2026-05-31T02-09-20-463353415.png"]
