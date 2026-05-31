@@ -133,6 +133,9 @@ items:
     name:
       en: |
         Living Room Couch
+    short_name:
+      en: |
+        couch
     synonyms:
       en: ["couch", "sofa", "living room sofa"]
     takeable: false
@@ -147,6 +150,9 @@ items:
     name:
       en: |
         Master Bedroom Bed
+    short_name:
+      en: |
+        bed
     synonyms:
       en: ["bed", "master bed", "bedroom bed"]
     takeable: false
@@ -161,6 +167,9 @@ items:
     name:
       en: |
         Master Ensuite Bathtub
+    short_name:
+      en: |
+        bathtub
     synonyms:
       en: ["bathtub", "tub", "master tub"]
     takeable: false
@@ -173,6 +182,9 @@ items:
     name:
       en: |
         Master Ensuite Shower
+    short_name:
+      en: |
+        shower
     synonyms:
       en: ["shower", "master shower"]
     takeable: false
