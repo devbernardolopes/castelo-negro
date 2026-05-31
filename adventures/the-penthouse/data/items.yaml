@@ -11,7 +11,7 @@ items:
   sabine_cell_phone:
     name:
       en: |
-        Sabine's Cell Phone
+        {owner}'s Cell Phone
     synonyms:
       en: ["cell phone", "phone", "sabine's phone"]
     takeable: true
@@ -48,7 +48,7 @@ items:
   sabine_jeans_pants:
     name:
       en: |
-        Sabine's Jeans Pants
+        {owner}'s Jeans Pants
     short_name:
       en: |
         jeans
@@ -110,7 +110,7 @@ items:
   bernie_jeans_pants:
     name:
       en: |
-        Bernie's Jeans Pants
+        {owner}'s Jeans Pants
     short_name:
       en: |
         jeans
