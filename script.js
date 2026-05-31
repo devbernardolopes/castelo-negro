@@ -182,6 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return tryAddMemoryFromElement(target);
     }
 
+    // Double-click direct-text-input -> show prompt history
+    if (target.id === 'direct-text-input' || target.closest('#direct-text-input')) {
+      ev.preventDefault();
+      showPromptHistoryPanel();
+      return;
+    }
+
     // Double-click empty space in #user-input -> show prompt history
     if (target.closest('#user-input') && !target.closest('.word-token')) {
       ev.preventDefault();
@@ -351,6 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prompt = buildPromptFromInput();
     if (!prompt) return;
     savePromptToHistory(prompt);
+    _historyIndex = null;
     appendPlayerPrompt(prompt);
     selectedWords = [];
     renderCommandBuilder();
@@ -366,6 +374,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const directTextInput = document.getElementById('direct-text-input');
   directTextInput?.addEventListener('keydown', (ev) => {
     if (!engine && !_isPausedForSend) return;
+
+    if (directInputMode && promptHistory.length > 0) {
+      if (ev.key === 'ArrowUp') {
+        ev.preventDefault();
+        if (_historyIndex === null) {
+          _historyIndex = promptHistory.length - 1;
+        } else if (_historyIndex > 0) {
+          _historyIndex--;
+        }
+        directTextInput.value = promptHistory[_historyIndex];
+        syncSendButtonEnabled();
+        return;
+      }
+      if (ev.key === 'ArrowDown') {
+        ev.preventDefault();
+        if (_historyIndex === null) return;
+        if (_historyIndex >= promptHistory.length - 1) {
+          _historyIndex = null;
+          directTextInput.value = '';
+        } else {
+          _historyIndex++;
+          directTextInput.value = promptHistory[_historyIndex];
+        }
+        syncSendButtonEnabled();
+        return;
+      }
+    }
+
+    _historyIndex = null;
+
     if (ev.key === 'Enter') {
       ev.preventDefault();
       submitPrompt();

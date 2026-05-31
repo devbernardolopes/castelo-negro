@@ -10,6 +10,7 @@ let _mapZoom = 1;
 let pendingWordClickTimer = null;
 let suppressPromptAddUntilTs = 0;
 let directInputMode = false;
+let _historyIndex = null;
 let _outputQueue = [];
 let _isPausedForSend = false;
 
@@ -44,9 +45,18 @@ function renderPromptHistoryPanel() {
     entry.addEventListener('click', (e) => {
       if (_isPausedForSend) return;
       e.preventDefault();
-      const words = promptHistory[i].split(/\s+/).filter(Boolean);
-      selectedWords = words;
-      renderCommandBuilder();
+      _historyIndex = null;
+      if (directInputMode) {
+        const directInput = document.getElementById('direct-text-input');
+        if (directInput) {
+          directInput.value = promptHistory[i];
+          syncSendButtonEnabled();
+        }
+      } else {
+        const words = promptHistory[i].split(/\s+/).filter(Boolean);
+        selectedWords = words;
+        renderCommandBuilder();
+      }
       hidePromptHistoryPanel();
     });
     panel.appendChild(entry);
@@ -58,6 +68,7 @@ function showPromptHistoryPanel() {
   const panel = document.getElementById('prompt-history-panel');
   if (!panel) return;
   if (promptHistory.length === 0) return;
+  _historyIndex = null;
   renderPromptHistoryPanel();
   panel.style.display = 'block';
 }
