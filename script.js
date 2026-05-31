@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (target.classList.contains('click-word')) {
       if (_isPausedForSend) return;
+      if (directInputMode) return;
       if (Date.now() < suppressPromptAddUntilTs) return;
       scheduleAddWordToCommand(target.getAttribute('data-word') || target.textContent || '');
       return;
