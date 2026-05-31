@@ -704,6 +704,7 @@ class GameEngine {
     if (!def) return '';
     const desc = def.description;
     if (!desc) return '';
+    const matchCtx = { object: itemId, object_name: this._pickLang(def.name) || itemId };
     let result;
     if (typeof desc === 'string') {
       result = desc;
@@ -712,8 +713,8 @@ class GameEngine {
       const parts = [base].filter(Boolean);
       if (Array.isArray(desc.conditions)) {
         for (const c of desc.conditions) {
-          if (this.evaluateCondition(c?.if || ''))
-            parts.push(this._pickLang(c?.message));
+          if (this.evaluateCondition(this._expandTemplate(String(c?.if || ''), matchCtx)))
+            parts.push(this._expandTemplate(this._pickLang(c?.message) || '', matchCtx));
         }
       }
       result = parts.filter(Boolean).join('\n');
