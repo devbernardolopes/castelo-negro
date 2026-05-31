@@ -90,6 +90,67 @@ class GameEngine {
     return 'protagonist';
   }
 
+  _getItemOwner(itemId) {
+    const id = String(itemId);
+    if (this.gameState.ownership && id in this.gameState.ownership) {
+      return this.gameState.ownership[id] || null;
+    }
+    return null;
+  }
+
+  _getPossessiveForm(name) {
+    if (!name) return '';
+    const trimmed = String(name).trim();
+    if (trimmed.toLowerCase().endsWith('s')) return trimmed + "'";
+    return trimmed + "'s";
+  }
+
+  _expandItemText(itemId, text, forceShowOwner) {
+    if (!text || !text.includes('{owner}')) return text;
+    const ownerId = this._getItemOwner(itemId);
+    const viewerId = this._getPlayerActorId();
+
+    if (ownerId && (forceShowOwner || ownerId !== viewerId)) {
+      const ownerName = this._pickLang(this.definition.actors?.[ownerId]?.name) || ownerId;
+      if (text.includes("{owner}'s") || text.includes("{owner}'")) {
+        text = text.replace(/\{owner\}(?:'s?)?/g, this._getPossessiveForm(ownerName));
+      } else {
+        text = text.replace(/\{owner\}/g, ownerName);
+      }
+    } else {
+      text = text.replace(/\{owner\}(?:'s?)?\s*/g, '');
+    }
+    return text.replace(/\s{2,}/g, ' ').trim();
+  }
+
+  _getItemDisplayName(itemId) {
+    const item = this.definition.items?.[itemId];
+    if (!item) return '';
+    return this._expandItemText(itemId, this._pickLang(item.name));
+  }
+
+  _getItemDisplayShortName(itemId) {
+    const item = this.definition.items?.[itemId];
+    if (!item) return '';
+    const sn = item.short_name;
+    return sn ? this._expandItemText(itemId, this._pickLang(sn)) : '';
+  }
+
+  _getItemDescription(itemId) {
+    const item = this.definition.items?.[itemId];
+    if (!item) return '';
+    const raw = typeof item.description === 'string'
+      ? item.description
+      : this._pickLang(item.description?.base || item.description);
+    return raw ? this._expandItemText(itemId, raw) : '';
+  }
+
+  _getItemResolvedName(itemId) {
+    const item = this.definition.items?.[itemId];
+    if (!item) return '';
+    return this._expandItemText(itemId, this._pickLang(item.name), true);
+  }
+
   _addKnownLocation(actorId, locationId) {
     const data = this.gameState.actors_data?.[actorId];
     if (!data) return;
@@ -276,6 +337,7 @@ class GameEngine {
       flags: {},
       story: {},
       container_contents: this._initContainerContents(),
+      ownership: this._initOwnership(),
       conversation: {
         active: false,
         actorId: null,
@@ -288,6 +350,14 @@ class GameEngine {
     const map = {};
     for (const [id, def] of Object.entries(this.definition.items || {})) {
       if (Array.isArray(def.contents)) map[id] = [...def.contents];
+    }
+    return map;
+  }
+
+  _initOwnership() {
+    const map = {};
+    for (const [id, def] of Object.entries(this.definition.items || {})) {
+      if (def.owner) map[id] = def.owner;
     }
     return map;
   }
@@ -565,6 +635,12 @@ class GameEngine {
           if (data.contained_by === id) count++;
         }
         return count;
+      },
+      getOwner: (itemId) => engine._getItemOwner(String(itemId)),
+      getOwnerName: (itemId) => {
+        const oid = engine._getItemOwner(String(itemId));
+        if (!oid) return '';
+        return engine._pickLang(engine.definition.actors?.[oid]?.name) || oid;
       }
     };
   }
@@ -676,6 +752,19 @@ class GameEngine {
       const setPlayerMatch = line.match(/^setPlayerActor\(\s*(.+)\s*\)$/);
       if (setPlayerMatch) {
         this._applySetPlayerActor(setPlayerMatch[1]);
+        continue;
+      }
+
+      // setOwner('itemId', 'actorId') — actorId empty removes ownership
+      const setOwnerMatch = line.match(/^setOwner\s*\(\s*['"]?([^,'"]+)['"]?\s*,\s*['"]?([^'"]*)['"]?\s*\)\s*$/);
+      if (setOwnerMatch) {
+        const itemId = String(setOwnerMatch[1]).trim();
+        const actorId = String(setOwnerMatch[2]).trim();
+        if (!actorId) {
+          delete this.gameState.ownership[itemId];
+        } else {
+          this.gameState.ownership[itemId] = actorId;
+        }
         continue;
       }
 
@@ -1120,11 +1209,11 @@ class GameEngine {
     if (this.definition.metadata?.auto_container_description) {
       const visible = this._getContainerVisibleContents(itemId);
       if (visible.length > 0) {
-        const names = visible.map(id => this._pickLang(this.definition.items?.[id]?.name) || id);
+        const names = visible.map(id => this._getItemDisplayName(id) || id);
         result += '\nInside you see: ' + names.join(', ') + '.';
       }
     }
-    return result;
+    return this._expandItemText(itemId, result);
   }
 
   _getGroundItemMessages(locationId) {
@@ -1146,7 +1235,7 @@ class GameEngine {
           }
         }
       } else {
-        const name = this._pickLang(item.name) || itemId;
+        const name = this._getItemDisplayName(itemId) || itemId;
         lines.push(`There is a ${name} here.`);
       }
     }

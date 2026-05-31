@@ -291,7 +291,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
         };
       }
       out[slotName] = itemMatch.itemId;
-      out[`${slotName}_name`] = itemMatch.phrase;
+      out[`${slotName}_name`] = this._getItemDisplayName(itemMatch.itemId) || itemMatch.phrase;
       i += itemMatch.len;
       continue;
     }
@@ -565,6 +565,12 @@ GameEngine.prototype._phraseMatchesItemId = function(phrase, itemId) {
   const shortName = this._pickLang(item?.short_name);
   if (shortName && p === String(shortName).trim().toLowerCase()) return true;
 
+  const resolvedName = this._getItemResolvedName(id);
+  if (resolvedName) {
+    const resolvedLower = String(resolvedName).trim().toLowerCase();
+    if (p === resolvedLower || this._stripPossessive(resolvedLower) === p) return true;
+  }
+
   const syn = item?.synonyms;
   if (syn && typeof syn === 'object') {
     const langList = syn?.[this.language];
@@ -636,7 +642,16 @@ GameEngine.prototype._expandTemplate = function(str, match) {
       }
       return '';
     }
-    
+
+    if (key === 'object_owner') {
+      const objId = match?.object;
+      if (objId && objId !== '__location__') {
+        const oid = this._getItemOwner(objId);
+        if (oid) return this._pickLang(this.definition.actors?.[oid]?.name) || oid;
+      }
+      return '';
+    }
+
     const v = match?.[key];
     // __location__ sentinel acts as empty string in condition templates
     if (key === 'object' && v === '__location__') return '';
@@ -705,6 +720,11 @@ GameEngine.prototype._findItemIdByName = function(query) {
   for (const [id, item] of Object.entries(this.definition.items || {})) {
     const n = this._pickLang(item?.name).toLowerCase();
     if (n === q) return id;
+    const resolved = this._getItemResolvedName(id);
+    if (resolved) {
+      const resolvedLower = String(resolved).trim().toLowerCase();
+      if (resolvedLower === q || this._stripPossessive(resolvedLower) === q) return id;
+    }
   }
   return null;
 };
@@ -721,6 +741,12 @@ GameEngine.prototype._findItemIdByNameOrSynonym = function(query) {
   for (const [id, item] of Object.entries(this.definition.items || {})) {
     const n = this._pickLang(item?.name);
     if (n && String(n).trim().toLowerCase() === q) return id;
+
+    const resolved = this._getItemResolvedName(id);
+    if (resolved) {
+      const resolvedLower = String(resolved).trim().toLowerCase();
+      if (resolvedLower === q || this._stripPossessive(resolvedLower) === q) return id;
+    }
 
     const sn = this._pickLang(item?.short_name);
     if (sn && String(sn).trim().toLowerCase() === q) return id;
@@ -753,6 +779,14 @@ GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
     if (n && String(n).trim().toLowerCase() === q) {
       results.push(id);
       continue;
+    }
+    const resolved = this._getItemResolvedName(id);
+    if (resolved) {
+      const resolvedLower = String(resolved).trim().toLowerCase();
+      if (resolvedLower === q || this._stripPossessive(resolvedLower) === q) {
+        results.push(id);
+        continue;
+      }
     }
     const sn = this._pickLang(item?.short_name);
     if (sn && String(sn).trim().toLowerCase() === q) {
@@ -817,7 +851,7 @@ GameEngine.prototype._takeItemByName = function(query) {
   }
   this.inventory.add(itemId);
   this._removeItemFromWorld(itemId);
-  this.hooks.onOutput?.(`You take the ${this._pickLang(this.definition.items?.[itemId]?.name) || itemId}.`);
+  this.hooks.onOutput?.(`You take the ${this._getItemDisplayName(itemId) || itemId}.`);
   this._afterTurn({ kind: 'take', itemId });
   return true;
 };
@@ -837,7 +871,7 @@ GameEngine.prototype._dropItemByName = function(query) {
   const item = this.definition.items?.[itemId];
   if (item?.on_drop?.effect) this.applyEffect(item.on_drop.effect);
   const msg = this._pickLang(item?.on_drop?.message);
-  this.hooks.onOutput?.(msg || `You drop the ${this._pickLang(item?.name) || itemId}.`);
+  this.hooks.onOutput?.(msg || `You drop the ${this._getItemDisplayName(itemId) || itemId}.`);
   this._afterTurn({ kind: 'drop', itemId });
   return true;
 };

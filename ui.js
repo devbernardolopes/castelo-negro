@@ -649,7 +649,7 @@ function renderInventoryList() {
     }
 
     const span = document.createElement('span');
-    let name = item ? engine._pickLang(item.name) : itemId;
+    let name = item ? engine._getItemDisplayName(itemId) : itemId;
     if (wearing.includes(itemId)) {
       name += ' (wearing)';
     } else {
