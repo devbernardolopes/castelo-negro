@@ -15,6 +15,7 @@ items:
     synonyms:
       en: ["cell phone", "phone", "sabine's phone"]
     takeable: true
+    owner: sabine
     size: 1
     description:
       en: |
@@ -55,6 +56,7 @@ items:
       en: ["jeans", "pants", "sabine's jeans", "sabine's pants"]
     takeable: true
     wearable: true
+    owner: sabine
     size: 2
     contents: [sabine_jeans_pants_pocket]
     description:
@@ -67,11 +69,14 @@ items:
   # -------------------------------
   bernie_credit_card:
     name:
+      # Previously: Bernie's Credit Card
+      # Review if the possessive form is necessary or if "Bernie's" can be omitted since the owner is already specified in the item definition.
       en: |
-        Bernie's Credit Card
+        {owner}'s Credit Card
     synonyms:
       en: ["credit card", "card", "bernie's card"]
     takeable: true
+    owner: bernie
     size: 1
     description:
       en: |
@@ -113,6 +118,7 @@ items:
       en: ["jeans", "pants", "bernie's jeans", "bernie's pants"]
     takeable: true
     wearable: true
+    owner: bernie
     size: 2
     contents: [bernie_jeans_pants_pocket]
     description:

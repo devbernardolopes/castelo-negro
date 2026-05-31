@@ -3,6 +3,28 @@
 # progressive_messages are evaluated after effects
 
 actions:
+  gift:
+    patterns:
+      obj_then_target:
+        - verb: ["gift"]
+        - object: ["*"]
+        - actor: ["*"]
+      target_then_obj:
+        - verb: ["gift"]
+        - actor: ["*"]
+        - object: ["*"]
+    conditions:
+      - "'{actor}' != '' and getActor('{actor}') != null and '{actor}' != current_player_actor"
+      - "getActor('{actor}').current_location == current_location"
+      # TODO: add condition to check if player has something to gift
+      # TODO: more conditions? For example, if we want to only allow gifting certain items or if we want to have some kind of affinity requirement for gifting to certain actors, or if for the gift action ownership of the item is required, etc.
+    effect:
+      - "setOwner('{object}', '{actor}')" # TODO: implement setOwner effect
+      - "setRelationship(current_player_actor, '{actor}', 'affinity', getRelationship('{actor}', 'affinity') + 10)" # TODO: adjust affinity increase or decrease as needed for the gifting action may be positive or negative depending on the item and the actor
+    message: # TODO: think about how to handle the message for this action since it can have a variable object and target. We may want to allow for some templating here where we can include the object and target names in the message.
+      en: |
+        You gift the {object_name} to {actor_name}. {actor_name} looks pleased.
+
   open:
     pattern:
       - verb: ["open"]

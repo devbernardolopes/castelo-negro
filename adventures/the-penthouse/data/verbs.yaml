@@ -8,7 +8,7 @@ verbs:
   give:
     synonyms: { en: ["give", "feed", "hand"], pt-br: ["dar", "alimentar"] }
   examine:
-    synonyms: { en: ["examine", "look at", "inspect", "look"], pt-br: ["examinar", "olhar"] }
+    synonyms: { en: ["examine", "look at", "inspect", "look", "l"], pt-br: ["examinar", "olhar"] }
   drop:
     synonyms: { en: ["drop", "put down"], pt-br: ["soltar", "colocar"] }
   use:
@@ -92,7 +92,9 @@ verbs:
   nod:
     synonyms: { en: ["nod"], pt-br: ["acenar com a cabeça"] }
   shake:
-    synonyms: { en: ["shake"], pt-br: ["sacudir"] }  
+    synonyms: { en: ["shake"], pt-br: ["sacudir"] }
+  gift:
+    synonyms: { en: ["gift", "donate"], pt-br: ["presentear", "doar"] }
 
 directions:
   north:
