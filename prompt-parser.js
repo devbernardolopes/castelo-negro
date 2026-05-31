@@ -344,6 +344,21 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       out[slotName] = actorMatch.actorId;
       out[`${slotName}_name`] = this._pickLang(this.definition.actors?.[actorMatch.actorId]?.name) || actorMatch.actorId;
       i += actorMatch.len;
+
+      // If actor was matched by stripping possessive (e.g. "sabine's" → "sabine")
+      // and remaining non-stopword tokens match an item, reject so a more specific
+      // action (e.g. examine with object="sabine's jeans") can handle the input.
+      const possPhrase = String(actorMatch.phrase || '').trim();
+      if (possPhrase.endsWith("'s") || possPhrase.endsWith("'")) {
+        skipStops();
+        if (i < tokens.length) {
+          const restTokens = tokens.slice(i).filter(t => !stopwords.has(t));
+          if (restTokens.length > 0 && this._findAllItemIdsByNameOrSynonym(restTokens.join(' ')).length > 0) {
+            return null;
+          }
+        }
+      }
+
       continue;
     }
 
@@ -1007,6 +1022,48 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
     }
   }
 
+  // Handle "mine" — match items owned by the player
+  const rawInput = String(input || '').trim().toLowerCase();
+  const playerId = this._getPlayerActorId();
+  if (rawInput === 'mine') {
+    const mineMatches = candidates.filter(id => this._getItemOwner(id) === playerId);
+    if (mineMatches.length === 1) {
+      return { itemId: mineMatches[0], phrase: 'mine' };
+    }
+  }
+
+  // Handle "my {word}" — match player-owned items matching the keyword
+  const myMatch = rawInput.match(/^my\s+(.+)$/);
+  if (myMatch) {
+    const keyword = myMatch[1].trim().toLowerCase();
+    const myMatches = candidates.filter(id => {
+      if (this._getItemOwner(id) !== playerId) return false;
+      const item = this.definition.items?.[id];
+      if (!item) return false;
+      const name = this._pickLang(item.name) || '';
+      const sn = this._pickLang(item.short_name) || '';
+      const syns = item.synonyms?.[this.language] || [];
+      const allTerms = [name.toLowerCase(), sn.toLowerCase(), ...syns.map(s => s.toLowerCase()), id.replace(/_/g, ' ')];
+      return allTerms.some(t => t.includes(keyword));
+    });
+    if (myMatches.length === 1) {
+      return { itemId: myMatches[0], phrase: keyword };
+    }
+  }
+
+  // Handle "hers"/"her's"/"her" — match items owned by a female actor
+  if (rawInput === 'hers' || rawInput === "her's" || rawInput === 'her') {
+    const herCandidates = candidates.filter(id => {
+      const ownerId = this._getItemOwner(id);
+      if (!ownerId) return false;
+      const ownerDef = this.definition.actors?.[ownerId];
+      return ownerDef?.properties?.gender === 'female';
+    });
+    if (herCandidates.length === 1) {
+      return { itemId: herCandidates[0], phrase: 'hers' };
+    }
+  }
+
   const words = q.split(/\s+/);
   if (words.length === 1) {
     const singleWord = this._stripPossessive(words[0]);
@@ -1057,41 +1114,44 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
 
 GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase, isStrangerAmbiguity) {
   const labels = candidates.map(id => {
-    // When all candidates are strangers to the player, use appearance descriptions
     if (isStrangerAmbiguity && this.definition.actors?.[id]) {
       return this._getAppearanceDescription(id);
     }
 
     const item = this.definition.items?.[id];
     const actor = this.definition.actors?.[id];
-    const def = item || actor;
-    if (!def) return id;
-    const name = this._pickLang(def.name) || id;
-    const syns = def.synonyms?.[this.language] || [];
 
-    const allTerms = [...syns.map(s => s.trim().toLowerCase()), name.trim().toLowerCase(), id.replace(/_/g, ' ')];
-    const sharedTerms = new Set();
-    if (candidates.length > 1) {
-      for (const otherId of candidates) {
-        if (otherId === id) continue;
-        const otherDef = this.definition.items?.[otherId] || this.definition.actors?.[otherId];
-        if (!otherDef) continue;
-        const otherName = this._pickLang(otherDef.name) || '';
-        const otherSyns = otherDef.synonyms?.[this.language] || [];
-        const otherTerms = [...otherSyns.map(s => s.trim().toLowerCase()), otherName.trim().toLowerCase(), otherId.replace(/_/g, ' ')];
-        for (const t of allTerms) {
-          if (otherTerms.includes(t)) sharedTerms.add(t);
+    // Build natural label for items with ownership
+    if (item) {
+      const shortName = this._pickLang(item.short_name) || '';
+      const ownerId = this._getItemOwner(id);
+      const playerId = this._getPlayerActorId();
+      const baseName = shortName.toLowerCase() ||
+        (this._pickLang(item.name) || id.replace(/_/g, ' '))
+          .replace(/\{owner\}\s*'?s?\s*/i, '')
+          .trim()
+          .toLowerCase();
+
+      if (ownerId) {
+        if (ownerId === playerId) {
+          return 'your ' + baseName;
         }
+        const ownerDef = this.definition.actors?.[ownerId];
+        const ownerName = ownerDef ? (this._pickLang(ownerDef.name) || ownerId) : ownerId;
+        const possessive = this._getPossessiveForm(ownerName);
+        return possessive + ' ' + baseName;
       }
+
+      // No owner: prefer short name, then resolved name, then id
+      return shortName || this._getItemResolvedName(id) || id.replace(/_/g, ' ');
     }
 
-    const unique = allTerms.filter(t => !sharedTerms.has(t));
-    if (unique.length > 0) {
-      unique.sort((a, b) => a.length - b.length);
-      return unique[0];
+    // For actors: use proper name (capitalized)
+    if (actor) {
+      return this._pickLang(actor.name) || id.replace(/_/g, ' ');
     }
-    allTerms.sort((a, b) => a.length - b.length);
-    return allTerms[0];
+
+    return id.replace(/_/g, ' ');
   });
 
   if (this.language === 'pt-br') {
