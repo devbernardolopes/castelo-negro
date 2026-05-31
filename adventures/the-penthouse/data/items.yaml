@@ -19,6 +19,7 @@ items:
     description:
       en: |
         A sleek smartphone.
+    images: ["images/items/tti-2026-05-31T17-49-06-403406110.png"]
 
   sabine_jeans_pants_pocket:
     name:
