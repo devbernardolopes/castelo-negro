@@ -17,6 +17,7 @@ actors:
       stamina: 100
       health: 100
       amount_of_vacations: 5
+      hair: "black"
     relationships:
       sabine:
         affinity: 0
@@ -45,6 +46,7 @@ actors:
       stamina: 75
       health: 80
       amount_of_vacations: 0
+      hair: "brown"
     relationships:
       bernie:
         affinity: 35
@@ -131,10 +133,11 @@ actors:
       stamina: 80
       health: 80
       amount_of_vacations: 0
+      hair: "black"
     relationships:
       bernie:
         affinity: 52
-        relationship_level: "acquaintances"
+        relationship_level: "friends"
       sabine:
         affinity: -21
         relationship_level: "strangers"

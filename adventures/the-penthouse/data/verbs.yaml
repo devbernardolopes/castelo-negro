@@ -95,6 +95,22 @@ verbs:
     synonyms: { en: ["shake"], pt-br: ["sacudir"] }
   gift:
     synonyms: { en: ["gift", "donate"], pt-br: ["presentear", "doar"] }
+  enter:
+    synonyms: { en: ["enter", "go in"], pt-br: ["entrar"] }
+  touch:
+    synonyms: { en: ["touch"], pt-br: ["tocar"] }
+  rub:
+    synonyms: { en: ["rub"], pt-br: ["esfregar"] }
+  run:
+    synonyms: { en: ["run", "sprint"], pt-br: ["correr", "sprintar"] }
+  walk:
+    synonyms: { en: ["walk", "stroll"], pt-br: ["andar", "passear"] }
+  swim:
+    synonyms: { en: ["swim"], pt-br: ["nadar"] }
+  fly:
+    synonyms: { en: ["fly"], pt-br: ["voar"] }
+  hide:
+    synonyms: { en: ["hide"], pt-br: ["esconder"] }
 
 directions:
   north:

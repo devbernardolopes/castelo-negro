@@ -30,6 +30,10 @@ properties:
     type: string
     possible_values: ["neutral", "happy", "sad", "anxious", "nervous", "angry", "excited", "bored", "curious"]
     default: "neutral"
+  hair:
+    type: string
+    possible_values: ["bald", "black", "brown", "blonde", "red", "gray", "white"]
+    default: "black"
   stamina:
     type: int
     min_value: 0
