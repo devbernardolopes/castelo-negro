@@ -674,17 +674,20 @@ class GameEngine {
         continue;
       }
 
-      // containActor('actorId', 'containerId')
-      const containMatch = line.match(/^containActor\(\s*(['"])(.+?)\1\s*,\s*(['"])(.+?)\3\s*\)\s*$/);
+      // containActor('actorId', 'containerId') or containActor(actorId, 'containerId')
+      const containMatch = line.match(/^containActor\(\s*([^,]+)\s*,\s*([^,]+)\s*\)\s*$/);
       if (containMatch) {
-        this._containActor(containMatch[2], containMatch[4]);
+        const actorId = String(this._evalExpression(containMatch[1]) ?? '');
+        const containerId = String(this._evalExpression(containMatch[2]) ?? '');
+        if (actorId) this._containActor(actorId, containerId);
         continue;
       }
 
-      // releaseActor('actorId')
-      const releaseMatch = line.match(/^releaseActor\(\s*(['"])(.+?)\1\s*\)\s*$/);
+      // releaseActor('actorId') or releaseActor(actorId)
+      const releaseMatch = line.match(/^releaseActor\(\s*(.+)\s*\)\s*$/);
       if (releaseMatch) {
-        this._releaseActor(releaseMatch[2]);
+        const actorId = String(this._evalExpression(releaseMatch[1]) ?? '');
+        if (actorId) this._releaseActor(actorId);
         continue;
       }
 
