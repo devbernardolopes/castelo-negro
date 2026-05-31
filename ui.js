@@ -595,8 +595,13 @@ function renderInventoryList() {
   const contentKey = items.join(',');
   while (inventoryList.firstChild) inventoryList.removeChild(inventoryList.firstChild);
 
+  const playerActorId = engine._getPlayerActorId ? engine._getPlayerActorId() : null;
+  const wearing = playerActorId ? (engine.gameState.actors_data?.[playerActorId]?.wearing || []) : [];
+
   for (const itemId of items) {
     const item = engine.definition.items?.[itemId];
+    if (item && item.show_in_inventory === false) continue;
+
     const li = document.createElement('li');
 
     const images = Array.isArray(item?.images) ? item.images : [];
@@ -612,7 +617,9 @@ function renderInventoryList() {
     }
 
     const span = document.createElement('span');
-    span.textContent = item ? engine._pickLang(item.name) : itemId;
+    let name = item ? engine._pickLang(item.name) : itemId;
+    if (wearing.includes(itemId)) name += ' (wearing)';
+    span.textContent = name;
     li.appendChild(span);
 
     makeWordsClickable(li);
