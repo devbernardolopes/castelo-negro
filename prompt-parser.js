@@ -303,7 +303,9 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
         };
       }
       out[slotName] = itemMatch.itemId;
-      out[`${slotName}_name`] = this._getItemDisplayName(itemMatch.itemId) || itemMatch.phrase;
+      out[`${slotName}_name`] = this._getItemDisplayShortName(itemMatch.itemId)
+        || this._getItemDisplayName(itemMatch.itemId)
+        || itemMatch.phrase;
       i += itemMatch.len;
       continue;
     }
