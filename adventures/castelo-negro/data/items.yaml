@@ -88,6 +88,8 @@ items:
     takeable: true
     size: 8
     description: { en: "Your tiny, crying daughter.", pt-br: "Sua pequena filha chorando." }
+    on_ground_messages:
+      - condition: "false"
     images: ["images/items/tti-2026-05-24T02-23-25-446674314.png"]
 
   cottage_kitchen_table:
