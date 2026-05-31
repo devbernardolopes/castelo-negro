@@ -30,8 +30,8 @@ actors:
       en: |
         Sabine
     synonyms:
-      en: ["sabine", "her", "girl", "sabine bernardes"]
-    playable: false
+      en: ["sabine", "her", "girl", "woman", "female", "lady"]
+    playable: true
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room]
     inventory: []
@@ -117,7 +117,7 @@ actors:
       en: |
         Dana
     synonyms:
-      en: ["dana", "her", "dana lopes"]
+      en: ["dana", "her", "girl", "woman", "female", "lady"]
     playable: true
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room, penthouse_master_bedroom, penthouse_master_ensuite]
