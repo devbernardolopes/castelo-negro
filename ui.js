@@ -182,6 +182,14 @@ function setDirectInputMode(enabled) {
     input.value = '';
     input.disabled = !engine;
   }
+  const userInput = document.getElementById('user-input');
+  if (userInput) userInput.style.display = directInputMode ? 'none' : '';
+  const memBtn = document.getElementById('tab-memory');
+  const memPanel = document.getElementById('tab-panel-memory');
+  if (directInputMode) {
+    if (memBtn) memBtn.style.display = 'none';
+    if (memPanel) memPanel.style.display = 'none';
+  }
   syncSendButtonEnabled();
 }
 
