@@ -96,6 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomTab = document.getElementById('tab-room');
     if (roomTab) {
       setSidebarTab('room');
+    } else if (directInputMode) {
+      setSidebarTab('inventory');
     } else {
       setSidebarTab('memory');
     }
