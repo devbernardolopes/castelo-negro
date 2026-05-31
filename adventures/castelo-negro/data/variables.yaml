@@ -11,7 +11,7 @@ variables:
 
   current_player_actor:
     type: object
-    value: [protagonist]
+    value: protagonist
 
   protagonist_memory:
     type: list
