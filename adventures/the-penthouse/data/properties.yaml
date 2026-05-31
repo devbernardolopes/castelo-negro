@@ -22,9 +22,13 @@ properties:
     type: int
     min_value: 0
     default: 25
+  gender:
+    type: string
+    possible_values: ["male", "female", "non-binary", "other"]
+    default: "other"
   mood:
     type: string
-    possible_values: ["neutral", "happy", "sad", "anxious", "nervous", "angry"]
+    possible_values: ["neutral", "happy", "sad", "anxious", "nervous", "angry", "excited", "bored", "curious"]
     default: "neutral"
   stamina:
     type: int

@@ -5,6 +5,9 @@
 # {base: {en, pt-br}, conditions} (locations)	                        truthy    truthy          _pickLang(desc.base) via line 614 primary
 
 items:
+  # -------------------------------
+  # Sabine's Items
+  # -------------------------------
   sabine_cell_phone:
     name:
       en: |
@@ -26,7 +29,7 @@ items:
     contents: [sabine_cell_phone]
     description:
       en: |
-        The pocket of Sabine's jeans pants.
+        The front pocket of Sabine's jeans pants.
       conditions:
         - if: "containerHas('sabine_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor != 'sabine'"
           message:
@@ -49,8 +52,60 @@ items:
     contents: [sabine_jeans_pants_pocket]
     description:
       en: |
-        A pair of stylish jeans.
+        A pair of women's stylish skinny jeans in indigo blue color. They have a high waist and a slim fit, accentuating the wearer's figure. The jeans feature classic five-pocket styling, with two front pockets, two back pockets, and a small coin pocket on the right side. The front pockets are adorned with silver rivets for added durability and style. The jeans are made of a stretchy denim fabric that provides comfort and flexibility for all-day wear. The waistband has belt loops, allowing for accessorizing with a belt if desired. Overall, these jeans are a fashionable and versatile addition to any wardrobe.
+  
+  # -------------------------------
+  # Bernie's Items
+  # -------------------------------
+  bernie_credit_card:
+    name:
+      en: |
+        Bernie's Credit Card
+    synonyms:
+      en: ["credit card", "card", "bernie's card"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A credit card with Bernie's name on it.
 
+  bernie_jeans_pants_pocket:
+    name:
+      en: |
+        Bernie's Jeans Pants Pocket
+    synonyms:
+      en: ["pocket", "bernie's pocket", "jeans pocket", "pants pocket", "bernie's jeans pocket", "bernie's pants pocket"]
+    contents: [bernie_credit_card]
+    description:
+      en: |
+        The back pocket of Bernie's jeans pants.
+      # conditions:
+      #   - if: "containerHas('bernie_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor != 'sabine'"
+      #     message:
+      #       en: |
+      #         You can see the outline of Sabine's cell phone.
+      #   - if: "containerHas('bernie_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor == 'bernie'"
+      #     message:
+      #       en: |
+      #         You can see the outline of your cell phone.
+  
+  bernie_jeans_pants:
+    name:
+      en: |
+        Bernie's Jeans Pants
+    synonyms:
+      en: ["jeans", "pants", "bernie's jeans", "bernie's pants"]
+    takeable: true
+    wearable: true
+    size: 2
+    contents: [bernie_jeans_pants_pocket]
+    description:
+      en: |
+        A pair of men's slim straight-leg jeans in dark wash. They have a comfortable fit and are made of durable denim fabric.
+
+  # -------------------------------
+  # Location Items
+  # -------------------------------
   living_room_couch:
     name:
       en: |
@@ -63,4 +118,4 @@ items:
     actor_capacity: 3
     description:
       en: |
-        A large, comfortable couch.
+        A large sectional sofa that provides a comfortable seating area for guests. It is made of soft, plush fabric in a neutral color, complementing the modern decor of the living room. The couch has deep cushions and wide armrests, making it an inviting spot to relax and enjoy the stunning view of the city through the floor-to-ceiling windows.

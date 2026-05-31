@@ -7,7 +7,7 @@ locations:
       en: ["penthouse living room", "living room", "room"]
     description:
       en: |
-        You're in the living room of your modest cottage.
+        A high-end living room with modern furniture and elegant decor. Floor to ceiling windows offer a stunning view of the city. A large sectional sofa is positioned centrally, providing a comfortable seating area for guests.
     contents: [living_room_couch]
     exits:
       north: penthouse_master_bedroom
