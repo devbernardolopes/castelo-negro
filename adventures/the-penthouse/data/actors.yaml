@@ -24,7 +24,7 @@ actors:
         relationship_level: "acquaintances"
       dana:
         affinity: 0
-        relationship_level: "acquaintances"
+        relationship_level: "friends"
 
   sabine:
     name:
