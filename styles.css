@@ -385,6 +385,11 @@ body {
   cursor: not-allowed;
 }
 
+#sidebar-tabs[data-enabled="false"] #tab-room,
+#sidebar-tabs[data-enabled="false"] #tab-panel-room {
+  display: none;
+}
+
 #sidebar-tabs[data-enabled="false"] .tab-panel:not(#tab-panel-system) {
   opacity: 0.6;
   pointer-events: none;
