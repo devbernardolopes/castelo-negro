@@ -60,6 +60,7 @@ items:
       en: |
         A pair of women's stylish skinny jeans in indigo blue color. They have a high waist and a slim fit, accentuating the wearer's figure. The jeans feature classic five-pocket styling, with two front pockets, two back pockets, and a small coin pocket on the right side. The front pockets are adorned with silver rivets for added durability and style. The jeans are made of a stretchy denim fabric that provides comfort and flexibility for all-day wear. The waistband has belt loops, allowing for accessorizing with a belt if desired. Overall, these jeans are a fashionable and versatile addition to any wardrobe.
     images: ["images/items/tti-2026-05-31T17-42-03-25590608.png"]
+  
   # -------------------------------
   # Bernie's Items
   # -------------------------------
@@ -74,6 +75,7 @@ items:
     description:
       en: |
         A credit card with Bernie's name on it.
+    images: ["images/items/tti-2026-05-31T17-45-10-875944803.png"]
 
   bernie_jeans_pants_pocket:
     name:
