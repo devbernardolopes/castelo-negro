@@ -141,23 +141,23 @@ actions:
     message:
       en: |
         You take the {object_name}.
-      conditional_messages:
-      - condition: "inventory.has('{object}')"
-        message:
-          en: |
-            You already have the {object_name}.
-      - condition: "!here.has('{object}')"
-        message:
-          en: |
-            There's no {object_name} here.
-      - condition: "!items.takeable('{object}')"
-        message:
-          en: |
-            You can't take the {object_name}.
-      - condition: "inventory.length >= inventory.max_capacity"
-        message:
-          en: |
-            You can't carry any more items.
+    conditional_messages:
+    - condition: "inventory.has('{object}')"
+      message:
+        en: |
+          You already have the {object_name}.
+    - condition: "!here.has('{object}')"
+      message:
+        en: |
+          There's no {object_name} here.
+    - condition: "!items.takeable('{object}')"
+      message:
+        en: |
+          You can't take the {object_name}.
+    - condition: "inventory.length >= inventory.max_capacity"
+      message:
+        en: |
+          You can't carry any more items.
 
   fallback_generic:
     message_pool:
