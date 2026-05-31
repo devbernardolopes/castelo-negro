@@ -50,6 +50,7 @@ function renderPromptHistoryPanel() {
         const directInput = document.getElementById('direct-text-input');
         if (directInput) {
           directInput.value = promptHistory[i];
+          directInput.focus();
           syncSendButtonEnabled();
         }
       } else {
