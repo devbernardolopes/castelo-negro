@@ -1446,6 +1446,21 @@ body {
 
 /* ===== PORTRAIT MOBILE (orientation: portrait) ===== */
 @media (orientation: portrait) and (max-width: 767px) {
+  #game-area {
+    flex-direction: column;
+  }
+
+  #text-display-wrapper {
+    order: 2;
+    flex: 1;
+  }
+
+  #right-panel {
+    order: 1;
+    flex: 0 1 auto;
+    max-height: 360px;
+  }
+
   #sidebar-tabs .tabs-body {
     flex: auto;
     height: 256px;
