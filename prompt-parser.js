@@ -478,8 +478,11 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
         skipStops();
         if (i < tokens.length) {
           const restTokens = tokens.slice(i).filter(t => !stopwords.has(t));
-          if (restTokens.length > 0 && this._findAllItemIdsByNameOrSynonym(restTokens.join(' ')).length > 0) {
-            return null;
+          if (restTokens.length > 0) {
+            const fullPhrase = (possPhrase + ' ' + restTokens.join(' ')).toLowerCase();
+            if (this._findAllItemIdsByNameOrSynonym(fullPhrase).length > 0) {
+              return null;
+            }
           }
         }
       }
@@ -991,7 +994,8 @@ GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
       const langList = syn?.[this.language];
       if (Array.isArray(langList)) {
         for (const s of langList) {
-          if (String(s).trim().toLowerCase() === q) {
+          const sClean = String(s).trim().toLowerCase();
+          if (sClean === q || this._stripPossessive(sClean) === q) {
             if (!results.includes(id)) results.push(id);
             break;
           }
@@ -999,6 +1003,21 @@ GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
       }
     }
   }
+
+  // Fallback: try de-pluralizing the last word (simple English plural heuristic)
+  if (results.length === 0 && this.language === 'en') {
+    const words = q.split(/\s+/);
+    if (words.length > 0) {
+      const last = words[words.length - 1];
+      // Only strip trailing 's' if the word doesn't end with 'ss', 'sh', 'ch', 'x', or 'z'
+      if (last.endsWith('s') && !/ss$|sh$|ch$|[xz]$/.test(last) && last.length >= 4) {
+        const depluralized = last.slice(0, -1);
+        const altQ = words.slice(0, -1).concat([depluralized]).join(' ');
+        return this._findAllItemIdsByNameOrSynonym(altQ);
+      }
+    }
+  }
+
   return results;
 };
 
@@ -1149,13 +1168,19 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
     }
   }
 
+  // Resolve a candidate id to a display phrase (short name, fallback full name)
+  const _resolvePhrase = (id) =>
+    this._getItemDisplayShortName(id)
+    || this._getItemDisplayName(id)
+    || id.replace(/_/g, ' ');
+
   // Handle "mine" — match items owned by the player
   const rawInput = String(input || '').trim().toLowerCase();
   const playerId = this._getPlayerActorId();
   if (rawInput === 'mine') {
     const mineMatches = candidates.filter(id => this._getItemOwner(id) === playerId);
     if (mineMatches.length === 1) {
-      return { itemId: mineMatches[0], phrase: 'mine' };
+      return { itemId: mineMatches[0], phrase: _resolvePhrase(mineMatches[0]) };
     }
   }
 
@@ -1174,7 +1199,7 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
       return allTerms.some(t => t.includes(keyword));
     });
     if (myMatches.length === 1) {
-      return { itemId: myMatches[0], phrase: keyword };
+      return { itemId: myMatches[0], phrase: _resolvePhrase(myMatches[0]) };
     }
   }
 
@@ -1187,7 +1212,7 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
       return ownerDef?.properties?.gender === 'female';
     });
     if (herCandidates.length === 1) {
-      return { itemId: herCandidates[0], phrase: 'hers' };
+      return { itemId: herCandidates[0], phrase: _resolvePhrase(herCandidates[0]) };
     }
   }
 

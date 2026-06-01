@@ -1235,7 +1235,7 @@ class GameEngine {
 
     const wearing = actorData.wearing || [];
     if (wearing.length > 0) {
-      const itemNames = wearing.map(id => this._getItemDisplayName(id) || id);
+      const itemNames = wearing.map(id => this._getItemDisplayShortName(id) || this._getItemDisplayName(id) || id);
       parts.push(`${subject} is wearing ${this._formatList(itemNames)}.`);
     }
 
