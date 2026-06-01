@@ -828,10 +828,7 @@ function _initMapControls() {
   });
 
   vp.addEventListener('dblclick', () => {
-    _mapPanX = 0;
-    _mapPanY = 0;
-    _mapZoom = 1;
-    _applyMapTransform();
+    _centerMapOnCurrentLocation();
   });
 
   vp.addEventListener('wheel', (e) => {
@@ -878,16 +875,44 @@ function _initMapControls() {
   vp.addEventListener('touchend', () => {
     const now = Date.now();
     if (now - lastTapTime < 300 && lastTapTime > 0) {
-      _mapPanX = 0;
-      _mapPanY = 0;
-      _mapZoom = 1;
-      _applyMapTransform();
+      _centerMapOnCurrentLocation();
       lastTapTime = 0;
     } else {
       lastTapTime = now;
     }
     lastTouchDist = 0;
   }, { passive: true });
+}
+
+function _centerMapOnCurrentLocation() {
+  const vp = document.getElementById('map-viewport');
+  const grid = document.getElementById('map-grid');
+  if (!vp || !grid || !engine) return;
+
+  const currentLoc = engine.gameState.current_location;
+  const cells = grid.children;
+  let cellEl = null;
+  for (const child of cells) {
+    if (child.classList.contains('map-cell-current')) {
+      cellEl = child;
+      break;
+    }
+  }
+  if (!cellEl) return;
+
+  const vpRect = vp.getBoundingClientRect();
+  const vpCenterX = vpRect.width / 2;
+  const vpCenterY = vpRect.height / 2;
+
+  const cellX = parseInt(cellEl.style.left, 10);
+  const cellY = parseInt(cellEl.style.top, 10);
+  const cellCenterX = cellX + cellEl.offsetWidth / 2;
+  const cellCenterY = cellY + cellEl.offsetHeight / 2;
+
+  _mapPanX = vpCenterX - cellCenterX;
+  _mapPanY = vpCenterY - cellCenterY;
+  _mapZoom = 1;
+  _applyMapTransform();
 }
 
 function _applyMapTransform() {
@@ -952,6 +977,6 @@ function renderMap() {
   mapEl.style.width = ((maxX - minX + 1) * (CELL + GAP) - GAP) + 'px';
   mapEl.style.height = ((maxY - minY + 1) * (CELL + GAP) - GAP) + 'px';
 
-  _applyMapTransform();
+  _centerMapOnCurrentLocation();
   if (_isTabContentChanged('map', contentKey)) _markTabUpdate('map');
 }
