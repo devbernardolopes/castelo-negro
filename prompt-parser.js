@@ -19,6 +19,23 @@ GameEngine.prototype.processPlayerCommand = function(input) {
       match[`${slotName}_name`] = resolved.phrase;
       this._pendingAmbiguity = null;
 
+      // Check follow-ups before conditions — slots left empty get prompted
+      if (actionDef.follow_up) {
+        for (const [slotName, promptMsg] of Object.entries(actionDef.follow_up)) {
+          if (!match[slotName] || match[slotName] === '') {
+            const msg = this._pickLang(promptMsg);
+            if (msg) this.hooks.onOutput?.(msg);
+            this._pendingSlotPrompt = {
+              actionId, actionDef, match,
+              slotName,
+              slotDef: this._getSlotDef(actionDef, slotName),
+              message: promptMsg
+            };
+            return true;
+          }
+        }
+      }
+
       const ok = this._checkActionConditions(actionDef, match);
       if (ok) {
         if (actionDef.confirmation) {
@@ -39,7 +56,7 @@ GameEngine.prototype.processPlayerCommand = function(input) {
   // Check for pending slot prompt
   if (this._pendingSlotPrompt) {
     const { actionId, actionDef, match, slotName, slotDef } = this._pendingSlotPrompt;
-    const resolved = this._resolveSlotPrompt(slotName, slotDef, cmd);
+    const resolved = this._resolveSlotPrompt(slotName, slotDef, cmd, actionDef, match);
     if (resolved) {
       match[slotName] = resolved.value;
       match[`${slotName}_name`] = resolved.label;
@@ -206,11 +223,26 @@ GameEngine.prototype._tryActions = function(cmd) {
       }
 
       if (passingCandidates.length === 0) {
-        const testMatch = { ...match.partialMatch };
-        testMatch[match.slotName] = match.candidates[0];
-        testMatch[`${match.slotName}_name`] = match.phrase;
-        if (this._executeActionFailure(actionId, actionDef, testMatch)) return true;
-        continue;
+        // Check if conditions failed due to empty follow-up slots
+        let hasEmptyFollowUp = false;
+        if (actionDef.follow_up) {
+          for (const [slotName] of Object.entries(actionDef.follow_up)) {
+            if (!match.partialMatch[slotName] || match.partialMatch[slotName] === '') {
+              hasEmptyFollowUp = true;
+              break;
+            }
+          }
+        }
+        if (hasEmptyFollowUp) {
+          // Defer condition check — let follow-up handle empty slots after ambiguity is resolved
+          passingCandidates.push(...match.candidates);
+        } else {
+          const testMatch = { ...match.partialMatch };
+          testMatch[match.slotName] = match.candidates[0];
+          testMatch[`${match.slotName}_name`] = match.phrase;
+          if (this._executeActionFailure(actionId, actionDef, testMatch)) return true;
+          continue;
+        }
       }
 
       if (passingCandidates.length === 1) {
@@ -1249,10 +1281,12 @@ GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase, 
     return id.replace(/_/g, ' ');
   });
 
+  // Capitalize first letter of first label (starts second sentence after "?")
+  const capitalized = labels.map((l, i) => i === 0 ? l.charAt(0).toUpperCase() + l.slice(1) : l);
   if (this.language === 'pt-br') {
-    return `Qual ${phrase}? ${labels.join(' ou ')}?`;
+    return `Qual ${phrase}? ${capitalized.join(' ou ')}?`;
   }
-  return `Which ${phrase}? ${labels.join(' or ')}?`;
+  return `Which ${phrase}? ${capitalized.join(' or ')}?`;
 };
 
 /**
@@ -1262,18 +1296,32 @@ GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase, 
  * @param {string} input
  * @returns {{ value: string, label: string }|null}
  */
-GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input) {
+GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, actionDef, match) {
   const cmd = String(input || '').trim().toLowerCase();
   if (!cmd) return null;
   const tokens = cmd.split(/\s+/).filter(Boolean);
 
   if (slotName === 'object' || slotName === 'target') {
     const itemMatch = this._matchItemSlotAt(tokens, 0, slotDef || '*');
-    if (itemMatch && !itemMatch.ambiguous) {
-      const label = this._getItemDisplayShortName(itemMatch.itemId)
-        || this._getItemDisplayName(itemMatch.itemId)
-        || itemMatch.phrase;
-      return { value: itemMatch.itemId, label };
+    if (itemMatch) {
+      // Auto-resolve ambiguity: try conditions, else pick first candidate
+      if (itemMatch.ambiguous && actionDef) {
+        const passing = itemMatch.candidates.filter(id => {
+          const testMatch = { ...match, [slotName]: id, [`${slotName}_name`]: itemMatch.phrase };
+          return this._checkActionConditions(actionDef, testMatch);
+        });
+        const chosen = passing.length === 1 ? passing[0] : itemMatch.candidates[0];
+        const label = this._getItemDisplayShortName(chosen)
+          || this._getItemDisplayName(chosen)
+          || itemMatch.phrase;
+        return { value: chosen, label };
+      }
+      if (!itemMatch.ambiguous) {
+        const label = this._getItemDisplayShortName(itemMatch.itemId)
+          || this._getItemDisplayName(itemMatch.itemId)
+          || itemMatch.phrase;
+        return { value: itemMatch.itemId, label };
+      }
     }
   }
 

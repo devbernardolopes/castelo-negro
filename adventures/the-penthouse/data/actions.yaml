@@ -54,14 +54,14 @@ actions:
         message:
           en: |
             {actor_name} isn't here.
-      - condition: "!inventory.has('{object}')"
-        message:
-          en: |
-            You don't have the {object_name}.
       - condition: "isWornBy(current_player_actor, '{object}')"
         message:
           en: |
             You need to remove the {object_name} first.
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: |
+            You don't have the {object_name}.
       - condition: "getActor('{actor}').inventory.length >= actors.{actor}.max_capacity"
         message:
           en: |
@@ -116,14 +116,14 @@ actions:
         message:
           en: |
             {actor_name} isn't here.
-      - condition: "!inventory.has('{object}')"
-        message:
-          en: |
-            You don't have the {object_name}.
       - condition: "isWornBy(current_player_actor, '{object}')"
         message:
           en: |
             You need to remove the {object_name} first.
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: |
+            You don't have the {object_name}.
       - condition: "getActor('{actor}').inventory.length >= actors.{actor}.max_capacity"
         message:
           en: |
