@@ -219,6 +219,22 @@ items:
       en: |
         A modern toilet in the half bathroom, designed for convenience and comfort.
   
+  half_bathroom_toilet_paper_roll_holder:
+    name:
+      en: |
+        Half Bathroom Toilet Paper Roll Holder
+    short_name:
+      en: |
+        toilet roll holder
+    synonyms:
+      en: ["toilet paper roll holder", "toilet paper holder", "paper roll holder", "holder"]
+    takeable: false
+    contents: [half_bathroom_toilet_paper_roll]
+    size: 1
+    description:
+      en: |
+        A simple and functional toilet paper roll holder mounted on the wall next to the toilet in the half bathroom.
+
   half_bathroom_sink:
     name:
       en: |
