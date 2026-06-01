@@ -79,7 +79,7 @@ locations:
     contents: [master_bedroom_bed]
     exits:
       south: penthouse_living_room_hallway
-      east: penthouse_master_ensuite
+      west: penthouse_master_ensuite
     images: ["images/locations/tti-2026-05-31T01-45-19-418079304.png"]
 
   penthouse_master_ensuite:
@@ -91,5 +91,5 @@ locations:
         A dark, opulent bathroom.
     contents: [master_ensuite_bathtub, master_ensuite_shower]
     exits:
-      west: penthouse_master_bedroom
+      east: penthouse_master_bedroom
     images: ["images/locations/tti-2026-05-31T02-09-20-463353415.png"]
