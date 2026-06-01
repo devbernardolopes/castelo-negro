@@ -295,6 +295,7 @@ actions:
     conditions:
       - "items.takeable('{object}')"
       - "here.has('{object}')"
+      - "!isWorn('{object}')"
       - "inventory.length < inventory.max_capacity"
       - "!inventory.has('{object}')"
     effect: "inventory.add('{object}')"
@@ -306,6 +307,10 @@ actions:
         message:
           en: |
             You already have the {object_name}.
+      - condition: "isWorn('{object}')"
+        message:
+          en: |
+            You need to remove the {object_name} first.
       - condition: "!here.has('{object}')"
         message:
           en: |
