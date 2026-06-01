@@ -97,6 +97,10 @@ verbs:
     synonyms: { en: ["gift", "donate"], pt-br: ["presentear", "doar"] }
   enter:
     synonyms: { en: ["enter", "go in"], pt-br: ["entrar"] }
+  exit:
+    synonyms: { en: ["exit", "leave", "get out", "get off"], pt-br: ["sair"] }
+  lie:
+    synonyms: { en: ["lie", "lie down"], pt-br: ["deitar"] }
   touch:
     synonyms: { en: ["touch"], pt-br: ["tocar"] }
   rub:

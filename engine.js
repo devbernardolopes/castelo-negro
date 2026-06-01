@@ -321,6 +321,7 @@ class GameEngine {
         wearing: Array.isArray(actorDef.wearing) ? [...actorDef.wearing] : [],
         current_location: actorDef.starting_location,
         contained_by: actorDef.starting_contained_by || null,
+        posture: actorDef.starting_posture || 'standing',
         known_locations: Array.isArray(actorDef.known_locations) ? [...actorDef.known_locations] : [],
         properties: props,
         property_overrides: overrides,
@@ -589,6 +590,8 @@ class GameEngine {
           return engine.definition.items?.[String(itemId)]?.size ?? 1;
         },
         sittable: (itemId) => Boolean(engine.definition.items?.[String(itemId)]?.sittable),
+        sleepable: (itemId) => Boolean(engine.definition.items?.[String(itemId)]?.sleepable),
+        enterable: (itemId) => Boolean(engine.definition.items?.[String(itemId)]?.enterable),
         actor_capacity: (itemId) => engine.definition.items?.[String(itemId)]?.actor_capacity ?? Infinity
       },
       locations: this.definition.locations || {},
@@ -620,6 +623,10 @@ class GameEngine {
       getContainedBy: (actorId) => {
         const data = engine.gameState.actors_data?.[String(actorId)];
         return data ? data.contained_by : null;
+      },
+      getPosture: (actorId) => {
+        const data = engine.gameState.actors_data?.[String(actorId)];
+        return data ? data.posture : 'standing';
       },
       getContainerOccupants: (itemId) => {
         const id = String(itemId);
@@ -769,12 +776,13 @@ class GameEngine {
         continue;
       }
 
-      // containActor('actorId', 'containerId') or containActor(actorId, 'containerId')
-      const containMatch = line.match(/^containActor\(\s*([^,]+)\s*,\s*([^,]+)\s*\)\s*$/);
+      // containActor('actorId', 'containerId'[, 'posture']) or containActor(actorId, 'containerId'[, 'posture'])
+      const containMatch = line.match(/^containActor\(\s*([^,]+)\s*,\s*([^,]+)(?:\s*,\s*['"]?([^)'"]+)['"]?)?\s*\)\s*$/);
       if (containMatch) {
         const actorId = String(this._evalExpression(containMatch[1]) ?? '');
         const containerId = String(this._evalExpression(containMatch[2]) ?? '');
-        if (actorId) this._containActor(actorId, containerId);
+        const posture = containMatch[3] ? String(containMatch[3]).trim() : undefined;
+        if (actorId) this._containActor(actorId, containerId, posture);
         continue;
       }
 
@@ -783,6 +791,16 @@ class GameEngine {
       if (releaseMatch) {
         const actorId = String(this._evalExpression(releaseMatch[1]) ?? '');
         if (actorId) this._releaseActor(actorId);
+        continue;
+      }
+
+      // setPosture('actorId', 'posture') or setPosture(actorId, 'posture')
+      const setPostureMatch = line.match(/^setPosture\(\s*([^,]+)\s*,\s*['"]?([^)'"]+)['"]?\s*\)\s*$/);
+      if (setPostureMatch) {
+        const actorId = String(this._evalExpression(setPostureMatch[1]) ?? '');
+        const posture = String(setPostureMatch[2]).trim();
+        const data = this.gameState.actors_data?.[actorId];
+        if (data) data.posture = posture;
         continue;
       }
 
@@ -928,16 +946,18 @@ class GameEngine {
     return data ? data.contained_by : null;
   }
 
-  _containActor(actorId, containerId) {
+  _containActor(actorId, containerId, posture) {
     const data = this.gameState.actors_data?.[actorId];
     if (!data) return;
     data.contained_by = containerId;
+    data.posture = posture || 'seated';
   }
 
   _releaseActor(actorId) {
     const data = this.gameState.actors_data?.[actorId];
     if (!data) return;
     data.contained_by = null;
+    data.posture = 'standing';
   }
 
   _getRelationshipLevel(fromActorId, toActorId) {
@@ -1023,13 +1043,33 @@ class GameEngine {
     return actorName;
   }
 
-  _getContainerPosture(containerId) {
+  _getContainerPosture(containerId, actorId) {
     if (!containerId) return 'here';
     const def = this.definition.items?.[containerId];
     if (!def) return 'here';
     const shortName = this._getItemDisplayShortName(containerId)
       || this._getItemDisplayName(containerId)
       || containerId;
+
+    // Check actor's explicit posture if provided
+    if (actorId) {
+      const posture = this.gameState.actors_data?.[actorId]?.posture;
+      if (posture && posture !== 'standing') {
+        const prep = (def.sleepable || def.sittable) ? 'on' : 'in';
+        const postures = {
+          seated: `seated ${prep} the ${shortName}`,
+          lying: `lying ${prep} the ${shortName}`,
+          crouched: `crouching ${prep} the ${shortName}`,
+          on_knees: `kneeling ${prep} the ${shortName}`,
+          on_all_fours: `on all fours ${prep} the ${shortName}`,
+          flying: 'flying',
+          falling: 'falling'
+        };
+        return postures[posture] || `standing in the ${shortName}`;
+      }
+    }
+
+    // Fall back to item property inference (backward compat)
     if (def.sleepable) return `lying on the ${shortName}`;
     if (def.sittable) return `seated on the ${shortName}`;
     return `inside the ${shortName}`;
@@ -1043,12 +1083,13 @@ class GameEngine {
       || this._getItemDisplayName(containerId)
       || containerId;
     if (def.sleepable || def.sittable) return `on the ${shortName}`;
-    return `in the ${shortName}`;
+    if (def.enterable) return `in the ${shortName}`;
+    return `inside the ${shortName}`;
   }
 
   _getPosturePhrase(actorId) {
     const data = this.gameState.actors_data?.[actorId];
-    return this._getContainerPosture(data?.contained_by || null);
+    return this._getContainerPosture(data?.contained_by || null, actorId);
   }
 
   _formatList(items) {
@@ -1175,7 +1216,7 @@ class GameEngine {
       const isSameContainer = playerContainer && containerId === playerContainer;
 
       const posture = containerId
-        ? this._getContainerPosture(containerId)
+        ? this._getContainerPosture(containerId, actorIds[0])
         : null;
 
       const references = actorIds.map(id => this._getActorReference(id, playerId));

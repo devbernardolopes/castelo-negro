@@ -273,7 +273,7 @@ actions:
       - "items.sittable('{target}')"
       - "here.has('{target}')"
       - "getContainerOccupantsCount('{target}') < items.actor_capacity('{target}')"
-    effect: "containActor(current_player_actor, '{target}')"
+    effect: "containActor(current_player_actor, '{target}', 'seated')"
     message:
       en: |
         You sit down on the {target_name}.
@@ -294,6 +294,37 @@ actions:
         message:
           en: |
             There's no room on the {target_name}.
+
+  lie:
+    pattern:
+      - verb: ["lie", "lie down"]
+      - target: ["*"]
+        optional: true
+    follow_up:
+      target:
+        en: "Lie down on what?"
+    conditions:
+      - "getPosture(current_player_actor) != 'lying'"
+      - "items.sleepable('{target}')"
+      - "here.has('{target}')"
+      - "getContainerOccupantsCount('{target}') < items.actor_capacity('{target}')"
+    effect: "containActor(current_player_actor, '{target}', 'lying')"
+    message:
+      en: |
+        You lie down on the {target_name}.
+    conditional_messages:
+      - condition: "getPosture(current_player_actor) == 'lying'"
+        message:
+          en: |
+            You're already lying down.
+      - condition: "'{target}' != '' and !items.sleepable('{target}')"
+        message:
+          en: |
+            That's not a good place to lie down.
+      - condition: "'{target}' != '' and !here.has('{target}')"
+        message:
+          en: |
+            There's no {target_name} here.
 
   switch:
     pattern:
@@ -349,6 +380,46 @@ actions:
         message:
           en: |
             You can't attack yourself.
+
+  enter:
+    pattern:
+      - verb: ["enter"]
+      - target: ["*"]
+        optional: true
+    follow_up:
+      target:
+        en: "Enter what?"
+    conditions:
+      - "items.enterable('{target}')"
+      - "here.has('{target}')"
+    effect: "containActor(current_player_actor, '{target}', 'standing')"
+    message:
+      en: |
+        You enter the {target_name}.
+    conditional_messages:
+      - condition: "'{target}' != '' and !items.enterable('{target}')"
+        message:
+          en: |
+            You can't enter that.
+      - condition: "'{target}' != '' and !here.has('{target}')"
+        message:
+          en: |
+            There's no {target_name} here.
+
+  exit:
+    pattern:
+      - verb: ["exit"]
+    conditions:
+      - "isSeated(current_player_actor)"
+    effect: "releaseActor(current_player_actor)"
+    message:
+      en: |
+        You get out.
+    conditional_messages:
+      - condition: "!isSeated(current_player_actor)"
+        message:
+          en: |
+            You're not inside anything.
 
   fallback_generic:
     message_pool:

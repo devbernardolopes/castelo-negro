@@ -155,6 +155,9 @@ items:
     name:
       en: |
         Half Bathroom Door
+    short_name:
+      en: |
+        door
     synonyms:
       en: ["door", "half bathroom door", "bathroom door"]
     openable: true
@@ -204,7 +207,7 @@ items:
       en: |
         toilet paper roll
     synonyms:
-      en: ["toilet paper roll", "toilet paper", "paper roll"]
+      en: ["toilet paper roll", "toilet paper", "paper roll", "paper"]
     takeable: true
     size: 1
     description:
@@ -216,6 +219,9 @@ items:
     name:
       en: |
         Guest Bedroom Door
+    short_name:
+      en: |
+        door
     synonyms:
       en: ["door", "guest bedroom door", "bedroom door"]
     openable: true
@@ -248,6 +254,9 @@ items:
     name:
       en: |
         Master Bedroom Door
+    short_name:
+      en: |
+        door
     synonyms:
       en: ["door", "bedroom door"]
     openable: true
@@ -287,6 +296,8 @@ items:
       en: ["bathtub", "tub", "master tub"]
     takeable: false
     size: 5
+    enterable: true
+    sittable: true
     description:
       en: |
         A luxurious bathtub in the master ensuite, perfect for a relaxing soak.
@@ -302,6 +313,7 @@ items:
       en: ["shower", "master shower"]
     takeable: false
     size: 5
+    enterable: true
     description:
       en: |
         A spacious and modern shower in the master ensuite, featuring sleek glass doors and high-end fixtures for a refreshing bathing experience.
