@@ -318,6 +318,38 @@ actions:
           en: |
             You're already playing as {actor_name}.
 
+  attack:
+    pattern:
+      - verb: ["attack"]
+      - actor: ["*"]
+        optional: true
+    follow_up:
+      actor:
+        en: "Attack whom?"
+    confirmation:
+      en: "Are you sure you want to attack {actor_name}?"
+    conditions:
+      - "'{actor}' != '' and getActor('{actor}') != null"
+      - "getActor('{actor}').current_location == current_location"
+      - "'{actor}' != current_player_actor"
+    effect: ""
+    message:
+      en: |
+        You attack {actor_name}!
+    conditional_messages:
+      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+        message:
+          en: |
+            There's no one here by that name.
+      - condition: "getActor('{actor}').current_location != current_location"
+        message:
+          en: |
+            {actor_name} isn't here.
+      - condition: "'{actor}' == current_player_actor"
+        message:
+          en: |
+            You can't attack yourself.
+
   fallback_generic:
     message_pool:
       en:
