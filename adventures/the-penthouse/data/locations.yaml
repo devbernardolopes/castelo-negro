@@ -12,7 +12,7 @@ locations:
         To the north is a long and dimly lit hallway that leads to the master bedroom of the penthouse. To the east is a balcony with a breathtaking view of the city skyline.
     contents: [living_room_couch]
     exits:
-      north: penthouse_master_hallway
+      north: penthouse_living_room_hallway
       east: penthouse_living_room_balcony
     images: ["images/locations/tti-2026-05-31T01-35-07-370740316.png"]
   
