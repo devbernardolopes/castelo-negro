@@ -212,7 +212,8 @@ items:
     size: 1
     description:
       en: |
-        A roll of toilet paper in the half bathroom, essential for any bathroom setup.
+        A simple roll of toilet paper.
+    images: ["images/items/tti-2026-06-01T21-04-48-419940349.png"]
 
   # Guest Bedroom
   guest_bedroom_door:
@@ -244,7 +245,7 @@ items:
     size: 4
     sittable: true
     sleepable: true
-    actor_capacity: 2
+    actor_capacity: 3
     description:
       en: |
         A comfortable queen-sized bed in the guest bedroom, perfect for accommodating visitors. The bed is adorned with soft linens and decorative pillows, creating a cozy and inviting sleeping area for guests staying in the penthouse.
@@ -279,7 +280,7 @@ items:
     size: 5
     sittable: true
     sleepable: true
-    actor_capacity: 2
+    actor_capacity: 4
     description:
       en: |
         A luxurious king-sized bed with a plush headboard and high-quality linens. The bed is adorned with decorative pillows and a cozy duvet, creating an inviting and comfortable sleeping area in the master bedroom of the penthouse.
@@ -298,6 +299,7 @@ items:
     size: 5
     enterable: true
     sittable: true
+    actor_capacity: 2
     description:
       en: |
         A luxurious bathtub in the master ensuite, perfect for a relaxing soak.
@@ -314,6 +316,7 @@ items:
     takeable: false
     size: 5
     enterable: true
+    actor_capacity: 3
     description:
       en: |
         A spacious and modern shower in the master ensuite, featuring sleek glass doors and high-end fixtures for a refreshing bathing experience.
