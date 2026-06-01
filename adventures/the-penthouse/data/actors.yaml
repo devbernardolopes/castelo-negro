@@ -34,12 +34,15 @@ actors:
     synonyms:
       en: ["sabine", "her", "girl", "woman", "female", "lady"]
     playable: true
+    images:
+      portrait: "images/actors/sabine/tti-2026-06-01T21-20-00-718795545.png"
+      full: "images/actors/sabine/tti-2026-06-01T21-24-07-779765986.png"
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room]
     inventory: []
     starting_contained_by: living_room_couch
     starting_posture: seated
-    wearing: [sabine_jeans_pants]
+    wearing: [sabine_jeans_pants, sabine_tank_top]
     max_capacity: 2
     description:
       en: |
