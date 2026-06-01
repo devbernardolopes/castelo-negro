@@ -26,14 +26,108 @@ actions:
       - "'{object}' != ''"
       - "'{actor}' != '' and getActor('{actor}') != null and '{actor}' != current_player_actor"
       - "getActor('{actor}').current_location == current_location"
-      # TODO: add condition to check if player has something to gift
-      # TODO: more conditions? For example, if we want to only allow gifting certain items or if we want to have some kind of affinity requirement for gifting to certain actors, or if for the gift action ownership of the item is required, etc.
+      - "inventory.has('{object}')"
+      - "!isWornBy(current_player_actor, '{object}')"
+      - "getActor('{actor}').inventory.length < actors.{actor}.max_capacity"
     effect:
-      - "setOwner('{object}', '{actor}')" # TODO: implement setOwner effect
-      - "setRelationship(current_player_actor, '{actor}', 'affinity', getRelationship('{actor}', 'affinity') + 10)" # TODO: adjust affinity increase or decrease as needed for the gifting action may be positive or negative depending on the item and the actor
-    message: # TODO: think about how to handle the message for this action since it can have a variable object and target. We may want to allow for some templating here where we can include the object and target names in the message.
+      - "inventory.remove('{object}')"
+      - "actorInventoryAdd('{actor}', '{object}')"
+      - "setOwner('{object}', '{actor}')"
+      - "setRelationship(current_player_actor, '{actor}', 'affinity', getRelationship('{actor}', 'affinity') + 10)"
+    message:
       en: |
         You gift the {object_name} to {actor_name}. {actor_name} looks pleased.
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: |
+            Gift what?
+      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+        message:
+          en: |
+            There's no one here by that name.
+      - condition: "'{actor}' == current_player_actor"
+        message:
+          en: |
+            You can't gift something to yourself.
+      - condition: "getActor('{actor}').current_location != current_location"
+        message:
+          en: |
+            {actor_name} isn't here.
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: |
+            You don't have the {object_name}.
+      - condition: "isWornBy(current_player_actor, '{object}')"
+        message:
+          en: |
+            You need to remove the {object_name} first.
+      - condition: "getActor('{actor}').inventory.length >= actors.{actor}.max_capacity"
+        message:
+          en: |
+            {actor_name} can't hold any more items.
+
+  give:
+    patterns:
+      obj_then_target:
+        - verb: ["give"]
+        - object: ["*"]
+          optional: true
+        - actor: ["*"]
+          optional: true
+      target_then_obj:
+        - verb: ["give"]
+        - actor: ["*"]
+          optional: true
+        - object: ["*"]
+          optional: true
+    follow_up:
+      object:
+        en: "Give what?"
+      actor:
+        en: "To whom?"
+    conditions:
+      - "'{object}' != ''"
+      - "'{actor}' != '' and getActor('{actor}') != null and '{actor}' != current_player_actor"
+      - "getActor('{actor}').current_location == current_location"
+      - "inventory.has('{object}')"
+      - "!isWornBy(current_player_actor, '{object}')"
+      - "getActor('{actor}').inventory.length < actors.{actor}.max_capacity"
+    effect:
+      - "inventory.remove('{object}')"
+      - "actorInventoryAdd('{actor}', '{object}')"
+    message:
+      en: |
+        You give the {object_name} to {actor_name}.
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: |
+            Give what?
+      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+        message:
+          en: |
+            There's no one here by that name.
+      - condition: "'{actor}' == current_player_actor"
+        message:
+          en: |
+            You can't give something to yourself.
+      - condition: "getActor('{actor}').current_location != current_location"
+        message:
+          en: |
+            {actor_name} isn't here.
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: |
+            You don't have the {object_name}.
+      - condition: "isWornBy(current_player_actor, '{object}')"
+        message:
+          en: |
+            You need to remove the {object_name} first.
+      - condition: "getActor('{actor}').inventory.length >= actors.{actor}.max_capacity"
+        message:
+          en: |
+            {actor_name} can't hold any more items.
 
   open:
     pattern:

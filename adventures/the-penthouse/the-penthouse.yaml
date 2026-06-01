@@ -9,7 +9,7 @@ metadata:
   data_files: ["items.yaml", "locations.yaml", "actions.yaml", "actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml", "properties.yaml"]
   allow_direct_input: true
   debug: false
-  auto_container_description: true
+  auto_container_description: false
   show_continue_message: true
   continue_message:
     en: "[glow][i]\[Press any key to continue...\][/i][/glow]"

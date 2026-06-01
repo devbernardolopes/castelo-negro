@@ -738,6 +738,25 @@ class GameEngine {
         continue;
       }
 
+      // actorInventoryAdd('actorId','itemId') / actorInventoryRemove('actorId','itemId')
+      const actorInvCall = line.match(/^(actorInventoryAdd|actorInventoryRemove)\(\s*([^,]+)\s*,\s*(.+)\s*\)\s*$/);
+      if (actorInvCall) {
+        const [, func, rawActor, rawItem] = actorInvCall;
+        const actorId = String(this._evalExpression(rawActor) ?? '');
+        const itemId = String(rawItem).trim().replace(/^['"]|['"]$/g, '');
+        if (!actorId || !itemId) continue;
+        const data = this.gameState.actors_data?.[actorId];
+        if (!data) { console.warn('[engine] actorInventoryAdd/Remove: unknown actor', actorId); continue; }
+        if (!Array.isArray(data.inventory)) data.inventory = [];
+        if (func === 'actorInventoryAdd') {
+          data.inventory.push(itemId);
+        } else {
+          const idx = data.inventory.indexOf(itemId);
+          if (idx !== -1) data.inventory.splice(idx, 1);
+        }
+        continue;
+      }
+
       const condMatch = line.match(/^([A-Za-z_]\w*)\s*([+\-*/]?=)\s*(.+)\s+if\s+(.+)\s+else\s+(.+)$/);
       if (condMatch) {
         const [, varName, op, whenTrue, cond, whenFalse] = condMatch;
