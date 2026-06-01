@@ -273,6 +273,30 @@ actions:
           en: |
             There's no room on the {target_name}.
 
+  switch:
+    pattern:
+      - verb: ["switch"]
+      - actor: ["*"]
+        match_mode: name_only
+        optional: true
+    conditions:
+      - "'{actor}' != '' and getActor('{actor}') != null"
+      - "'{actor}' != current_player_actor"
+    effect:
+      - "setPlayerActor('{actor}')"
+    message:
+      en: |
+        You switch to playing as {actor_name}.
+    conditional_messages:
+      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+        message:
+          en: |
+            There's no one like that here.
+      - condition: "'{actor}' == current_player_actor"
+        message:
+          en: |
+            You're already playing as {actor_name}.
+
   fallback_generic:
     message_pool:
       en:

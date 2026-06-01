@@ -1417,16 +1417,25 @@ class GameEngine {
     const variable = this.gameState.variables.current_player_actor;
     if (!variable) return;
     variable.value = this._coerceAndClamp(variable, actorId);
-    const actorDef = this.definition.actors[actorId];
+    this._endConversation();
     const actorData = this.gameState.actors_data?.[actorId];
-    if (actorDef.starting_location) {
-      this.gameState.current_location = actorDef.starting_location;
+    if (actorData?.current_location) {
+      this.gameState.current_location = actorData.current_location;
       this.gameState.previous_location = null;
-      if (actorData) actorData.current_location = actorDef.starting_location;
+    } else {
+      const actorDef = this.definition.actors[actorId];
+      if (actorDef.starting_location) {
+        this.gameState.current_location = actorDef.starting_location;
+        this.gameState.previous_location = null;
+        if (actorData) actorData.current_location = actorDef.starting_location;
+      }
     }
+    this._memoryConfig = this._getPlayerMemoryConfig();
     this.hooks.onInventoryRender?.();
     this.hooks.onLocationRender?.(this.gameState.current_location);
     this.hooks.onMindRender?.();
+    this.hooks.onMemoryRender?.();
+    this.hooks.onMapRender?.();
   }
 
   /** @param {string} locationId */

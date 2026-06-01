@@ -35,7 +35,7 @@ properties:
     possible_values: ["bald", "black", "brown", "blonde", "red", "gray", "white"]
     default: "black"
   is_alive:
-    type: boolean
+    type: bool
     default: true
   stamina:
     type: int

@@ -266,7 +266,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     }
 
     if (!slotEntry || typeof slotEntry !== 'object') return null;
-    const entries = Object.entries(slotEntry).filter(([k]) => k !== 'optional');
+    const entries = Object.entries(slotEntry).filter(([k]) => k !== 'optional' && k !== 'match_mode');
     if (entries.length !== 1) return null;
     const slotName = entries[0][0];
     const slotDef = entries[0][1];
@@ -322,7 +322,8 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
 
     if (slotName === 'actor') {
       const actorIds = Array.isArray(slotDef) ? slotDef.map(id => String(id)) : [];
-      const actorMatch = this._matchActorSlotAt(tokens, i, actorIds.length ? actorIds : '*');
+      const matchMode = slotEntry.match_mode;
+      const actorMatch = this._matchActorSlotAt(tokens, i, actorIds.length ? actorIds : '*', { matchMode });
       if (!actorMatch) {
         if (isOptional) { out[slotName] = ''; optionalSkipped = true; continue; }
         return null;
@@ -418,7 +419,7 @@ GameEngine.prototype._buildActorIndex = function() {
   return index;
 };
 
-GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef) {
+GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {}) {
   const isWildcard = slotDef === '*' || (Array.isArray(slotDef) && slotDef.includes('*'));
 
   let candidates;
@@ -446,12 +447,14 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef) {
       const name = this._pickLang(actorDef.name);
       if (name && p === String(name).trim().toLowerCase()) { matched.push(actorId); continue; }
 
-      const syn = actorDef.synonyms;
-      if (syn && typeof syn === 'object') {
-        const langList = syn[this.language];
-        if (Array.isArray(langList)) {
-          for (const s of langList) {
-            if (p === String(s).trim().toLowerCase()) { matched.push(actorId); break; }
+      if (opts.matchMode !== 'name_only') {
+        const syn = actorDef.synonyms;
+        if (syn && typeof syn === 'object') {
+          const langList = syn[this.language];
+          if (Array.isArray(langList)) {
+            for (const s of langList) {
+              if (p === String(s).trim().toLowerCase()) { matched.push(actorId); break; }
+            }
           }
         }
       }
