@@ -130,19 +130,11 @@ items:
     synonyms:
       en: ["pocket", "bernie's pocket", "jeans pocket", "pants pocket", "bernie's jeans pocket", "bernie's pants pocket"]
     contents: [bernie_credit_card]
+    container_capacity: 1
     show_in_inventory: false
     description:
       en: |
         The back pocket of Bernie's jeans pants.
-      # conditions:
-      #   - if: "containerHas('bernie_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor != 'sabine'"
-      #     message:
-      #       en: |
-      #         You can see the outline of Sabine's cell phone.
-      #   - if: "containerHas('bernie_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor == 'bernie'"
-      #     message:
-      #       en: |
-      #         You can see the outline of your cell phone.
   
   bernie_jeans_pants:
     name:
@@ -161,6 +153,11 @@ items:
     description:
       en: |
         A pair of men's slim straight-leg jeans in dark wash. They have a comfortable fit and are made of durable denim fabric.
+      conditions:
+        - if: "containerHas(bernie_jeans_pants, bernie_jeans_pants_pocket) and current_player_actor != 'bernie'"
+          message:
+            en: |
+              You can see the outline of Bernie's credit card in the back pocket of his jeans.
     images: ["images/items/tti-2026-05-31T17-37-47-474329566.png"]
 
   # -------------------------------
@@ -178,7 +175,6 @@ items:
     synonyms:
       en: ["couch", "sofa", "living room sofa"]
     takeable: false
-    size: 5
     sittable: true
     sleepable: true
     actor_capacity: 3
@@ -198,7 +194,6 @@ items:
       en: ["door", "half bathroom door", "bathroom door"]
     openable: true
     takeable: false
-    size: 3
     description:
       en: |
         A sleek wooden door that leads to the half bathroom. It has a modern design that fits the overall aesthetic of the penthouse, providing privacy and access to the bathroom facilities.
@@ -213,11 +208,11 @@ items:
     synonyms:
       en: ["toilet", "bathroom toilet"]
     takeable: false
-    size: 2
     sittable: true
+    actor_capacity: 1
     description:
       en: |
-        A modern toilet in the half bathroom, designed for convenience and comfort.
+        A modern toilet in the half bathroom, designed for convenience and comfort. Next to it is a toilet paper roll holder for easy access to toilet paper.
   
   half_bathroom_toilet_paper_roll_holder:
     name:
@@ -230,10 +225,14 @@ items:
       en: ["toilet paper roll holder", "toilet paper holder", "paper roll holder", "holder"]
     takeable: false
     contents: [half_bathroom_toilet_paper_roll]
-    size: 1
     description:
       en: |
         A simple and functional toilet paper roll holder mounted on the wall next to the toilet in the half bathroom.
+      conditions:
+        - if: "containerHas(half_bathroom_toilet_paper_roll_holder, half_bathroom_toilet_paper_roll)"
+          message:
+            en: |
+              Currently holding a roll of toilet paper.
 
   half_bathroom_sink:
     name:
@@ -246,7 +245,6 @@ items:
       en: ["sink", "bathroom sink"]
     takeable: false
     openable: true
-    size: 2
     description:
       en: |
         A sleek and stylish sink in the half bathroom, perfect for washing hands and freshening up.
