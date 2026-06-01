@@ -32,6 +32,7 @@ items:
     synonyms:
       en: ["pocket", "sabine's pocket", "jeans pocket", "pants pocket", "sabine's jeans pocket", "sabine's pants pocket"]
     contents: [sabine_cell_phone]
+    show_in_inventory: false
     description:
       en: |
         The front pocket of Sabine's jeans pants.
