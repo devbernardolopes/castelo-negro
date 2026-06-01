@@ -5,7 +5,7 @@ actors:
         Bernie
     playable: true
     starting_location: penthouse_living_room
-    known_locations: [penthouse_living_room, penthouse_master_bedroom, penthouse_master_ensuite]
+    known_locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_guest_bedroom, penthouse_hallway_half_bathroom, penthouse_living_room_balcony, penthouse_master_bedroom, penthouse_master_ensuite]
     inventory: []
     starting_contained_by: living_room_couch
     wearing: [bernie_jeans_pants]
@@ -126,10 +126,10 @@ actors:
     synonyms:
       en: ["dana", "her", "girl", "woman", "female", "lady"]
     playable: true
-    starting_location: penthouse_living_room
-    known_locations: [penthouse_living_room, penthouse_master_bedroom, penthouse_master_ensuite]
+    starting_location: penthouse_hallway_half_bathroom
+    known_locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_half_bathroom, penthouse_living_room_balcony]
     inventory: []
-    starting_contained_by: living_room_couch
+    # starting_contained_by: living_room_couch
     max_capacity: 2
     description:
       en: |
