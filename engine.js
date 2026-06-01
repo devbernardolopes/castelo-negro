@@ -1585,7 +1585,7 @@ class GameEngine {
           }
         }
       } else {
-        const name = this._getItemDisplayName(itemId) || itemId;
+        const name = this._getItemDisplayShortName(itemId) || this._getItemDisplayName(itemId) || itemId;
         lines.push(`There is a ${name} here.`);
       }
     }
