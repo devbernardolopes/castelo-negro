@@ -115,7 +115,7 @@ items:
       en: |
         jeans
     synonyms:
-      en: ["jeans", "pants", "bernie's jeans", "bernie's pants"]
+      en: ["jeans", "pants", "bernie's jeans", "bernie's pants", "jeans pants", "👖"]
     takeable: true
     wearable: true
     owner: bernie

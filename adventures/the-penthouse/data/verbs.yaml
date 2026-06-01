@@ -113,6 +113,8 @@ verbs:
     synonyms: { en: ["hide"], pt-br: ["esconder"] }
   switch:
     synonyms: { en: ["switch", "toggle"], pt-br: ["alternar", "trocar"] }
+  greet:
+    synonyms: { en: ["greet", "say hi"], pt-br: ["cumprimentar", "dizer oi"] }
 
 directions:
   north:
