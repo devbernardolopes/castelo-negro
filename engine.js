@@ -105,6 +105,15 @@ class GameEngine {
     return trimmed + "'s";
   }
 
+  _getSubjectPronoun(actorId) {
+    const playerId = this._getPlayerActorId();
+    if (actorId === playerId) return 'you';
+    const gender = this.gameState.actors_data?.[actorId]?.properties?.gender;
+    if (gender === 'male') return 'he';
+    if (gender === 'female') return 'she';
+    return 'they';
+  }
+
   _expandItemText(itemId, text, forceShowOwner) {
     if (!text || !text.includes('{owner}')) return text;
     const ownerId = this._getItemOwner(itemId);
@@ -835,7 +844,10 @@ class GameEngine {
         const itemId = String(removeWornMatch[2]).trim().replace(/^['"]|['"]$/g, '');
         const data = this.gameState.actors_data?.[actorId];
         if (!data || !Array.isArray(data.wearing) || !data.wearing.includes(itemId)) {
-          this.hooks.onOutput?.("They aren't wearing that.");
+          const subj = this._getSubjectPronoun(actorId);
+          const subjCap = subj.charAt(0).toUpperCase() + subj.slice(1);
+          const be = subj === 'you' ? 'aren\'t' : 'isn\'t';
+          this.hooks.onOutput?.(`${subjCap} ${be} wearing that.`);
           continue;
         }
         // Remove from wearing

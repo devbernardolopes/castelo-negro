@@ -517,14 +517,14 @@ actions:
 
   remove:
     patterns:
-      own:
-        - verb: ["remove", "take off"]
-        - object: ["*"]
-          optional: true
       from_actor:
         - verb: ["remove", "take off"]
         - object: ["*"]
         - actor: ["*"]
+      own:
+        - verb: ["remove", "take off"]
+        - object: ["*"]
+          optional: true
     follow_up:
       object:
         en: "Remove what?"

@@ -445,6 +445,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     }
 
     if (slotName === 'actor') {
+      skipStops();
       const actorIds = Array.isArray(slotDef) ? slotDef.map(id => String(id)) : [];
       const matchMode = slotEntry.match_mode;
       const actorMatch = this._matchActorSlotAt(tokens, i, actorIds.length ? actorIds : '*', { matchMode });
