@@ -142,6 +142,7 @@ items:
     takeable: false
     size: 5
     sittable: true
+    sleepable: true
     actor_capacity: 3
     description:
       en: |
