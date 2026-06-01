@@ -1198,7 +1198,7 @@ class GameEngine {
           sentences.push(`You can see ${allRefs} here.`);
         } else {
           const verb = actorIds.length === 1 ? 'is' : 'are';
-          sentences.push(`${allRefs} ${verb} here.`);
+          sentences.push(`${allRefs.charAt(0).toUpperCase() + allRefs.slice(1)} ${verb} here.`);
         }
       } else {
         const allRefs = this._formatList(references);
@@ -1206,7 +1206,7 @@ class GameEngine {
           sentences.push(`You can see ${allRefs} ${posture}.`);
         } else {
           const verb = actorIds.length === 1 ? 'is' : 'are';
-          sentences.push(`${allRefs} ${verb} ${posture}.`);
+          sentences.push(`${allRefs.charAt(0).toUpperCase() + allRefs.slice(1)} ${verb} ${posture}.`);
         }
       }
     }
