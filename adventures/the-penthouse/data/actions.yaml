@@ -8,12 +8,22 @@ actions:
       obj_then_target:
         - verb: ["gift"]
         - object: ["*"]
+          optional: true
         - actor: ["*"]
+          optional: true
       target_then_obj:
         - verb: ["gift"]
         - actor: ["*"]
+          optional: true
         - object: ["*"]
+          optional: true
+    follow_up:
+      object:
+        en: "Gift what?"
+      actor:
+        en: "To whom?"
     conditions:
+      - "'{object}' != ''"
       - "'{actor}' != '' and getActor('{actor}') != null and '{actor}' != current_player_actor"
       - "getActor('{actor}').current_location == current_location"
       # TODO: add condition to check if player has something to gift
@@ -124,6 +134,10 @@ actions:
     pattern:
       - verb: ["drop"]
       - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Drop what?"
     conditions:
       - "inventory.has('{object}')"
       - "items.droppable('{object}')"
@@ -180,6 +194,10 @@ actions:
     pattern:
       - verb: ["take"]
       - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Take what?"
     conditions:
       - "items.takeable('{object}')"
       - "here.has('{object}')"
@@ -211,6 +229,10 @@ actions:
     pattern:
       - verb: ["talk", "greet"]
       - actor: ["*"]
+        optional: true
+    follow_up:
+      actor:
+        en: "To whom?"
     conditions:
       - "'{actor}' != '' and getActor('{actor}') != null"
       - "getActor('{actor}').current_location == current_location"
@@ -279,6 +301,9 @@ actions:
       - actor: ["*"]
         match_mode: name_only
         optional: true
+    follow_up:
+      actor:
+        en: "Switch to whom?"
     conditions:
       - "'{actor}' != '' and getActor('{actor}') != null"
       - "'{actor}' != current_player_actor"
@@ -288,10 +313,6 @@ actions:
       en: |
         You switch to playing as {actor_name}.
     conditional_messages:
-      - condition: "'{actor}' == '' or getActor('{actor}') == null"
-        message:
-          en: |
-            There's no one like that here.
       - condition: "'{actor}' == current_player_actor"
         message:
           en: |

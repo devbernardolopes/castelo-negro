@@ -21,6 +21,12 @@ GameEngine.prototype.processPlayerCommand = function(input) {
 
       const ok = this._checkActionConditions(actionDef, match);
       if (ok) {
+        if (actionDef.confirmation) {
+          const msg = this._pickLang(actionDef.confirmation);
+          if (msg) this.hooks.onOutput?.(msg);
+          this._pendingConfirmation = { actionId, actionDef, match };
+          return true;
+        }
         this._executeActionSuccess(actionId, actionDef, match);
       } else {
         this._executeActionFailure(actionId, actionDef, match);
@@ -28,6 +34,66 @@ GameEngine.prototype.processPlayerCommand = function(input) {
       return true;
     }
     this._pendingAmbiguity = null;
+  }
+
+  // Check for pending slot prompt
+  if (this._pendingSlotPrompt) {
+    const { actionId, actionDef, match, slotName, slotDef } = this._pendingSlotPrompt;
+    const resolved = this._resolveSlotPrompt(slotName, slotDef, cmd);
+    if (resolved) {
+      match[slotName] = resolved.value;
+      match[`${slotName}_name`] = resolved.label;
+      this._pendingSlotPrompt = null;
+
+      // Check if another slot needs prompting (multi-slot sequential)
+      if (actionDef.follow_up) {
+        for (const [nextSlot, nextPrompt] of Object.entries(actionDef.follow_up)) {
+          if (!match[nextSlot] || match[nextSlot] === '') {
+            const msg = this._pickLang(nextPrompt);
+            if (msg) this.hooks.onOutput?.(msg);
+            this._pendingSlotPrompt = {
+              actionId, actionDef, match,
+              slotName: nextSlot,
+              slotDef: this._getSlotDef(actionDef, nextSlot),
+              message: nextPrompt
+            };
+            return true;
+          }
+        }
+      }
+
+      const ok = this._checkActionConditions(actionDef, match);
+      if (ok) {
+        if (actionDef.confirmation) {
+          const msg = this._pickLang(actionDef.confirmation);
+          if (msg) this.hooks.onOutput?.(msg);
+          this._pendingConfirmation = { actionId, actionDef, match };
+          return true;
+        }
+        this._executeActionSuccess(actionId, actionDef, match);
+      } else {
+        this._executeActionFailure(actionId, actionDef, match);
+      }
+    } else {
+      this._pendingSlotPrompt = null;
+      this.hooks.onOutput?.("You can't do that.");
+      this._afterTurn({ kind: 'action_cancelled', id: actionId });
+    }
+    return true;
+  }
+
+  // Check for pending confirmation
+  if (this._pendingConfirmation) {
+    const { actionId, actionDef, match } = this._pendingConfirmation;
+    const answer = this._resolveBinaryAnswer(cmd);
+    this._pendingConfirmation = null;
+    if (answer === 'yes') {
+      this._executeActionSuccess(actionId, actionDef, match);
+    } else {
+      this.hooks.onOutput?.("Very well.");
+      this._afterTurn({ kind: 'action_cancelled', id: actionId });
+    }
+    return true;
   }
 
   // If conversation is active, try dialogue options first
@@ -183,8 +249,34 @@ GameEngine.prototype._tryActions = function(cmd) {
       continue;
     }
 
+    // Check for follow-up slot prompts before evaluating conditions
+    if (actionDef.follow_up) {
+      for (const [slotName, promptMsg] of Object.entries(actionDef.follow_up)) {
+        if (!match[slotName] || match[slotName] === '') {
+          const msg = this._pickLang(promptMsg);
+          if (msg) this.hooks.onOutput?.(msg);
+          this._pendingSlotPrompt = {
+            actionId,
+            actionDef,
+            match,
+            slotName,
+            slotDef: this._getSlotDef(actionDef, slotName),
+            message: promptMsg
+          };
+          return true;
+        }
+      }
+    }
+
     const ok = this._checkActionConditions(actionDef, match);
     if (ok) {
+      // Confirmation gate
+      if (actionDef.confirmation) {
+        const msg = this._pickLang(actionDef.confirmation);
+        if (msg) this.hooks.onOutput?.(msg);
+        this._pendingConfirmation = { actionId, actionDef, match };
+        return true;
+      }
       this._executeActionSuccess(actionId, actionDef, match);
       return true;
     }
@@ -1161,4 +1253,101 @@ GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase, 
     return `Qual ${phrase}? ${labels.join(' ou ')}?`;
   }
   return `Which ${phrase}? ${labels.join(' or ')}?`;
+};
+
+/**
+ * Resolve a pending slot prompt by matching user input against the slot type.
+ * @param {string} slotName
+ * @param {*} slotDef
+ * @param {string} input
+ * @returns {{ value: string, label: string }|null}
+ */
+GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input) {
+  const cmd = String(input || '').trim().toLowerCase();
+  if (!cmd) return null;
+  const tokens = cmd.split(/\s+/).filter(Boolean);
+
+  if (slotName === 'object' || slotName === 'target') {
+    const itemMatch = this._matchItemSlotAt(tokens, 0, slotDef || '*');
+    if (itemMatch && !itemMatch.ambiguous) {
+      const label = this._getItemDisplayShortName(itemMatch.itemId)
+        || this._getItemDisplayName(itemMatch.itemId)
+        || itemMatch.phrase;
+      return { value: itemMatch.itemId, label };
+    }
+  }
+
+  if (slotName === 'actor') {
+    const actorMatch = this._matchActorSlotAt(tokens, 0, slotDef === '*' ? '*' : slotDef);
+    if (actorMatch && !actorMatch.ambiguous && !actorMatch._strangerBlocked) {
+      const actorDef = this.definition.actors?.[actorMatch.actorId];
+      const label = this._pickLang(actorDef?.name) || actorMatch.actorId;
+      return { value: actorMatch.actorId, label };
+    }
+  }
+
+  if (slotName === 'location') {
+    const locationIds = Array.isArray(slotDef) ? slotDef : [];
+    const locMatch = this._matchLocationSlotAt(tokens, 0, locationIds);
+    if (locMatch) {
+      const locDef = this.definition.locations?.[locMatch.locationId];
+      const label = this._pickLang(locDef?.name) || locMatch.locationId;
+      return { value: locMatch.locationId, label };
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Resolve a binary (yes/no) answer from user input using verbs.binary.
+ * @param {string} input
+ * @returns {'yes'|'no'|null}
+ */
+GameEngine.prototype._resolveBinaryAnswer = function(input) {
+  const q = String(input || '').trim().toLowerCase();
+  if (!q) return null;
+  const binary = this.definition.verbs?.binary?.[this.language];
+  if (binary) {
+    if (Array.isArray(binary.yes) && binary.yes.includes(q)) return 'yes';
+    if (Array.isArray(binary.no) && binary.no.includes(q)) return 'no';
+  }
+  // English fallback
+  if (['yes', 'y', 'yeah', 'yep', 'sure', 'ok', 'okay'].includes(q)) return 'yes';
+  if (['no', 'n', 'nope', 'nah', 'not really'].includes(q)) return 'no';
+  return null;
+};
+
+/**
+ * Extract a slot definition from an action's pattern by slot name.
+ * @param {object} actionDef
+ * @param {string} slotName
+ * @returns {*}
+ */
+GameEngine.prototype._getSlotDef = function(actionDef, slotName) {
+  if (actionDef?.patterns) {
+    for (const pat of Object.values(actionDef.patterns)) {
+      if (Array.isArray(pat)) {
+        for (const entry of pat) {
+          if (entry && typeof entry === 'object') {
+            const entries = Object.entries(entry).filter(([k]) => k !== 'optional' && k !== 'match_mode');
+            if (entries.length === 1 && entries[0][0] === slotName) {
+              return entries[0][1];
+            }
+          }
+        }
+      }
+    }
+  }
+  if (Array.isArray(actionDef?.pattern)) {
+    for (const entry of actionDef.pattern) {
+      if (entry && typeof entry === 'object') {
+        const entries = Object.entries(entry).filter(([k]) => k !== 'optional' && k !== 'match_mode');
+        if (entries.length === 1 && entries[0][0] === slotName) {
+          return entries[0][1];
+        }
+      }
+    }
+  }
+  return '*';
 };
