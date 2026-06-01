@@ -37,6 +37,15 @@ properties:
   is_alive:
     type: bool
     default: true
+  is_conscious:
+    type: bool
+    default: true
+  is_awake:
+    type: bool
+    default: true
+  is_sleeping:
+    type: bool
+    default: false
   stamina:
     type: int
     min_value: 0
