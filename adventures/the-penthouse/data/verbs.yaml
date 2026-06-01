@@ -137,3 +137,12 @@ directions:
     synonyms: { en: ["up", "u"], pt-br: ["cima", "c"] }
   down:
     synonyms: { en: ["down", "d"], pt-br: ["baixo", "b"] }
+
+self:
+  en: ["self", "me", "myself", "my", "mine"]
+
+binary:
+  yes:
+    en: ["yes", "y", "yeah", "yep", "sure", "ok", "okay"]
+  no:
+    en: ["no", "n", "nope", "nah", "not really"]
