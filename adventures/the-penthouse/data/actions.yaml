@@ -421,6 +421,34 @@ actions:
           en: |
             You're not inside anything.
 
+  remove:
+    patterns:
+      own:
+        - verb: ["remove", "take off"]
+        - object: ["*"]
+          optional: true
+      from_actor:
+        - verb: ["remove", "take off"]
+        - object: ["*"]
+        - actor: ["*"]
+    follow_up:
+      object:
+        en: "Remove what?"
+    conditions:
+      - "'{object}' != ''"
+      - "'{actor}' == '' or (getActor('{actor}') != null and getActor('{actor}').current_location == current_location)"
+    effect:
+      - "removeWornItem('{actor}', '{object}')"
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: |
+            Remove what?
+      - condition: "'{actor}' != '' and (getActor('{actor}') == null or getActor('{actor}').current_location != current_location)"
+        message:
+          en: |
+            There's no one like that here.
+
   fallback_generic:
     message_pool:
       en:

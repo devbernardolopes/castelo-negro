@@ -95,6 +95,8 @@ verbs:
     synonyms: { en: ["shake"], pt-br: ["sacudir"] }
   gift:
     synonyms: { en: ["gift", "donate"], pt-br: ["presentear", "doar"] }
+  remove:
+    synonyms: { en: ["remove", "take off"], pt-br: ["remover", "tirar"] }
   enter:
     synonyms: { en: ["enter", "go in"], pt-br: ["entrar"] }
   exit:

@@ -611,6 +611,10 @@ class GameEngine {
         }
         return false;
       },
+      isWornBy: (actorId, itemId) => {
+        const ad = engine.gameState.actors_data?.[String(actorId)];
+        return ad ? Array.isArray(ad.wearing) && ad.wearing.includes(String(itemId)) : false;
+      },
       getActorWearing: (actorId) => {
         const ad = engine.gameState.actors_data?.[actorId];
         return ad && Array.isArray(ad.wearing) ? [...ad.wearing] : [];
@@ -801,6 +805,42 @@ class GameEngine {
         const posture = String(setPostureMatch[2]).trim();
         const data = this.gameState.actors_data?.[actorId];
         if (data) data.posture = posture;
+        continue;
+      }
+
+      // removeWornItem('actorId', 'itemId') or removeWornItem(actorId, 'itemId')
+      const removeWornMatch = line.match(/^removeWornItem\(\s*([^,]+)\s*,\s*(.+)\s*\)\s*$/);
+      if (removeWornMatch) {
+        const rawActor = String(this._evalExpression(removeWornMatch[1]) ?? '');
+        const actorId = rawActor || this._getPlayerActorId();
+        const itemId = String(removeWornMatch[2]).trim().replace(/^['"]|['"]$/g, '');
+        const data = this.gameState.actors_data?.[actorId];
+        if (!data || !Array.isArray(data.wearing) || !data.wearing.includes(itemId)) {
+          this.hooks.onOutput?.("They aren't wearing that.");
+          continue;
+        }
+        // Remove from wearing
+        const idx = data.wearing.indexOf(itemId);
+        if (idx !== -1) data.wearing.splice(idx, 1);
+        // Remove from world if it was somehow there
+        this._removeItemFromWorld(itemId);
+        // Try player's inventory first
+        const playerId = this._getPlayerActorId();
+        const playerData = this.gameState.actors_data?.[playerId];
+        const itemName = this._getItemDisplayShortName(itemId) || this._getItemDisplayName(itemId) || itemId;
+        const isSelf = actorId === playerId;
+        const possessive = isSelf ? 'your' : (this._pickLang(this.definition.actors?.[actorId]?.name) || actorId) + "'s";
+        if (playerData && playerData.inventory.length < Number(this.definition.actors?.[playerId]?.max_capacity ?? 9999)) {
+          playerData.inventory.push(itemId);
+          this.hooks.onOutput?.(`You remove ${possessive} ${itemName} and are now holding it.`);
+        } else {
+          const loc = this.getFullLocationData(this.gameState.current_location);
+          if (loc) {
+            if (!Array.isArray(loc.contents)) loc.contents = [];
+            loc.contents.push(itemId);
+          }
+          this.hooks.onOutput?.(`You remove ${possessive} ${itemName} and put it on the floor.`);
+        }
         continue;
       }
 
