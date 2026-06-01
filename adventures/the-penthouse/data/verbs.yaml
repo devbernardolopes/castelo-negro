@@ -111,6 +111,8 @@ verbs:
     synonyms: { en: ["fly"], pt-br: ["voar"] }
   hide:
     synonyms: { en: ["hide"], pt-br: ["esconder"] }
+  switch:
+    synonyms: { en: ["switch", "toggle"], pt-br: ["alternar", "trocar"] }
 
 directions:
   north:

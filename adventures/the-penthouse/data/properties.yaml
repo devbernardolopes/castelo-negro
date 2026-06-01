@@ -34,6 +34,9 @@ properties:
     type: string
     possible_values: ["bald", "black", "brown", "blonde", "red", "gray", "white"]
     default: "black"
+  is_alive:
+    type: boolean
+    default: true
   stamina:
     type: int
     min_value: 0

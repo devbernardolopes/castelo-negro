@@ -14,6 +14,7 @@ actors:
       age: 44
       gender: "male"
       mood: "neutral"
+      is_alive: true
       stamina: 100
       health: 100
       amount_of_vacations: 5
@@ -46,6 +47,7 @@ actors:
       age: 23
       gender: "female"
       mood: "anxious"
+      is_alive: true
       stamina: 75
       health: 80
       amount_of_vacations: 0
@@ -136,6 +138,7 @@ actors:
       age: 29
       gender: "female"
       mood: "curious"
+      is_alive: true
       stamina: 80
       health: 80
       amount_of_vacations: 0
