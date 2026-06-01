@@ -52,7 +52,7 @@ locations:
     description:
       en: |
         A small, stylish half bathroom located off the hallway. It features a modern sink with a sleek faucet, a wall-mounted mirror, and a toilet. The decor is minimalist, with clean lines and a neutral color palette that complements the overall aesthetic of the penthouse.
-    contents: [half_bathroom_sink, half_bathroom_toilet, half_bathroom_toilet_paper_roll]
+    contents: [half_bathroom_sink, half_bathroom_toilet, half_bathroom_toilet_paper_roll_holder]
     exits:
       west: penthouse_living_room_hallway
     images: ["images/locations/tti-2026-06-01T19-38-36-39720164.png"]
