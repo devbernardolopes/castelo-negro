@@ -114,6 +114,31 @@
       <div id="text-display-wrapper">
         <div id="text-display"></div>
         <button id="scroll-down-btn" class="scroll-down-btn" aria-label="Scroll to bottom">↓</button>
+        <div id="input-row">
+          <div id="input-area">
+            <div id="prompt-history-panel" class="prompt-history-panel" style="display:none" role="listbox" aria-label="Prompt history"></div>
+            <input type="text" id="direct-text-input" class="direct-text-input" placeholder="Type a command…" autocomplete="off" style="display:none;">
+            <div id="user-input" role="list" aria-label="Command builder"></div>
+          </div>
+          <button id="input-btn-send" class="input-btn">Send</button>
+          <div id="directional-buttons-row" class="directional-buttons">
+            <div class="button-row">
+              <button id="direction-btn-nw" class="direction-btn" data-direction="nw" disabled>↖</button>
+              <button id="direction-btn-n" class="direction-btn" data-direction="n" disabled>↑</button>
+              <button id="direction-btn-ne" class="direction-btn" data-direction="ne" disabled>↗</button>
+            </div>
+            <div class="button-row">
+              <button id="direction-btn-w" class="direction-btn" data-direction="w" disabled>←</button>
+              <span class="direction-spacer"></span>
+              <button id="direction-btn-e" class="direction-btn" data-direction="e" disabled>→</button>
+            </div>
+            <div class="button-row">
+              <button id="direction-btn-sw" class="direction-btn" data-direction="sw" disabled>↙</button>
+              <button id="direction-btn-s" class="direction-btn" data-direction="s" disabled>↓</button>
+              <button id="direction-btn-se" class="direction-btn" data-direction="se" disabled>↘</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div id="right-panel">
         <div id="room-image"><img id="room-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Room Image" style="max-width:100%;max-height:100%;display:none;"/></div>
@@ -153,31 +178,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-    <div id="input-row">
-      <div id="input-area">
-        <div id="prompt-history-panel" class="prompt-history-panel" style="display:none" role="listbox" aria-label="Prompt history"></div>
-        <input type="text" id="direct-text-input" class="direct-text-input" placeholder="Type a command…" autocomplete="off" style="display:none;">
-        <div id="user-input" role="list" aria-label="Command builder"></div>
-      </div>
-      <button id="input-btn-send" class="input-btn">Send</button>
-      <div id="directional-buttons-row" class="directional-buttons">
-        <div class="button-row">
-          <button id="direction-btn-nw" class="direction-btn" data-direction="nw" disabled>↖</button>
-          <button id="direction-btn-n" class="direction-btn" data-direction="n" disabled>↑</button>
-          <button id="direction-btn-ne" class="direction-btn" data-direction="ne" disabled>↗</button>
-        </div>
-        <div class="button-row">
-          <button id="direction-btn-w" class="direction-btn" data-direction="w" disabled>←</button>
-          <span class="direction-spacer"></span>
-          <button id="direction-btn-e" class="direction-btn" data-direction="e" disabled>→</button>
-        </div>
-        <div class="button-row">
-          <button id="direction-btn-sw" class="direction-btn" data-direction="sw" disabled>↙</button>
-          <button id="direction-btn-s" class="direction-btn" data-direction="s" disabled>↓</button>
-          <button id="direction-btn-se" class="direction-btn" data-direction="se" disabled>↘</button>
         </div>
       </div>
     </div>

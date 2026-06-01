@@ -889,7 +889,11 @@ function _centerMapOnCurrentLocation() {
   const grid = document.getElementById('map-grid');
   if (!vp || !grid || !engine) return;
 
-  const currentLoc = engine.gameState.current_location;
+  // Bail out if the viewport is hidden (zero dimensions) — centering will be
+  // deferred until the MAP tab becomes visible.
+  const vpRect = vp.getBoundingClientRect();
+  if (vpRect.width === 0 || vpRect.height === 0) return;
+
   const cells = grid.children;
   let cellEl = null;
   for (const child of cells) {
@@ -900,7 +904,6 @@ function _centerMapOnCurrentLocation() {
   }
   if (!cellEl) return;
 
-  const vpRect = vp.getBoundingClientRect();
   const vpCenterX = vpRect.width / 2;
   const vpCenterY = vpRect.height / 2;
 

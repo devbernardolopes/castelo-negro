@@ -104,7 +104,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
-    btn.addEventListener('click', () => setSidebarTab(btn.getAttribute('data-tab')));
+    btn.addEventListener('click', () => {
+      const tab = btn.getAttribute('data-tab');
+      setSidebarTab(tab);
+      if (tab === 'map' && typeof _centerMapOnCurrentLocation === 'function') {
+        _centerMapOnCurrentLocation();
+      }
+    });
   });
   setSidebarTab('system');
 
