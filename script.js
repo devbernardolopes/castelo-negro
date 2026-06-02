@@ -899,6 +899,8 @@ document.addEventListener('DOMContentLoaded', () => {
     _buildTabsFromMetadata();
     engine.renderCurrentLocation();
   });
+
+  document.getElementById('menu-btn-change-language')?.addEventListener('click', () => {
     if (!engine) return;
     renderLanguageGrid();
     setLanguageModalVisible(true);
