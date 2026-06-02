@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setSidebarTabsEnabled(false);
   setAdventureTitle('');
   resetUiForNewGame();
-  setText('text-display', 'Load an adventure to begin.');
+  setText('text-display-content', 'Load an adventure to begin.');
   updateScrollBtnVisibility();
 
   // Apply saved theme
@@ -526,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setGameControlsEnabled(false);
       setSidebarTabsEnabled(false);
       setAdventureTitle('');
-      setText('text-display', 'Failed to load adventure file.');
+      setText('text-display-content', 'Failed to load adventure file.');
       updateScrollBtnVisibility();
     }
   });
@@ -890,7 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setSidebarTabsEnabled(true);
     setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
     _focusGameTab();
-    const textDisplay = document.getElementById('text-display');
+    const textDisplay = document.getElementById('text-display-content');
     if (textDisplay) textDisplay.innerHTML = '';
     updateScrollBtnVisibility();
     appendGameMetadata(engine?.definition?.metadata);
@@ -996,7 +996,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setSidebarTabsEnabled(true);
     setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
     _focusGameTab();
-    const textDisplay = document.getElementById('text-display');
+    const textDisplay = document.getElementById('text-display-content');
     if (textDisplay) textDisplay.innerHTML = '';
     updateScrollBtnVisibility();
     appendGameMetadata(engine?.definition?.metadata);

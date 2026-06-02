@@ -19,9 +19,15 @@ metadata:
     system:
       en: "System"
       visible: true
+    debug:
+      en: "Debug"
+      visible: false
     room:
       en: "Room"
       visible: true
+    memory:
+      en: "Memory"
+      visible: false
     inventory:
       en: "Inventory"
       visible: true

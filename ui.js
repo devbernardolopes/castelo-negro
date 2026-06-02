@@ -295,7 +295,7 @@ function formatMarkupToHtml(text) {
 }
 
 function _doAppendOutput(text) {
-  const el = document.getElementById('text-display');
+  const el = document.getElementById('text-display-content');
   if (!el) return;
   const entry = document.createElement('div');
   entry.className = 'log-entry';
@@ -303,11 +303,12 @@ function _doAppendOutput(text) {
   makeWordsClickable(entry);
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
   el.appendChild(entry);
-  el.scrollTop = el.scrollHeight;
+  const scrollEl = document.getElementById('text-display');
+  if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
 }
 
 function _doAppendLocationName(text) {
-  const el = document.getElementById('text-display');
+  const el = document.getElementById('text-display-content');
   if (!el) return;
   const entry = document.createElement('div');
   entry.className = 'log-entry location-name';
@@ -315,7 +316,8 @@ function _doAppendLocationName(text) {
   makeWordsClickable(entry);
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
   el.appendChild(entry);
-  el.scrollTop = el.scrollHeight;
+  const scrollEl = document.getElementById('text-display');
+  if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
 }
 
 function appendOutput(text) {
@@ -442,14 +444,15 @@ function appendLocationName(text) {
 }
 
 function appendPlayerPrompt(promptText) {
-  const el = document.getElementById('text-display');
+  const el = document.getElementById('text-display-content');
   if (!el) return;
   const entry = document.createElement('div');
   entry.className = 'log-entry player-prompt';
   entry.textContent = `> ${promptText}`;
   if (el.childNodes.length) el.appendChild(document.createElement('br'));
   el.appendChild(entry);
-  el.scrollTop = el.scrollHeight;
+  const scrollEl = document.getElementById('text-display');
+  if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
 }
 
 function stripWordPunctuation(rawWord) {
