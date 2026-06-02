@@ -650,13 +650,12 @@ body {
 #text-display[data-font-size="larger"] { font-size: 18px; }
 
 .scroll-down-btn {
-  position: absolute;
+  position: sticky;
   bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
   z-index: 10;
   width: 36px;
   height: 36px;
+  margin: 0 auto;
   border-radius: 50%;
   background: var(--accent);
   border: 1px solid var(--border-color);
