@@ -1472,3 +1472,85 @@ body {
     overflow-y: visible;
   }
 }
+
+/* Relationships tab */
+#relationships-list {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.relationships-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  background: var(--bg-primary);
+}
+
+.relationships-portrait {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.relationships-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.relationships-name {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.relationships-level,
+.relationships-affinity {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.relationships-empty {
+  padding: 8px;
+  opacity: 0.6;
+  font-style: italic;
+}
+
+/* Stats tab */
+#stats-list {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stats-row:last-child {
+  border-bottom: none;
+}
+
+.stats-label {
+  font-weight: bold;
+  font-size: 0.95em;
+}
+
+.stats-value {
+  font-size: 0.95em;
+  opacity: 0.85;
+}

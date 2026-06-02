@@ -59,36 +59,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   _updateMobileLayout();
 
-  // Sidebar tabs wiring (Mind / Inventory / Memory / Debug / etc).
+  // Sidebar tabs wiring.
   function setSidebarTab(tabName) {
-    const panels = {
-      system: document.getElementById('tab-panel-system'),
-      mind: document.getElementById('tab-panel-mind'),
-      inventory: document.getElementById('tab-panel-inventory'),
-      memory: document.getElementById('tab-panel-memory'),
-      debug: document.getElementById('tab-panel-debug'),
-      map: document.getElementById('tab-panel-map'),
-      room: document.getElementById('tab-panel-room')
-    };
-    const buttons = {
-      system: document.getElementById('tab-system'),
-      mind: document.getElementById('tab-mind'),
-      inventory: document.getElementById('tab-inventory'),
-      memory: document.getElementById('tab-memory'),
-      debug: document.getElementById('tab-debug'),
-      map: document.getElementById('tab-map'),
-      room: document.getElementById('tab-room')
-    };
-    for (const [name, panel] of Object.entries(panels)) {
-      if (panel) panel.style.display = name === tabName ? 'flex' : 'none';
-    }
-    for (const [name, btn] of Object.entries(buttons)) {
-      if (!btn) continue;
-      btn.setAttribute('aria-selected', name === tabName ? 'true' : 'false');
-      btn.tabIndex = name === tabName ? 0 : -1;
-    }
-    const selectedBtn = buttons[tabName];
-    if (selectedBtn) selectedBtn.classList.remove('has-update');
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+      panel.style.display = panel.id === `tab-panel-${tabName}` ? 'flex' : 'none';
+    });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      const name = btn.getAttribute('data-tab');
+      const isSelected = name === tabName;
+      btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+      btn.tabIndex = isSelected ? 0 : -1;
+      if (isSelected) btn.classList.remove('has-update');
+    });
   }
   window.setSidebarTab = setSidebarTab;
 
@@ -102,6 +84,92 @@ document.addEventListener('DOMContentLoaded', () => {
       setSidebarTab('memory');
     }
   }
+
+  function _buildTabsFromMetadata() {
+    const tabs = engine?.definition?.metadata?.tabs;
+    if (!tabs) return;
+
+    const tabsHeader = document.querySelector('#sidebar-tabs .tabs-header');
+    const tabsBody = document.querySelector('#sidebar-tabs .tabs-body');
+    if (!tabsHeader || !tabsBody) return;
+
+    const created = [];
+
+    for (const [tabName, tabDef] of Object.entries(tabs)) {
+      if (tabName === 'system' || tabName === 'room') continue;
+
+      const visible = tabDef.visible !== false;
+      const label = engine._pickLang(tabDef) || tabName;
+
+      let btn = document.getElementById(`tab-${tabName}`);
+      let panel = document.getElementById(`tab-panel-${tabName}`);
+
+      if (!btn) {
+        btn = document.createElement('button');
+        btn.className = 'tab-btn';
+        btn.type = 'button';
+        btn.role = 'tab';
+        btn.setAttribute('aria-selected', 'false');
+        btn.setAttribute('aria-controls', `tab-panel-${tabName}`);
+        btn.id = `tab-${tabName}`;
+        btn.setAttribute('data-tab', tabName);
+        btn.textContent = label;
+        btn.addEventListener('click', () => {
+          setSidebarTab(tabName);
+          if (tabName === 'map' && typeof _centerMapOnCurrentLocation === 'function') {
+            _centerMapOnCurrentLocation();
+          }
+        });
+        if (!engine) btn.disabled = true;
+        tabsHeader.appendChild(btn);
+        created.push(tabName);
+      } else {
+        btn.textContent = label;
+      }
+
+      if (!panel) {
+        const contentId = `${tabName}-list`;
+        panel = document.createElement('div');
+        panel.className = 'tab-panel';
+        panel.role = 'tabpanel';
+        panel.id = `tab-panel-${tabName}`;
+        panel.setAttribute('aria-labelledby', `tab-${tabName}`);
+        panel.style.display = 'none';
+        const inner = document.createElement('div');
+        inner.id = contentId;
+        panel.appendChild(inner);
+        tabsBody.appendChild(panel);
+      }
+
+      btn.style.display = visible ? '' : 'none';
+      if (!visible && btn.getAttribute('aria-selected') === 'true') {
+        const sysBtn = document.getElementById('tab-system');
+        if (sysBtn) sysBtn.click();
+      }
+    }
+
+    // Reorder metadata tab buttons after system
+    const sysBtn = document.getElementById('tab-system');
+    for (const tabName of Object.keys(tabs)) {
+      if (tabName === 'system') continue;
+      const btn = document.getElementById(`tab-${tabName}`);
+      if (btn && btn.parentNode === tabsHeader) {
+        tabsHeader.appendChild(btn);
+      }
+    }
+    if (sysBtn && sysBtn.parentNode === tabsHeader) {
+      tabsHeader.insertBefore(sysBtn, tabsHeader.firstChild);
+    }
+
+    // Reorder panels to match
+    for (const tabName of Object.keys(tabs)) {
+      const panel = document.getElementById(`tab-panel-${tabName}`);
+      if (panel && panel.parentNode === tabsBody) {
+        tabsBody.appendChild(panel);
+      }
+    }
+  }
+  window._buildTabsFromMetadata = _buildTabsFromMetadata;
 
   document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -731,6 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setImageModalVisible(true);
   }
+  window.showImageModal = showImageModal;
 
   document.getElementById('img-modal-close')?.addEventListener('click', () => setImageModalVisible(false));
   document.getElementById('img-modal-backdrop')?.addEventListener('click', (e) => {
@@ -807,7 +876,9 @@ document.addEventListener('DOMContentLoaded', () => {
       onMindRender: renderMindPanel,
       onMemoryRender: renderMemoryList,
       onDebugRender: renderDebugPanel,
-      onMapRender: renderMap
+      onMapRender: renderMap,
+      onRelationshipsRender: renderRelationshipsList,
+      onStatsRender: renderStatsList
     });
     resetUiForNewGame();
     setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
@@ -825,10 +896,9 @@ document.addEventListener('DOMContentLoaded', () => {
     appendGameMetadata(engine?.definition?.metadata);
     const intro = engine.getText('intro');
     if (intro) appendOutput(intro);
+    _buildTabsFromMetadata();
     engine.renderCurrentLocation();
   });
-
-  document.getElementById('menu-btn-change-language')?.addEventListener('click', () => {
     if (!engine) return;
     renderLanguageGrid();
     setLanguageModalVisible(true);
@@ -845,6 +915,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!rightPanel || !roomImage || !sidebarTabs) return;
 
     if (isMobile) {
+      const roomDef = engine?.definition?.metadata?.tabs?.room;
+      const roomVisible = roomDef ? roomDef.visible !== false : true;
+      if (!roomVisible) {
+        // Room tab disabled in metadata — keep room image in right panel
+        return;
+      }
       const roomTab = document.createElement('button');
       roomTab.className = 'tab-btn';
       roomTab.type = 'button';
@@ -904,7 +980,9 @@ document.addEventListener('DOMContentLoaded', () => {
       onMindRender: renderMindPanel,
       onMemoryRender: renderMemoryList,
       onDebugRender: renderDebugPanel,
-      onMapRender: renderMap
+      onMapRender: renderMap,
+      onRelationshipsRender: renderRelationshipsList,
+      onStatsRender: renderStatsList
     });
     resetUiForNewGame();
     setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
@@ -922,6 +1000,7 @@ document.addEventListener('DOMContentLoaded', () => {
     appendGameMetadata(engine?.definition?.metadata);
     const intro = engine.getText('intro');
     if (intro) appendOutput(intro);
+    _buildTabsFromMetadata();
     engine.renderCurrentLocation();
   });
 });

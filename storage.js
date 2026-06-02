@@ -188,7 +188,9 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
     onMindRender: renderMindPanel,
     onMemoryRender: renderMemoryList,
     onDebugRender: renderDebugPanel,
-    onMapRender: renderMap
+    onMapRender: renderMap,
+    onRelationshipsRender: renderRelationshipsList,
+    onStatsRender: renderStatsList
   });
   setAdventureTitle(parsed?.metadata?.title || file.name);
   setMenuButtonsEnabled(true);
@@ -206,6 +208,7 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
   appendGameMetadata(parsed?.metadata);
   const intro = engine.getText('intro');
   if (intro) appendOutput(intro);
+  window._buildTabsFromMetadata?.();
   engine.renderCurrentLocation();
 }
 
@@ -242,7 +245,9 @@ async function loadAdventureFromUrl(yamlUrl) {
     onMindRender: renderMindPanel,
     onMemoryRender: renderMemoryList,
     onDebugRender: renderDebugPanel,
-    onMapRender: renderMap
+    onMapRender: renderMap,
+    onRelationshipsRender: renderRelationshipsList,
+    onStatsRender: renderStatsList
   });
   setAdventureTitle(parsed?.metadata?.title || yamlUrl);
   setMenuButtonsEnabled(true);
@@ -260,6 +265,7 @@ async function loadAdventureFromUrl(yamlUrl) {
   appendGameMetadata(parsed?.metadata);
   const intro = engine.getText('intro');
   if (intro) appendOutput(intro);
+  window._buildTabsFromMetadata?.();
   engine.renderCurrentLocation();
 }
 

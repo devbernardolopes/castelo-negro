@@ -58,9 +58,11 @@ class GameEngine {
    *   onInventoryRender?: ()=>void,
    *   onRoomImageRender?: (url:string|null)=>void,
    *   onMindRender?: ()=>void,
-   *   onMemoryRender?: ()=>void,
-   *   onDebugRender?: ()=>void
-   * }} hooks
+ *   onMemoryRender?: ()=>void,
+ *   onDebugRender?: ()=>void,
+ *   onRelationshipsRender?: ()=>void,
+ *   onStatsRender?: ()=>void
+ * }} hooks
    */
   constructor(definition, hooks = {}) {
     validateDefinition(definition);
@@ -1548,6 +1550,8 @@ class GameEngine {
     this.hooks.onMindRender?.();
     this.hooks.onMemoryRender?.();
     this.hooks.onMapRender?.();
+    this.hooks.onRelationshipsRender?.();
+    this.hooks.onStatsRender?.();
   }
 
   /** @param {string} locationId */
@@ -1692,6 +1696,8 @@ class GameEngine {
     this.hooks.onMemoryRender?.();
     this.hooks.onDebugRender?.();
     this.hooks.onMapRender?.();
+    this.hooks.onRelationshipsRender?.();
+    this.hooks.onStatsRender?.();
     this.hooks.onLocationRender?.(locationId);
   }
 

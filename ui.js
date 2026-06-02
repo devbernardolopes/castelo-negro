@@ -163,6 +163,8 @@ function resetUiForNewGame() {
   clearEl('memory-list');
   clearEl('debug-panel');
   clearEl('map-grid');
+  clearEl('relationships-list');
+  clearEl('stats-list');
   _mapPanX = 0;
   _mapPanY = 0;
   _mapZoom = 1;
@@ -982,4 +984,141 @@ function renderMap() {
 
   _centerMapOnCurrentLocation();
   if (_isTabContentChanged('map', contentKey)) _markTabUpdate('map');
+}
+
+/**
+ * Re-render the relationships tab listing all known actors.
+ */
+function renderRelationshipsList() {
+  const el = document.getElementById('relationships-list');
+  if (!el) return;
+  if (!engine) return;
+
+  const playerId = engine._getPlayerActorId();
+  const playerData = engine.gameState.actors_data?.[playerId];
+  if (!playerData) return;
+
+  const rels = playerData.relationships || {};
+  const known = [];
+  for (const [actorId, rel] of Object.entries(rels)) {
+    if (rel.relationship_level && rel.relationship_level !== 'strangers') {
+      known.push({ actorId, relationship_level: rel.relationship_level, affinity: rel.affinity });
+    }
+  }
+
+  known.sort((a, b) => {
+    const na = engine._pickLang(engine.definition.actors?.[a.actorId]?.name) || a.actorId;
+    const nb = engine._pickLang(engine.definition.actors?.[b.actorId]?.name) || b.actorId;
+    return na.localeCompare(nb);
+  });
+
+  const contentKey = known.map(a => `${a.actorId}:${a.relationship_level}:${a.affinity}`).join(',');
+
+  while (el.firstChild) el.removeChild(el.firstChild);
+
+  if (known.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'relationships-empty';
+    empty.textContent = 'No relationships yet.';
+    el.appendChild(empty);
+    if (_isTabContentChanged('relationships', contentKey)) _markTabUpdate('relationships');
+    return;
+  }
+
+  for (const entry of known) {
+    const actorDef = engine.definition.actors?.[entry.actorId];
+    const name = engine._pickLang(actorDef?.name) || entry.actorId;
+    const level = String(entry.relationship_level || '');
+    const affinity = entry.affinity ?? 0;
+
+    const row = document.createElement('div');
+    row.className = 'relationships-item';
+
+    const portraitUrl = actorDef?.images?.portrait;
+    if (portraitUrl) {
+      const img = document.createElement('img');
+      img.className = 'relationships-portrait';
+      img.alt = '';
+      engine.resolveAssetUrl(portraitUrl).then(url => {
+        if (url) img.src = url;
+      });
+      img.onerror = () => { img.style.display = 'none'; };
+      img.addEventListener('click', () => {
+        if (typeof window.showImageModal === 'function') {
+          engine.resolveAssetUrl(portraitUrl).then(url => {
+            if (url) window.showImageModal(url, name);
+          });
+        }
+      });
+      row.appendChild(img);
+    }
+
+    const info = document.createElement('div');
+    info.className = 'relationships-info';
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'relationships-name';
+    nameEl.textContent = name;
+    info.appendChild(nameEl);
+
+    const levelEl = document.createElement('div');
+    levelEl.className = 'relationships-level';
+    levelEl.textContent = `${level.charAt(0).toUpperCase() + level.slice(1)}`;
+    info.appendChild(levelEl);
+
+    const affEl = document.createElement('div');
+    affEl.className = 'relationships-affinity';
+    affEl.textContent = `Affinity: ${affinity}`;
+    info.appendChild(affEl);
+
+    row.appendChild(info);
+    el.appendChild(row);
+  }
+
+  if (_isTabContentChanged('relationships', contentKey)) _markTabUpdate('relationships');
+}
+
+/**
+ * Re-render the stats tab listing player actor stat properties.
+ */
+function renderStatsList() {
+  const el = document.getElementById('stats-list');
+  if (!el) return;
+  if (!engine) return;
+
+  const playerId = engine._getPlayerActorId();
+  const playerData = engine.gameState.actors_data?.[playerId];
+  if (!playerData) return;
+
+  const propDefs = engine.definition.properties || {};
+  const statDefs = Object.entries(propDefs).filter(([, def]) => def.is_stat);
+
+  const contentKey = statDefs.map(([key]) => {
+    const val = playerData.properties?.[key];
+    return `${key}:${val}`;
+  }).join(',');
+
+  while (el.firstChild) el.removeChild(el.firstChild);
+
+  for (const [key, def] of statDefs) {
+    const value = playerData.properties?.[key] ?? def.default ?? '';
+    const label = key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
+
+    const row = document.createElement('div');
+    row.className = 'stats-row';
+
+    const labelEl = document.createElement('span');
+    labelEl.className = 'stats-label';
+    labelEl.textContent = label;
+
+    const valueEl = document.createElement('span');
+    valueEl.className = 'stats-value';
+    valueEl.textContent = value;
+
+    row.appendChild(labelEl);
+    row.appendChild(valueEl);
+    el.appendChild(row);
+  }
+
+  if (_isTabContentChanged('stats', contentKey)) _markTabUpdate('stats');
 }
