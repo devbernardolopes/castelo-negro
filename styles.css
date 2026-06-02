@@ -641,6 +641,7 @@ body {
   white-space: normal;
   min-height: 0;
   border-radius: 2px;
+  position: relative;
 }
 
 #text-display[data-font-size="small"] { font-size: 12px; }
