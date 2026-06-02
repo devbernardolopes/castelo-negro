@@ -7,7 +7,7 @@ metadata:
   assets_path: "assets/"
   data_path: "data/"
   data_files: ["items.yaml", "locations.yaml", "end_conditions.yaml", "actions.yaml", "events.yaml", "actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml"]
-  allow_direct_input: true
+  allow_direct_input: false
   debug: false
   auto_container_description: false
   show_continue_message: true
