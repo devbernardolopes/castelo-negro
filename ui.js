@@ -974,6 +974,7 @@ function renderMap() {
     div.className = 'map-cell';
     if (cell.isCurrent) div.classList.add('map-cell-current');
     div.title = cell.name;
+    div.dataset.locationId = cell.id;
     div.style.left = ((cell.x - minX) * (CELL + GAP)) + 'px';
     div.style.top = ((cell.y - minY) * (CELL + GAP)) + 'px';
     div.style.width = CELL + 'px';
@@ -984,6 +985,49 @@ function renderMap() {
 
   mapEl.style.width = ((maxX - minX + 1) * (CELL + GAP) - GAP) + 'px';
   mapEl.style.height = ((maxY - minY + 1) * (CELL + GAP) - GAP) + 'px';
+
+  // Render group background colors beneath location squares
+  const groups = engine.definition.groups;
+  if (groups) {
+    const cellPos = {};
+    for (const child of mapEl.children) {
+      if (child.classList.contains('map-cell')) {
+        cellPos[child.dataset.locationId] = {
+          left: parseInt(child.style.left, 10),
+          top: parseInt(child.style.top, 10)
+        };
+      }
+    }
+    for (const groupDef of Object.values(groups)) {
+      const locs = groupDef.locations;
+      const color = groupDef.color;
+      if (!Array.isArray(locs) || !color) continue;
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      let hasAny = false;
+      for (const locId of locs) {
+        const pos = cellPos[locId];
+        if (!pos) continue;
+        hasAny = true;
+        if (pos.left < minX) minX = pos.left;
+        if (pos.top < minY) minY = pos.top;
+        if (pos.left + CELL > maxX) maxX = pos.left + CELL;
+        if (pos.top + CELL > maxY) maxY = pos.top + CELL;
+      }
+      if (!hasAny) continue;
+      const PAD = 4;
+      const bg = document.createElement('div');
+      bg.className = 'map-group-bg';
+      bg.style.position = 'absolute';
+      bg.style.pointerEvents = 'none';
+      bg.style.left = (minX - PAD) + 'px';
+      bg.style.top = (minY - PAD) + 'px';
+      bg.style.width = (maxX - minX + PAD * 2) + 'px';
+      bg.style.height = (maxY - minY + PAD * 2) + 'px';
+      bg.style.backgroundColor = color;
+      bg.style.borderRadius = '4px';
+      mapEl.insertBefore(bg, mapEl.firstChild);
+    }
+  }
 
   _centerMapOnCurrentLocation();
   if (_isTabContentChanged('map', contentKey)) _markTabUpdate('map');

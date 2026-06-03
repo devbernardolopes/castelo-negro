@@ -208,7 +208,9 @@ class GameEngine {
       if (!c) continue;
       const locDef = this.definition.locations?.[id];
       const fullName = this._pickLang(locDef?.name) || id;
-      const shortName = fullName.length > 14 ? fullName.substring(0, 12) + '…' : fullName;
+      const mapNameText = this._pickLang(locDef?.map_name);
+      const displayForMap = mapNameText || fullName;
+      const shortName = displayForMap.length > 14 ? displayForMap.substring(0, 12) + '…' : displayForMap;
       result.push({ id, x: c.x, y: c.y, name: fullName, shortName, isCurrent: id === startId });
     }
     return result;
