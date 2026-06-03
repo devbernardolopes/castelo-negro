@@ -290,6 +290,21 @@ items:
       en: |
         A sleek and stylish sink in the half bathroom, perfect for washing hands and freshening up.
 
+  half_bathroom_sink_water:
+    name:
+      en: |
+        Half Bathroom Sink Water
+    short_name:
+      en: |
+        sink water
+    synonyms:
+      en: ["sink water", "water"]
+    takeable: false
+    container_type: in
+    description:
+      en: |
+        Clean water in the half bathroom sink, ready for use.
+
   half_bathroom_faucet:
     name:
       en: |

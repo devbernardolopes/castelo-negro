@@ -121,6 +121,8 @@ verbs:
     synonyms: { en: ["switch", "toggle"], pt-br: ["alternar", "trocar"] }
   greet:
     synonyms: { en: ["greet", "say hi"], pt-br: ["cumprimentar", "dizer oi"] }
+  flush:
+    synonyms: { en: ["flush"], pt-br: ["dar descarga"] }
 
 directions:
   north:

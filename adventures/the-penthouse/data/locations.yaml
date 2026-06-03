@@ -6,6 +6,8 @@ locations:
     map_name:
       en: |
         Private Elevator
+    synonyms:
+      en: ["elevator", "private elevator"]
     description:
       en: |
         A modern private elevator that provides direct access to the penthouse level. The elevator is designed with a sleek interior and offers a comfortable ride for residents and guests.
@@ -21,6 +23,8 @@ locations:
     map_name:
       en: |
         Vestibule
+    synonyms:
+      en: ["vestibule", "entryway"]
     description:
       en: |
         A stylish vestibule that serves as the entry point to the penthouse. The space features a modern design with a sleek console table and a few tasteful accessories. The walls are adorned with contemporary art pieces, creating a sophisticated atmosphere that welcomes guests into the luxurious living space.
