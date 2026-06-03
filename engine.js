@@ -1118,6 +1118,15 @@ class GameEngine {
     return actorName;
   }
 
+  _getContainerType(containerId) {
+    const def = this.definition.items?.[containerId];
+    if (!def) return 'in';
+    if (def.container_type) return def.container_type;
+    if (def.sleepable || def.sittable) return 'on';
+    if (def.enterable) return 'in';
+    return 'in';
+  }
+
   _getContainerPosture(containerId, actorId) {
     if (!containerId) return 'here';
     const def = this.definition.items?.[containerId];
@@ -1126,11 +1135,10 @@ class GameEngine {
       || this._getItemDisplayName(containerId)
       || containerId;
 
-    // Check actor's explicit posture if provided
     if (actorId) {
       const posture = this.gameState.actors_data?.[actorId]?.posture;
       if (posture && posture !== 'standing') {
-        const prep = (def.sleepable || def.sittable) ? 'on' : 'in';
+        const prep = this._getContainerType(containerId) === 'on' ? 'on' : 'in';
         const postures = {
           seated: `seated ${prep} the ${shortName}`,
           lying: `lying ${prep} the ${shortName}`,
@@ -1140,13 +1148,16 @@ class GameEngine {
           flying: 'flying',
           falling: 'falling'
         };
-        return postures[posture] || `standing in the ${shortName}`;
+        return postures[posture] || `standing ${prep} the ${shortName}`;
       }
     }
 
-    // Fall back to item property inference (backward compat)
-    if (def.sleepable) return `lying on the ${shortName}`;
-    if (def.sittable) return `seated on the ${shortName}`;
+    const type = this._getContainerType(containerId);
+    if (type === 'on') {
+      if (def.sleepable) return `lying on the ${shortName}`;
+      if (def.sittable) return `seated on the ${shortName}`;
+      return `standing on the ${shortName}`;
+    }
     return `inside the ${shortName}`;
   }
 
@@ -1157,9 +1168,9 @@ class GameEngine {
     const shortName = this._getItemDisplayShortName(containerId)
       || this._getItemDisplayName(containerId)
       || containerId;
-    if (def.sleepable || def.sittable) return `on the ${shortName}`;
-    if (def.enterable) return `in the ${shortName}`;
-    return `inside the ${shortName}`;
+    const type = this._getContainerType(containerId);
+    if (type === 'on') return `on the ${shortName}`;
+    return `in the ${shortName}`;
   }
 
   _getPosturePhrase(actorId) {
@@ -1619,7 +1630,14 @@ class GameEngine {
       const visible = this._getContainerVisibleContents(itemId);
       if (visible.length > 0) {
         const names = visible.map(id => this._getItemDisplayName(id) || id);
-        result += '\nInside you see: ' + names.join(', ') + '.';
+        const headers = {
+          in: 'Inside you see:',
+          on: 'On it you see:',
+          hanging: 'Hanging on it:',
+          attached: 'Attached to it:'
+        };
+        const type = this._getContainerType(itemId);
+        result += '\n' + (headers[type] || headers.in) + ' ' + names.join(', ') + '.';
       }
     }
 

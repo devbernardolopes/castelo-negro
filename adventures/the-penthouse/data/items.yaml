@@ -195,6 +195,7 @@ items:
       en: ["coffee table", "table", "living room table"]
     takeable: false
     sittable: true
+    container_type: on
     container_capacity: 4
     actor_capacity: 1
     description:
@@ -211,6 +212,7 @@ items:
     synonyms:
       en: ["bar cart", "cart", "living room cart"]
     takeable: false
+    container_type: on
     container_capacity: 6
     description:
       en: |
@@ -259,6 +261,7 @@ items:
     synonyms:
       en: ["toilet paper roll holder", "toilet paper holder", "paper roll holder", "holder"]
     takeable: false
+    container_type: hanging
     container_capacity: 1
     contents: [half_bathroom_toilet_paper_roll]
     description:
@@ -280,6 +283,7 @@ items:
     synonyms:
       en: ["sink", "bathroom sink"]
     takeable: false
+    container_type: attached
     contents: [half_bathroom_faucet]
     container_capacity: 1
     description:
@@ -398,6 +402,7 @@ items:
     takeable: false
     enterable: true
     sittable: true
+    container_type: in
     actor_capacity: 2
     container_capacity: 10
     description:
