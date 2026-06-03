@@ -808,7 +808,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('room-img')?.addEventListener('click', function () {
     if (this.style.display === 'none' || !this.src) return;
-    showImageModal(this.src, 'Room Image');
+    const locName = engine ? engine._pickLang(engine.getFullLocationData(engine.gameState.current_location)?.name) || 'Room Image' : 'Room Image';
+    showImageModal(this.src, locName);
   });
 
   document.getElementById('inventory-list')?.addEventListener('click', (e) => {
