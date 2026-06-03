@@ -451,6 +451,7 @@ actions:
     conditions:
       - "inventory.has('{object}')"
       - "'{target}' == '__location__' or here.has('{target}') or inventory.has('{target}')"
+      - "'{target}' == '__location__' or items.container_capacity('{target}') != null"
     effect:
       - "inventory.remove('{object}')"
       - "putInTarget('{target}', '{object}')"
@@ -466,6 +467,10 @@ actions:
         message:
           en: "There's no {target_name} here."
           pt-br: "Não há {target_name} aqui."
+      - condition: "'{target}' != '__location__' and items.container_capacity('{target}') == null"
+        message:
+          en: "You can't put things in the {target_name}."
+          pt-br: "Você não pode colocar coisas no {target_name}."
       - condition: "'{target}' != '__location__' and items.container_count('{target}') >= items.container_capacity('{target}')"
         message:
           en: "The {target_name} is full. You can't put anything else in it."

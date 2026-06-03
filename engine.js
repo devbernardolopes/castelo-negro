@@ -589,7 +589,7 @@ class GameEngine {
           return def?.takeable === true;
         },
         container_capacity: (itemId) => {
-          return engine.definition.items?.[String(itemId)]?.container_capacity ?? Infinity;
+          return engine.definition.items?.[String(itemId)]?.container_capacity;
         },
         container_count: (itemId) => {
           const c = engine.gameState.container_contents?.[String(itemId)];
