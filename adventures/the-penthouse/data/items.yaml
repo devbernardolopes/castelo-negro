@@ -246,11 +246,27 @@ items:
     takeable: false
     sittable: true
     actor_capacity: 1
+    container_type: in
     container_capacity: 1
     description:
       en: |
         A modern toilet in the half bathroom, designed for convenience and comfort. Next to it is a toilet paper roll holder for easy access to toilet paper.
   
+  half_bathroom_toilet_water:
+    name:
+      en: |
+        Half Bathroom Toilet Water
+    short_name:
+      en: |
+        toilet water
+    synonyms:
+      en: ["toilet water", "water"]
+    takeable: false
+    container_type: in
+    description:
+      en: |
+        Clean water in the half bathroom toilet, ready for use.
+
   half_bathroom_toilet_paper_roll_holder:
     name:
       en: |
