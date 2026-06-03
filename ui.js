@@ -141,6 +141,11 @@ function setAdventureTitle(title) {
   setText('adventure-title-row', title || '');
 }
 
+function setDirectionalNavVisibility(visible) {
+  const el = document.getElementById('directional-buttons-row');
+  if (el) el.style.display = visible ? '' : 'none';
+}
+
 function setMapTabVisibility(visible) {
   const tabBtn = document.getElementById('tab-map');
   if (tabBtn) tabBtn.style.display = visible ? '' : 'none';

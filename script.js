@@ -882,6 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     resetUiForNewGame();
     setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
+    setDirectionalNavVisibility(!!engine?.definition?.metadata?.directional_navigation);
     setMapTabVisibility(true);
     document.getElementById('tab-inventory').style.display = '';
     document.getElementById('tab-memory').style.display = '';
@@ -988,6 +989,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     resetUiForNewGame();
     setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
+    setDirectionalNavVisibility(!!engine?.definition?.metadata?.directional_navigation);
     setMapTabVisibility(true);
     document.getElementById('tab-inventory').style.display = '';
     document.getElementById('tab-memory').style.display = '';

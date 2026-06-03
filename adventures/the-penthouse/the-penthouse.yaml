@@ -15,6 +15,7 @@ metadata:
     en: "[glow][i]\[Press any key to continue...\][/i][/glow]"
   highlight_color_verbs: "#FF0000"
   highlight_color_items: "#0000FF"
+  directional_navigation: false
   tabs:
     system:
       en: "System"
