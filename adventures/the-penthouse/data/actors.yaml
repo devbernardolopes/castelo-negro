@@ -46,9 +46,9 @@ actors:
     starting_posture: seated
     wearing: [sabine_jeans_pants, sabine_tank_top, sabine_silver_strappy_sandals]
     max_capacity: 2
-    description:
-      en: |
-        Sabine is a young woman in her 20s. She looks anxious, her eyes darting around the room as she fidgets with the hem of her shirt.
+    # description:
+    #   en: |
+    #     Sabine is a young woman in her 20s. She looks anxious, her eyes darting around the room as she fidgets with the hem of her shirt.
     properties:
       age: 23
       gender: "female"
@@ -141,9 +141,9 @@ actors:
     starting_contained_by: half_bathroom_toilet
     starting_posture: seated
     max_capacity: 2
-    description:
-      en: |
-        Dana is your friend. She looks curious, her gaze wandering as she takes in every detail of the room. There's a relaxed confidence in the way she carries herself.
+    # description:
+    #   en: |
+    #     Dana is your friend. She looks curious, her gaze wandering as she takes in every detail of the room. There's a relaxed confidence in the way she carries herself.
     properties:
       age: 29
       gender: "female"
