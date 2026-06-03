@@ -1353,7 +1353,7 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
 
   if (slotName === 'actor') {
     const actorMatch = this._matchActorSlotAt(tokens, 0, slotDef === '*' ? '*' : slotDef);
-    if (actorMatch && !actorMatch.ambiguous && !actorMatch._strangerBlocked) {
+    if (actorMatch && !actorMatch.ambiguous) {
       const actorDef = this.definition.actors?.[actorMatch.actorId];
       const label = this._pickLang(actorDef?.name) || actorMatch.actorId;
       return { value: actorMatch.actorId, label };
