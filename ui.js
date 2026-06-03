@@ -1029,6 +1029,66 @@ function renderMap() {
     }
   }
 
+  // Render exit connection lines between known locations
+  const locDefs = engine.definition.locations;
+  if (locDefs) {
+    const gridLookup = {};
+    for (const cell of grid) gridLookup[cell.id] = cell;
+
+    const DIR_O = {
+      north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0],
+      northeast: [1, -1], northwest: [-1, -1], southeast: [1, 1], southwest: [-1, 1]
+    };
+
+    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#FF0000';
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.pointerEvents = 'none';
+    svg.style.overflow = 'visible';
+    svg.setAttribute('width', (maxX - minX + 1) * (CELL + GAP) - GAP);
+    svg.setAttribute('height', (maxY - minY + 1) * (CELL + GAP) - GAP);
+
+    for (const cell of grid) {
+      const locDef = locDefs[cell.id];
+      if (!locDef?.exits) continue;
+      const cx = (cell.x - minX) * (CELL + GAP);
+      const cy = (cell.y - minY) * (CELL + GAP);
+
+      for (const [dir, raw] of Object.entries(locDef.exits)) {
+        if (!DIR_O[dir]) continue;
+        const targetId = typeof raw === 'string' ? raw : raw?.location;
+        if (!targetId || !gridLookup[targetId]) continue;
+        const t = gridLookup[targetId];
+        const tx = (t.x - minX) * (CELL + GAP);
+        const ty = (t.y - minY) * (CELL + GAP);
+
+        let x1, y1, x2, y2;
+        switch (dir) {
+          case 'east':  x1 = cx + CELL; y1 = cy + CELL/2; x2 = tx; y2 = ty + CELL/2; break;
+          case 'west':  x1 = cx; y1 = cy + CELL/2; x2 = tx + CELL; y2 = ty + CELL/2; break;
+          case 'north': x1 = cx + CELL/2; y1 = cy; x2 = tx + CELL/2; y2 = ty + CELL; break;
+          case 'south': x1 = cx + CELL/2; y1 = cy + CELL; x2 = tx + CELL/2; y2 = ty; break;
+          case 'northeast': x1 = cx + CELL; y1 = cy; x2 = tx; y2 = ty + CELL; break;
+          case 'northwest': x1 = cx; y1 = cy; x2 = tx + CELL; y2 = ty + CELL; break;
+          case 'southeast': x1 = cx + CELL; y1 = cy + CELL; x2 = tx; y2 = ty; break;
+          case 'southwest': x1 = cx; y1 = cy + CELL; x2 = tx + CELL; y2 = ty; break;
+        }
+        const line = document.createElementNS(svgNS, 'line');
+        line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+        line.setAttribute('stroke', accentColor);
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(line);
+      }
+    }
+    const firstCell = mapEl.querySelector('.map-cell');
+    mapEl.insertBefore(svg, firstCell || mapEl.firstChild);
+  }
+
   _centerMapOnCurrentLocation();
   if (_isTabContentChanged('map', contentKey)) _markTabUpdate('map');
 }
