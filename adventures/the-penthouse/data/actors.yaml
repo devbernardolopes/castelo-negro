@@ -130,6 +130,9 @@ actors:
     synonyms:
       en: ["dana", "her", "girl", "woman", "female", "lady"]
     playable: true
+    images:
+      portrait: "images/actors/dana/tti-2026-06-03T16-56-14-749972571.png"
+      full: "images/actors/dana/tti-2026-06-03T17-46-27-162983925.png"
     starting_location: penthouse_hallway_half_bathroom
     known_locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_half_bathroom, penthouse_living_room_balcony]
     inventory: []
