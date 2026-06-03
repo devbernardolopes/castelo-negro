@@ -136,8 +136,9 @@ actions:
     conditions:
       - "here.has('{object}')"
       - "items.openable('{object}')"
-      - "!{object}_open"
-    effect: "{object}_open = true"
+      - "!items.isOpen('{object}')"
+      - "!items.isLocked('{object}') or items.canOpen('{object}')"
+    effect: "setOpen('{object}', true)"
     message:
       en: |
         You open the {object_name}.
@@ -150,10 +151,14 @@ actions:
         message:
           en: |
             You can't open the {object_name}.
-      - condition: "{object}_open"
+      - condition: "items.isOpen('{object}')"
         message:
           en: |
             The {object_name} is already open.
+      - condition: "items.isLocked('{object}') and !items.canOpen('{object}')"
+        message:
+          en: |
+            The {object_name} is locked.
 
   close:
     pattern:
@@ -162,8 +167,8 @@ actions:
     conditions:
       - "here.has('{object}')"
       - "items.openable('{object}')"
-      - "{object}_open"
-    effect: "{object}_open = false"
+      - "items.isOpen('{object}')"
+    effect: "setOpen('{object}', false)"
     message:
       en: |
         You close the {object_name}.
@@ -176,10 +181,77 @@ actions:
         message:
           en: |
             You can't close the {object_name}.
-      - condition: "!{object}_open"
+      - condition: "!items.isOpen('{object}')"
         message:
           en: |
             The {object_name} is already closed.
+
+  unlock:
+    pattern:
+      - verb: ["unlock"]
+      - object: ["*"]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "items.isLocked('{object}')"
+      - "items.canOpen('{object}')"
+    effect: "setLocked('{object}', false)"
+    message:
+      en: |
+        You unlock the {object_name}.
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't unlock the {object_name}.
+      - condition: "!items.isLocked('{object}')"
+        message:
+          en: |
+            The {object_name} isn't locked.
+      - condition: "!items.canOpen('{object}')"
+        message:
+          en: |
+            You don't have the right item to unlock the {object_name}.
+
+  lock:
+    pattern:
+      - verb: ["lock"]
+      - object: ["*"]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "items.isOpen('{object}')"
+      - "!items.isLocked('{object}')"
+      - "items.canOpen('{object}')"
+    effect: "setLocked('{object}', true)"
+    message:
+      en: |
+        You lock the {object_name}.
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't lock the {object_name}.
+      - condition: "!items.isOpen('{object}')"
+        message:
+          en: |
+            You need to close the {object_name} before locking it.
+      - condition: "items.isLocked('{object}')"
+        message:
+          en: |
+            The {object_name} is already locked.
+      - condition: "!items.canOpen('{object}')"
+        message:
+          en: |
+            You don't have the right item to lock the {object_name}.
 
   examine_actor:
     pattern:
@@ -265,6 +337,7 @@ actions:
       - "inventory.has('{object}')"
       - "'{target}' == '__location__' or here.has('{target}') or inventory.has('{target}')"
       - "'{target}' == '__location__' or items.container_capacity('{target}') != null"
+      - "'{target}' == '__location__' or !items.openable('{target}') or items.isOpen('{target}')"
     effect:
       - "inventory.remove('{object}')"
       - "putInTarget('{target}', '{object}')"
@@ -284,6 +357,10 @@ actions:
         message:
           en: |
             You can't put things in the {target_name}.
+      - condition: "'{target}' != '__location__' and items.openable('{target}') and !items.isOpen('{target}')"
+        message:
+          en: |
+            The {target_name} is closed. You need to open it first.
       - condition: "'{target}' != '__location__' and items.container_count('{target}') >= items.container_capacity('{target}')"
         message:
           en: |

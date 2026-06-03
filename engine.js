@@ -342,6 +342,19 @@ class GameEngine {
       };
     }
 
+    const itemStates = {};
+    for (const [itemId, itemDef] of Object.entries(this.definition.items || {})) {
+      const cfg = itemDef.openable;
+      if (!cfg || cfg === true) continue;
+      if (typeof cfg === 'object') {
+        itemStates[itemId] = {
+          open: cfg.initial === 'open',
+          locked: cfg.locked === true,
+          lockable: cfg.lockable === true
+        };
+      }
+    }
+
     return {
       current_location: startLoc,
       previous_location: null,
@@ -352,6 +365,7 @@ class GameEngine {
       story: {},
       container_contents: this._initContainerContents(),
       ownership: this._initOwnership(),
+      item_states: itemStates,
       conversation: {
         active: false,
         actorId: null,
@@ -605,7 +619,30 @@ class GameEngine {
         sittable: (itemId) => Boolean(engine.definition.items?.[String(itemId)]?.sittable),
         sleepable: (itemId) => Boolean(engine.definition.items?.[String(itemId)]?.sleepable),
         enterable: (itemId) => Boolean(engine.definition.items?.[String(itemId)]?.enterable),
-        actor_capacity: (itemId) => engine.definition.items?.[String(itemId)]?.actor_capacity ?? Infinity
+        actor_capacity: (itemId) => engine.definition.items?.[String(itemId)]?.actor_capacity ?? Infinity,
+        isOpen: (itemId) => engine._isItemOpen(String(itemId)),
+        isLocked: (itemId) => engine._isItemLocked(String(itemId)),
+        canOpen: (itemId) => {
+          const id = String(itemId);
+          if (!engine._isItemLocked(id)) return true;
+          const cfg = engine.definition.items?.[id]?.openable;
+          if (!cfg || cfg === true) return false;
+          if (typeof cfg !== 'object') return false;
+          const methods = Array.isArray(cfg.methods) ? cfg.methods : [];
+          for (const method of methods) {
+            if (method.key) {
+              if (engine.inventory.has(String(method.key))) return true;
+            }
+            if (method.type === 'tool' && Array.isArray(method.items)) {
+              if (method.items.some(i => engine.inventory.has(i))) return true;
+            }
+            if (method.type === 'force') {
+              if (!method.condition) return true;
+              try { if (engine.evaluateCondition(method.condition)) return true; } catch (_) {}
+            }
+          }
+          return false;
+        }
       },
       locations: this.definition.locations || {},
       actors: this.definition.actors || {},
@@ -894,6 +931,20 @@ class GameEngine {
         continue;
       }
 
+      // setOpen('itemId', true/false)
+      const setOpenMatch = line.match(/^setOpen\(\s*(['"])(.+?)\1\s*,\s*(true|false)\s*\)\s*$/);
+      if (setOpenMatch) {
+        this._setItemOpen(setOpenMatch[2], setOpenMatch[3] === 'true');
+        continue;
+      }
+
+      // setLocked('itemId', true/false)
+      const setLockedMatch = line.match(/^setLocked\(\s*(['"])(.+?)\1\s*,\s*(true|false)\s*\)\s*$/);
+      if (setLockedMatch) {
+        this._setItemLocked(setLockedMatch[2], setLockedMatch[3] === 'true');
+        continue;
+      }
+
       const m = line.match(/^([A-Za-z_]\w*)\s*([+\-*/]?=)\s*(.+)$/);
       if (!m) {
         console.warn('[engine] Unrecognized effect line:', line);
@@ -915,6 +966,8 @@ class GameEngine {
   _getContainerVisibleContents(containerId) {
     const contents = this.gameState.container_contents?.[containerId];
     if (!Array.isArray(contents)) return [];
+    const def = this.definition.items?.[containerId];
+    if (def?.openable && !this._isItemOpen(containerId)) return [];
     return contents.filter(itemId => this._isContainerItemVisible(containerId, itemId));
   }
 
@@ -932,7 +985,11 @@ class GameEngine {
       if (childId === id) return true;
       if (visited.has(childId)) continue;
       visited.add(childId);
-      if (parentId && !this._isContainerItemVisible(parentId, childId)) continue;
+      if (parentId) {
+        const parentDef = this.definition.items?.[parentId];
+        if (parentDef?.openable && !this._isItemOpen(parentId)) continue;
+        if (!this._isContainerItemVisible(parentId, childId)) continue;
+      }
       const sub = this.gameState.container_contents?.[childId];
       if (Array.isArray(sub)) {
         for (const grandchild of sub) {
@@ -1040,6 +1097,37 @@ class GameEngine {
     return rel?.relationship_level || 'strangers';
   }
 
+  _isItemOpen(itemId) {
+    const state = this.gameState.item_states?.[itemId];
+    if (state !== undefined) return state.open === true;
+    const v = this.gameState.variables?.[`${itemId}_open`];
+    return v?.value === true;
+  }
+
+  _isItemLocked(itemId) {
+    const state = this.gameState.item_states?.[itemId];
+    if (state !== undefined) return state.locked === true;
+    return false;
+  }
+
+  _setItemOpen(itemId, open) {
+    if (!this.gameState.item_states[itemId]) {
+      const cfg = this.definition.items?.[itemId]?.openable;
+      if (!cfg) return;
+      this.gameState.item_states[itemId] = {
+        open: false,
+        locked: cfg === true ? false : (cfg.locked === true),
+        lockable: cfg === true ? false : (cfg.lockable === true)
+      };
+    }
+    this.gameState.item_states[itemId].open = open;
+  }
+
+  _setItemLocked(itemId, locked) {
+    if (!this.gameState.item_states[itemId]) return;
+    this.gameState.item_states[itemId].locked = locked;
+  }
+
   _isActorHidden(actorId) {
     const data = this.gameState.actors_data?.[actorId];
     if (!data || !data.contained_by) return false;
@@ -1048,9 +1136,7 @@ class GameEngine {
     if (!containerDef) return false;
     if (containerDef.sittable || containerDef.sleepable) return false;
     if (containerDef.openable) {
-      const openVar = this.gameState.variables?.[`${containerId}_open`];
-      const isOpen = openVar?.value === true;
-      if (!isOpen) return true;
+      if (!this._isItemOpen(containerId)) return true;
     }
     return false;
   }
