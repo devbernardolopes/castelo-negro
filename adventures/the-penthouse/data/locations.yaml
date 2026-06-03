@@ -3,6 +3,9 @@ locations:
     name:
       en: |
         Penthouse - Living Room
+    map_name:
+      en: |
+        Living Room
     synonyms:
       en: ["penthouse living room", "living room", "room"]
     description:
@@ -20,6 +23,9 @@ locations:
     name:
       en: |
         Penthouse - Living Room Hallway
+    map_name:
+      en: |
+        Hallway
     description:
       en: |
         A long, dimly lit hallway that connects the living room to the master bedroom at the end. The walls are adorned with modern art pieces, and a sleek console table runs along one side, decorated with a few tasteful accessories. The hallway has a quiet, intimate atmosphere, providing a sense of separation from the bustling city outside.
@@ -37,6 +43,9 @@ locations:
     name:
       en: |
         Penthouse - Hallway Guest Bedroom
+    map_name:
+      en: |
+        Guest Bedroom
     description:
       en: |
         A cozy guest bedroom located off the hallway. The room features a comfortable bed, a small nightstand with a lamp, and a dresser for storage. The decor is simple yet elegant, with soft lighting and neutral tones that create a welcoming atmosphere for guests.
@@ -49,6 +58,9 @@ locations:
     name:
       en: |
         Penthouse - Hallway Half Bathroom
+    map_name:
+      en: |
+        Half Bathroom
     description:
       en: |
         A small, stylish half bathroom located off the hallway. It features a modern sink with a sleek faucet, a wall-mounted mirror, and a toilet. The decor is minimalist, with clean lines and a neutral color palette that complements the overall aesthetic of the penthouse.
@@ -61,6 +73,9 @@ locations:
     name:
       en: |
         Penthouse - Living Room Balcony
+    map_name:
+      en: |
+        Balcony
     description:
       en: |
         A balcony off the living room with a breathtaking view of the city skyline. The balcony is furnished with a small table and chairs, making it an ideal spot for enjoying a morning coffee or evening drink while taking in the sights and sounds of the bustling city below.
@@ -73,6 +88,9 @@ locations:
     name:
       en: |
         Penthouse - Master Bedroom
+    map_name:
+      en: |
+        Master Bedroom
     description:
       en: |
         A luxurious master bedroom with a large bed and a balcony overlooking the city.
@@ -86,6 +104,9 @@ locations:
     name:
       en: |
         Penthouse - Master Ensuite
+    map_name:
+      en: |
+        Master Ensuite
     description:
       en: |
         A dark, opulent bathroom.
@@ -93,3 +114,11 @@ locations:
     exits:
       east: penthouse_master_bedroom
     images: ["images/locations/tti-2026-05-31T02-09-20-463353415.png"]
+
+groups:
+  penthouse:
+    name:
+      en: |
+        The Penthouse
+    color: "#FFD700"
+    locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_guest_bedroom, penthouse_hallway_half_bathroom, penthouse_living_room_balcony, penthouse_master_bedroom, penthouse_master_ensuite]
