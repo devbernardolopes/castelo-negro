@@ -4,6 +4,9 @@ actors:
       en: |
         Bernie
     playable: true
+    images:
+      portrait: "images/actors/bernie/tti-2026-06-03T19-03-48-859248176.png"
+      full: "images/actors/bernie/tti-2026-06-03T19-02-12-433302665.png"
     starting_location: penthouse_living_room
     known_locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_guest_bedroom, penthouse_hallway_half_bathroom, penthouse_living_room_balcony, penthouse_master_bedroom, penthouse_master_ensuite]
     inventory: []

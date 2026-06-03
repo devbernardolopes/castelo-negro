@@ -182,6 +182,36 @@ items:
       en: |
         A large sectional sofa that provides a comfortable seating area for guests. It is made of soft, plush fabric in a neutral color, complementing the modern decor of the living room. The couch has deep cushions and wide armrests, making it an inviting spot to relax and enjoy the stunning view of the city through the floor-to-ceiling windows.
 
+  living_room_coffee_table:
+    name:
+      en: |
+        Living Room Coffee Table
+    short_name:
+      en: |
+        coffee table
+    synonyms:
+      en: ["coffee table", "table", "living room table"]
+    takeable: false
+    sittable: true
+    actor_capacity: 1
+    description:
+      en: |
+        A contemporary coffee table at the center of the living room, holding a few art books and a decorative vase. The table has a sleek design with a glass top and metal legs, adding a touch of sophistication to the space.
+
+  living_room_bar_cart:
+    name:
+      en: |
+        Living Room Bar Cart
+    short_name:
+      en: |
+        bar cart
+    synonyms:
+      en: ["bar cart", "cart", "living room cart"]
+    takeable: false
+    description:
+      en: |
+        A stylish bar cart in the living room, stocked with an assortment of spirits and glassware, ready for entertaining. The bar cart has a modern design with a metal frame and glass shelves, providing a functional and attractive way to display and serve drinks for guests.
+
   # Hallway - Half Bathroom
   half_bathroom_door:
     name:
@@ -244,10 +274,26 @@ items:
     synonyms:
       en: ["sink", "bathroom sink"]
     takeable: false
-    openable: true
+    contents: [half_bathroom_faucet]
+    container_capacity: 1
     description:
       en: |
         A sleek and stylish sink in the half bathroom, perfect for washing hands and freshening up.
+
+  half_bathroom_faucet:
+    name:
+      en: |
+        Half Bathroom Faucet
+    short_name:
+      en: |
+        faucet
+    synonyms:
+      en: ["faucet", "sink faucet", "bathroom faucet"]
+    takeable: false
+    openable: true
+    description:
+      en: |
+        A modern faucet mounted on the half bathroom sink, providing a convenient water source for washing hands and face.
 
   half_bathroom_toilet_paper_roll:
     name:
