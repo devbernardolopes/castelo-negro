@@ -1107,13 +1107,12 @@ function renderRelationshipsList() {
   if (!engine) return;
 
   const playerId = engine._getPlayerActorId();
-  const playerData = engine.gameState.actors_data?.[playerId];
-  if (!playerData) return;
 
-  const rels = playerData.relationships || {};
   const known = [];
-  for (const [actorId, rel] of Object.entries(rels)) {
-    if (rel.relationship_level && rel.relationship_level !== 'strangers') {
+  for (const [actorId, actorData] of Object.entries(engine.gameState.actors_data || {})) {
+    if (actorId === playerId) continue;
+    const rel = actorData.relationships?.[playerId];
+    if (rel && rel.relationship_level && rel.relationship_level !== 'strangers') {
       known.push({ actorId, relationship_level: rel.relationship_level, affinity: rel.affinity });
     }
   }
