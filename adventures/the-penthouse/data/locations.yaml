@@ -1,4 +1,35 @@
 locations:
+  penthouse_private_elevator:
+    name:
+      en: |
+        Penthouse - Private Elevator
+    map_name:
+      en: |
+        Private Elevator
+    description:
+      en: |
+        A modern private elevator that provides direct access to the penthouse level. The elevator is designed with a sleek interior and offers a comfortable ride for residents and guests.
+    contents: []
+    exits:
+      north: penthouse_vestibule
+    images: ["images/locations/tti-2026-06-03T19-52-32-715109934.png"]
+
+  penthouse_vestibule:
+    name:
+      en: |
+        Penthouse - Vestibule
+    map_name:
+      en: |
+        Vestibule
+    description:
+      en: |
+        A stylish vestibule that serves as the entry point to the penthouse. The space features a modern design with a sleek console table and a few tasteful accessories. The walls are adorned with contemporary art pieces, creating a sophisticated atmosphere that welcomes guests into the luxurious living space.
+    contents: []
+    exits:
+      south: penthouse_private_elevator
+      north: penthouse_living_room
+    images: ["images/locations/tti-2026-06-03T19-48-45-948125387.png"]
+
   penthouse_living_room:
     name:
       en: |
@@ -12,9 +43,10 @@ locations:
       en: |
         A high-end living room with modern furniture and elegant decor. Floor to ceiling windows offer a stunning view of the city. A large sectional sofa is positioned centrally, providing a comfortable seating area for guests. On the far wall, a sleek entertainment center houses a state-of-the-art sound system and a large flat-screen TV. In the corner, a stylish bar cart is stocked with an assortment of spirits and glassware, ready for entertaining. At the center of the room, a contemporary coffee table holds a few art books and a decorative vase.
 
-        To the north is a long and dimly lit hallway that leads to the master bedroom of the penthouse. To the east is a balcony with a breathtaking view of the city skyline.
+        To the north is a long and dimly lit hallway that leads to the master bedroom of the penthouse. To the east is a balcony with a breathtaking view of the city skyline. To the south is the vestibule, which serves as the entry point to the penthouse.
     contents: [living_room_couch, living_room_coffee_table, living_room_bar_cart]
     exits:
+      south: penthouse_vestibule
       north: penthouse_living_room_hallway
       east: penthouse_living_room_balcony
     images: ["images/locations/tti-2026-05-31T01-35-07-370740316.png"]
@@ -121,4 +153,4 @@ groups:
       en: |
         The Penthouse
     color: "#FFD700"
-    locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_guest_bedroom, penthouse_hallway_half_bathroom, penthouse_living_room_balcony, penthouse_master_bedroom, penthouse_master_ensuite]
+    locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_guest_bedroom, penthouse_hallway_half_bathroom, penthouse_living_room_balcony, penthouse_master_bedroom, penthouse_master_ensuite]

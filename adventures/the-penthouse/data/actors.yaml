@@ -8,7 +8,7 @@ actors:
       portrait: "images/actors/bernie/tti-2026-06-03T19-03-48-859248176.png"
       full: "images/actors/bernie/tti-2026-06-03T19-02-12-433302665.png"
     starting_location: penthouse_living_room
-    known_locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_guest_bedroom, penthouse_hallway_half_bathroom, penthouse_living_room_balcony, penthouse_master_bedroom, penthouse_master_ensuite]
+    known_locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_guest_bedroom, penthouse_hallway_half_bathroom, penthouse_living_room_balcony, penthouse_master_bedroom, penthouse_master_ensuite]
     inventory: []
     wearing: [bernie_jeans_pants]
     max_capacity: 2
@@ -40,7 +40,7 @@ actors:
       portrait: "images/actors/sabine/tti-2026-06-01T21-20-00-718795545.png"
       full: "images/actors/sabine/tti-2026-06-01T21-24-07-779765986.png"
     starting_location: penthouse_living_room
-    known_locations: [penthouse_living_room]
+    known_locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room]
     inventory: []
     starting_contained_by: living_room_couch
     starting_posture: seated
@@ -136,7 +136,7 @@ actors:
       portrait: "images/actors/dana/tti-2026-06-03T16-56-14-749972571.png"
       full: "images/actors/dana/tti-2026-06-03T17-46-27-162983925.png"
     starting_location: penthouse_hallway_half_bathroom
-    known_locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_half_bathroom, penthouse_living_room_balcony]
+    known_locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_half_bathroom, penthouse_living_room_balcony]
     inventory: []
     starting_contained_by: half_bathroom_toilet
     starting_posture: seated
