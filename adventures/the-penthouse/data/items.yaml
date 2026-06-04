@@ -225,7 +225,7 @@ items:
         Half Bathroom Door
     short_name:
       en: |
-        door
+        half bathroom door
     synonyms:
       en: ["door", "half bathroom door", "bathroom door"]
     openable:
@@ -364,7 +364,7 @@ items:
         Guest Bedroom Door
     short_name:
       en: |
-        door
+        guest bedroom door
     synonyms:
       en: ["door", "guest bedroom door", "bedroom door"]
     openable: true
