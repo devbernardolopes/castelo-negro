@@ -1441,9 +1441,18 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
   if (!q || !this._pendingAmbiguity) return null;
   const { candidates } = this._pendingAmbiguity;
 
+  const numericChoice = q.match(/^\[(\d+)\]$/) || q.match(/^(\d+)$/);
+  if (numericChoice) {
+    const index = Number.parseInt(numericChoice[1], 10) - 1;
+    if (Number.isInteger(index) && index >= 0 && index < candidates.length) {
+      const candidateId = candidates[index];
+      return { itemId: candidateId, phrase: this._resolveAmbiguityChoicePhrase(candidateId) };
+    }
+  }
+
   for (const candidateId of candidates) {
     if (this._phraseMatchesItemId(q, candidateId)) {
-      return { itemId: candidateId, phrase: q };
+      return { itemId: candidateId, phrase: this._resolveAmbiguityChoicePhrase(candidateId) };
     }
   }
 
@@ -1453,12 +1462,12 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
     if (!actorDef) continue;
     const actorName = this._pickLang(actorDef.name);
     if (actorName && q === String(actorName).trim().toLowerCase()) {
-      return { itemId: candidateId, phrase: q };
+      return { itemId: candidateId, phrase: this._resolveAmbiguityChoicePhrase(candidateId) };
     }
     const syns = actorDef.synonyms?.[this.language] || [];
     for (const s of syns) {
       if (q === String(s).trim().toLowerCase()) {
-        return { itemId: candidateId, phrase: q };
+        return { itemId: candidateId, phrase: this._resolveAmbiguityChoicePhrase(candidateId) };
       }
     }
   }
@@ -1552,17 +1561,24 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
       }
     }
     if (scored.length === 1) {
-      return { itemId: scored[0], phrase: singleWord };
+      return { itemId: scored[0], phrase: _resolvePhrase(scored[0]) };
     }
   }
 
   return null;
 };
 
+GameEngine.prototype._resolveAmbiguityChoicePhrase = function(itemId) {
+  return this._getItemDisplayShortName(itemId)
+    || this._getItemDisplayName(itemId)
+    || this._pickLang(this.definition.actors?.[itemId]?.name)
+    || String(itemId || '').replace(/_/g, ' ');
+};
+
 GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase, isStrangerAmbiguity) {
-  const labels = candidates.map(id => {
+  const labels = candidates.map((id, index) => {
     if (isStrangerAmbiguity && this.definition.actors?.[id]) {
-      return this._getAppearanceDescription(id);
+      return `[${index + 1}] ${this._getAppearanceDescription(id)}`;
     }
 
     const item = this.definition.items?.[id];
@@ -1581,24 +1597,24 @@ GameEngine.prototype._buildDisambiguationMessage = function(candidates, phrase, 
 
       if (ownerId) {
         if (ownerId === playerId) {
-          return 'your ' + baseName;
+          return `[${index + 1}] your ${baseName}`;
         }
         const ownerDef = this.definition.actors?.[ownerId];
         const ownerName = ownerDef ? (this._pickLang(ownerDef.name) || ownerId) : ownerId;
         const possessive = this._getPossessiveForm(ownerName);
-        return possessive + ' ' + baseName;
+        return `[${index + 1}] ${possessive} ${baseName}`;
       }
 
       // No owner: prefer short name, then resolved name, then id
-      return shortName || this._getItemResolvedName(id) || id.replace(/_/g, ' ');
+      return `[${index + 1}] ${shortName || this._getItemResolvedName(id) || id.replace(/_/g, ' ')}`;
     }
 
     // For actors: use proper name (capitalized)
     if (actor) {
-      return this._pickLang(actor.name) || id.replace(/_/g, ' ');
+      return `[${index + 1}] ${this._pickLang(actor.name) || id.replace(/_/g, ' ')}`;
     }
 
-    return id.replace(/_/g, ' ');
+    return `[${index + 1}] ${id.replace(/_/g, ' ')}`;
   });
 
   // Capitalize first letter of first label (starts second sentence after "?")
