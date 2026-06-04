@@ -910,15 +910,35 @@ class GameEngine {
       const removeWornMatch = line.match(/^removeWornItem\(\s*([^,]+)\s*,\s*(.+)\s*\)\s*$/);
       if (removeWornMatch) {
         const rawActor = String(this._evalExpression(removeWornMatch[1]) ?? '');
-        const actorId = rawActor || this._getPlayerActorId();
+        let actorId = rawActor || this._getPlayerActorId();
         const itemId = String(removeWornMatch[2]).trim().replace(/^['"]|['"]$/g, '');
-        const data = this.gameState.actors_data?.[actorId];
+        let data = this.gameState.actors_data?.[actorId];
         if (!data || !Array.isArray(data.wearing) || !data.wearing.includes(itemId)) {
-          const subj = this._getSubjectPronoun(actorId);
-          const subjCap = subj.charAt(0).toUpperCase() + subj.slice(1);
-          const be = subj === 'you' ? 'aren\'t' : 'isn\'t';
-          this.hooks.onOutput?.(`${subjCap} ${be} wearing that.`);
-          continue;
+          if (!rawActor) {
+            // No actor specified — search other actors in the current location
+            const locId = this.gameState.current_location;
+            let found = false;
+            for (const [aid, ad] of Object.entries(this.gameState.actors_data || {})) {
+              if (aid === actorId) continue;
+              if (ad.current_location !== locId) continue;
+              if (Array.isArray(ad.wearing) && ad.wearing.includes(itemId)) {
+                actorId = aid;
+                data = ad;
+                found = true;
+                break;
+              }
+            }
+            if (!found) {
+              this.hooks.onOutput?.("You aren't wearing that.");
+              continue;
+            }
+          } else {
+            const subj = this._getSubjectPronoun(actorId);
+            const subjCap = subj.charAt(0).toUpperCase() + subj.slice(1);
+            const be = subj === 'you' ? 'aren\'t' : 'isn\'t';
+            this.hooks.onOutput?.(`${subjCap} ${be} wearing that.`);
+            continue;
+          }
         }
         // Remove from wearing
         const idx = data.wearing.indexOf(itemId);
