@@ -814,12 +814,61 @@ GameEngine.prototype._matchItemSlotAt = function(tokens, idx, slotDef) {
   return null;
 };
 
+GameEngine.prototype._getScopedItemIds = function() {
+  const currentLoc = this.gameState.current_location;
+  const loc = this.getFullLocationData(currentLoc);
+  const scoped = new Set();
+  const queue = [];
+
+  for (const c of (Array.isArray(loc?.contents) ? loc.contents : [])) {
+    queue.push([c, null]);
+  }
+
+  for (const actorData of Object.values(this.gameState.actors_data || {})) {
+    if (actorData.current_location !== currentLoc) continue;
+    for (const rootId of [
+      ...(Array.isArray(actorData.inventory) ? actorData.inventory : []),
+      ...(Array.isArray(actorData.wearing) ? actorData.wearing : [])
+    ]) {
+      queue.push([rootId, null]);
+    }
+  }
+
+  const visited = new Set();
+  while (queue.length) {
+    const [childId, parentId] = queue.shift();
+    if (visited.has(childId)) continue;
+    visited.add(childId);
+
+    if (parentId) {
+      const parentDef = this.definition.items?.[parentId];
+      if (parentDef?.openable && !this._isItemOpen(parentId)) continue;
+      if (!this._isContainerItemVisible(parentId, childId)) continue;
+    }
+
+    scoped.add(childId);
+
+    const sub = this.gameState.container_contents?.[childId];
+    if (Array.isArray(sub)) {
+      for (const grandchild of sub) {
+        queue.push([grandchild, childId]);
+      }
+    }
+  }
+
+  return scoped;
+};
+
 GameEngine.prototype._matchAnyItemAt = function(tokens, idx) {
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
     const phrase = tokens.slice(idx, idx + len).join(' ');
     const matches = this._findAllItemIdsByNameOrSynonym(phrase);
-    if (matches.length === 1) return { itemId: matches[0], len, phrase };
-    if (matches.length > 1) return { ambiguous: true, candidates: matches, phrase, len };
+    if (matches.length > 0) {
+      const scoped = this._getScopedItemIds();
+      const inScope = matches.filter(id => scoped.has(id));
+      if (inScope.length === 1) return { itemId: inScope[0], len, phrase };
+      if (inScope.length > 1) return { ambiguous: true, candidates: inScope, phrase, len };
+    }
   }
   // Fallback: check if phrase matches the current location (by name or synonym)
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
