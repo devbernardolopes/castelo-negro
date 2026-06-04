@@ -62,6 +62,16 @@ GameEngine.prototype.processPlayerCommand = function(input) {
       match[`${slotName}_name`] = resolved.label;
       this._pendingSlotPrompt = null;
 
+      // If the resolved value was an actor name used as an object slot,
+      // reconstruct the full command and re-process so legacy handlers
+      // (e.g. _takeItemByName) can produce a proper response instead of
+      // the action's conditions failing with empty values.
+      if (match._actorAsObject) {
+        const fullCmd = ((match.verb || '') + ' ' + cmd).trim();
+        this.processPlayerCommand(fullCmd);
+        return true;
+      }
+
       // Check if another slot needs prompting (multi-slot sequential)
       if (actionDef.follow_up) {
         for (const [nextSlot, nextPrompt] of Object.entries(actionDef.follow_up)) {
@@ -1571,6 +1581,17 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
           || itemMatch.phrase;
         return { value: itemMatch.itemId, label };
       }
+    }
+    // No item matched — if the input looks like an actor name, signal the
+    // caller to skip this action and fall through to legacy handling.
+    const stopwords = this._getParserStopwords();
+    const nonStopTokens = tokens.filter(t => !stopwords.has(t));
+    if (nonStopTokens.length > 0) {
+      const rawVal = nonStopTokens.join(' ');
+      if (this._matchActorSlotAt(nonStopTokens, 0, ['*'])) {
+        match._actorAsObject = true;
+      }
+      return { value: rawVal, label: rawVal };
     }
   }
 
