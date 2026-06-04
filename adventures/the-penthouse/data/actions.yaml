@@ -426,12 +426,17 @@ actions:
         en: "To whom?"
     conditions:
       - "'{actor}' != '' and getActor('{actor}') != null"
+      - "getActor('{actor}') != current_player_actor"
       - "getActor('{actor}').current_location == current_location"
     effect: "startConversation('{actor}')"
     message:
       en: ""
     conditional_messages:
-      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+      - condition: "getActor('{actor}') == current_player_actor"
+        message:
+          en: |
+            You can't talk to yourself.
+      - condition: "getActor('{actor}') == null"
         message:
           en: |
             There's no one here by that name.
