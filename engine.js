@@ -158,10 +158,12 @@ class GameEngine {
     const openable = item.openable;
     if (openable && typeof openable === 'object' && openable.show_current_state === true) {
       const isOpen = this._isItemOpen(itemId);
-      const stateKey = String(isOpen);
-      const stateStr = this._pickLang(this.definition.open_state?.[stateKey]);
-      if (stateStr) {
-        desc += (desc ? '\n' : '') + `It is currently ${stateStr}.`;
+      const entries = this.definition.open_state;
+      if (entries) {
+        const stateStr = this._pickLang(entries[isOpen] || entries[String(isOpen)]);
+        if (stateStr) {
+          desc += (desc ? '\n' : '') + `It is currently ${stateStr}.`;
+        }
       }
     }
 
@@ -1791,6 +1793,18 @@ class GameEngine {
       const refs = occupantActors.map(id => this._getActorReference(id, playerIdForContainer));
       const verb = occupantActors.length === 1 ? 'is' : 'are';
       result += `\nCurrently, ${this._formatList(refs)} ${verb} ${this._getContainerSimplePosture(itemId)}${isPlayerOnSame ? ' with you' : ''}.`;
+    }
+
+    const openable = def.openable;
+    if (openable && typeof openable === 'object' && openable.show_current_state === true) {
+      const isOpen = this._isItemOpen(itemId);
+      const entries = this.definition.open_state;
+      if (entries) {
+        const stateStr = this._pickLang(entries[isOpen] || entries[String(isOpen)]);
+        if (stateStr) {
+          result += (result ? '\n' : '') + `It is currently ${stateStr}.`;
+        }
+      }
     }
 
     return this._expandItemText(itemId, result);
