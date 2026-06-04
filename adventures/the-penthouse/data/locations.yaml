@@ -70,7 +70,21 @@ locations:
     contents: [master_bedroom_door, half_bathroom_door, guest_bedroom_door]
     exits:
       south: penthouse_living_room
-      east: penthouse_hallway_half_bathroom
+      east:
+        location: penthouse_hallway_half_bathroom
+        conditions:
+          - if: "half_bathroom_door_open"
+            allow: true
+          - if: "!half_bathroom_door_open and !half_bathroom_door_locked"
+            allow: false
+            message:
+              en: |
+                The half bathroom door is closed. You need to open it first.
+          - if: "half_bathroom_door_locked"
+            allow: false
+            message:
+              en: |
+                The half bathroom door is locked. You can't enter.
       northeast: penthouse_hallway_guest_bedroom
       north: penthouse_master_bedroom
     images: ["images/locations/tti-2026-06-01T18-58-40-301114127.png"]
@@ -93,16 +107,30 @@ locations:
   penthouse_hallway_half_bathroom:
     name:
       en: |
-        Penthouse - Hallway Half Bathroom
+        Penthouse - Half Bathroom
     map_name:
       en: |
         Half Bathroom
     description:
       en: |
         A small, stylish half bathroom located off the hallway. It features a modern sink with a sleek faucet, a wall-mounted mirror, and a toilet. The decor is minimalist, with clean lines and a neutral color palette that complements the overall aesthetic of the penthouse.
-    contents: [half_bathroom_sink, half_bathroom_toilet, half_bathroom_toilet_paper_roll_holder]
+    contents: [half_bathroom_door, half_bathroom_sink, half_bathroom_toilet, half_bathroom_toilet_paper_roll_holder]
     exits:
-      west: penthouse_living_room_hallway
+      west:
+        location: penthouse_living_room_hallway
+        conditions:
+          - if: "half_bathroom_door_open"
+            allow: true
+          - if: "!half_bathroom_door_open and !half_bathroom_door_locked"
+            allow: false
+            message:
+              en: |
+                The half bathroom door is closed. You need to open it first.
+          - if: "half_bathroom_door_locked"
+            allow: false
+            message:
+              en: |
+                The half bathroom door is locked. You can't enter.
     images: ["images/locations/tti-2026-06-01T19-38-36-39720164.png"]
 
   penthouse_living_room_balcony:
