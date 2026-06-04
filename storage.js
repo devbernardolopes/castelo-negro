@@ -198,6 +198,7 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
   setDebugTabVisibility(!!parsed?.metadata?.debug);
+  setDirectionalNavVisibility(!!parsed?.metadata?.directional_navigation);
   setMapTabVisibility(true);
   document.getElementById('tab-inventory').style.display = '';
   document.getElementById('tab-memory').style.display = '';
@@ -256,6 +257,7 @@ async function loadAdventureFromUrl(yamlUrl) {
   setGameControlsEnabled(true);
   setSidebarTabsEnabled(true);
   setDebugTabVisibility(!!parsed?.metadata?.debug);
+  setDirectionalNavVisibility(!!parsed?.metadata?.directional_navigation);
   setMapTabVisibility(true);
   document.getElementById('tab-inventory').style.display = '';
   document.getElementById('tab-memory').style.display = '';
