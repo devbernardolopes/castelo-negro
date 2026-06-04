@@ -120,7 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
             _centerMapOnCurrentLocation();
           }
         });
-        if (!engine) btn.disabled = true;
+        const sidebarEl = document.getElementById('sidebar-tabs');
+        const isEnabled = sidebarEl?.getAttribute('data-enabled') !== 'false';
+        btn.disabled = !isEnabled;
         tabsHeader.appendChild(btn);
         created.push(tabName);
       } else {

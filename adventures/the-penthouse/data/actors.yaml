@@ -203,8 +203,7 @@ actors:
     starting_location: penthouse_vestibule
     known_locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room]
     inventory: []
-    # starting_contained_by: half_bathroom_toilet
-    # starting_posture: seated
+    wearing: [anya_white_leggings, anya_white_sneakers, anya_black_cropped_sweater]
     max_capacity: 2
     properties:
       age: 19

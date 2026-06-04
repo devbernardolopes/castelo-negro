@@ -6,6 +6,63 @@
 
 items:
   # -------------------------------
+  # Anya's Items
+  # -------------------------------
+  anya_white_leggings:
+    name:
+      en: |
+        {owner}'s White Leggings
+    short_name:
+      en: |
+        white leggings
+    synonyms:
+      en: ["white leggings", "leggings", "anya's leggings"]
+    takeable: true
+    wearable: true
+    owner: anya
+    size: 1
+    description:
+      en: |
+        A pair of simple white leggings made of stretchy fabric, providing a comfortable and versatile option for casual wear or lounging at home.
+    images: ["images/items/tti-2026-06-04T15-07-46-103774258.png"]
+
+  anya_white_sneakers:
+    name:
+      en: |
+        {owner}'s White Sneakers
+    short_name:
+      en: |
+        white sneakers
+    synonyms:
+      en: ["white sneakers", "sneakers", "shoes", "anya's sneakers"]
+    takeable: true
+    wearable: true
+    owner: anya
+    size: 1
+    description:
+      en: |
+        A pair of classic white sneakers with a clean and minimalist design, perfect for everyday wear and providing a comfortable fit for various activities.
+    images: ["images/items/tti-2026-06-04T15-10-02-821735076.png"]
+
+  anya_black_cropped_sweater:
+    name:
+      en: |
+        {owner}'s Black Cropped Sweater
+    short_name:
+      en: |
+        black cropped sweater
+    synonyms:
+      en: ["black cropped sweater", "cropped sweater", "sweater", "anya's sweater"]
+    takeable: true
+    wearable: true
+    owner: anya
+    size: 1
+    description:
+      en: |
+        A stylish black cropped sweater with a relaxed fit and a soft, cozy fabric, perfect for layering and adding a touch of casual chic to any outfit.
+    images: ["images/items/tti-2026-06-04T15-12-43-419871339.png"]
+
+  # -------------------------------
   # Sabine's Items
   # -------------------------------
   sabine_cell_phone:
