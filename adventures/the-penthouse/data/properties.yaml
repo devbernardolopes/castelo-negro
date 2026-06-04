@@ -87,7 +87,10 @@ properties:
     default: 0
     is_stat: true
     show_in_relationships: true
-  relationship_level:
+    label:
+      en: |
+        Vacations
+    relationship_level:
     type: string
     possible_values: ["strangers", "acquaintances", "partners", "enemies"]
     default: "strangers"
