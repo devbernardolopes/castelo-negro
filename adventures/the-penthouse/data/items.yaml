@@ -193,7 +193,6 @@ items:
         coffee table
     synonyms:
       en: ["coffee table", "table", "living room table"]
-    takeable: false
     sittable: true
     container_type: on
     container_capacity: 4
@@ -379,6 +378,29 @@ items:
     description:
       en: |
         A sturdy wooden door that leads to the guest bedroom. It has a sleek design that complements the modern aesthetic of the penthouse, providing privacy and security for guests staying in the guest bedroom.
+
+  guest_bedroom_closet:
+    name:
+      en: |
+        Guest Bedroom Closet
+    short_name:
+      en: |
+        closet
+    synonyms:
+      en: ["closet", "wardrobe", "guest bedroom closet"]
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+      side: two_way
+      accessible_from:
+        - penthouse_guest_bedroom
+    container_type: in
+    actor_capacity: 2
+    container_capacity: 10
+    description:
+      en: |
+        A spacious closet in the guest bedroom, providing ample storage space for guests to hang their clothes and store their belongings during their stay at the penthouse.
 
   guest_bedroom_bed:
     name:

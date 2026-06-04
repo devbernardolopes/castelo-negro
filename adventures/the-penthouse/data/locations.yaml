@@ -127,7 +127,7 @@ locations:
     description:
       en: |
         A cozy guest bedroom located off the hallway. The room features a comfortable bed, a small nightstand with a lamp, and a dresser for storage. The decor is simple yet elegant, with soft lighting and neutral tones that create a welcoming atmosphere for guests.
-    contents: []
+    contents: [guest_bedroom_closet, guest_bedroom_bed, guest_bedroom_door]
     exits:
       southwest: penthouse_living_room_hallway
     images: ["images/locations/tti-2026-06-01T19-45-01-595181002.png"]
