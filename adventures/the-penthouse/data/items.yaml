@@ -232,7 +232,6 @@ items:
         couch
     synonyms:
       en: ["couch", "sofa", "living room sofa"]
-    takeable: false
     sittable: true
     sleepable: true
     actor_capacity: 3
@@ -240,6 +239,22 @@ items:
     description:
       en: |
         A large sectional sofa that provides a comfortable seating area for guests. It is made of soft, plush fabric in a neutral color, complementing the modern decor of the living room. The couch has deep cushions and wide armrests, making it an inviting spot to relax and enjoy the stunning view of the city through the floor-to-ceiling windows.
+
+  tv_remote_control:
+    name:
+      en: |
+        TV Remote Control
+    short_name:
+      en: |
+        remote control
+    synonyms:
+      en: ["remote control", "remote", "tv remote"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A sleek and modern TV remote control that allows you to operate the state-of-the-art sound system and large flat-screen TV in the living room. The remote has a minimalist design with a few buttons for power, volume, channel selection, and input switching, providing a convenient way to enjoy entertainment in the penthouse living room.
+    images: ["images/items/tti-2026-06-04T15-21-09-705658701.png"]
 
   living_room_coffee_table:
     name:
