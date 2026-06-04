@@ -125,6 +125,10 @@ verbs:
     synonyms: { en: ["flush"], pt-br: ["dar descarga"] }
   knock:
     synonyms: { en: ["knock"], pt-br: ["bater"] }
+  pay:
+    synonyms: { en: ["pay"], pt-br: ["pagar"] }
+  invite:
+    synonyms: { en: ["invite"], pt-br: ["convidar"] }
 
 directions:
   north:
