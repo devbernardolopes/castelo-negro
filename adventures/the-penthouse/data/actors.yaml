@@ -22,11 +22,14 @@ actors:
       amount_of_vacations: 5
       hair: "black"
     relationships:
+      anya:
+        affinity: 35
+        relationship_level: "acquaintances"
       sabine:
-        affinity: 0
+        affinity: 25
         relationship_level: "acquaintances"
       dana:
-        affinity: 0
+        affinity: 50
         relationship_level: "friends"
 
   sabine:
@@ -46,9 +49,6 @@ actors:
     starting_posture: seated
     wearing: [sabine_jeans_pants, sabine_tank_top, sabine_silver_strappy_sandals]
     max_capacity: 2
-    # description:
-    #   en: |
-    #     Sabine is a young woman in her 20s. She looks anxious, her eyes darting around the room as she fidgets with the hem of her shirt.
     properties:
       age: 23
       gender: "female"
@@ -141,9 +141,6 @@ actors:
     starting_contained_by: half_bathroom_toilet
     starting_posture: seated
     max_capacity: 2
-    # description:
-    #   en: |
-    #     Dana is your friend. She looks curious, her gaze wandering as she takes in every detail of the room. There's a relaxed confidence in the way she carries herself.
     properties:
       age: 29
       gender: "female"
@@ -188,6 +185,68 @@ actors:
                 en: "Hey, Dana."
               effects:
                 - "setRelationship(current_player_actor, 'dana', 'affinity', getRelationship('dana', 'affinity') + 1)"
+              next: null
+            - text:
+                en: "..."
+              next: null
+
+  anya:
+    name:
+      en: |
+        Anya
+    synonyms:
+      en: ["anya", "her", "girl", "woman", "female", "lady"]
+    playable: true
+    images:
+      portrait: "images/actors/anya/tti-2026-06-04T09-51-13-856148239.png"
+      full: "images/actors/anya/tti-2026-06-04T10-30-37-992937636.png"
+    starting_location: penthouse_vestibule
+    known_locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room]
+    inventory: []
+    # starting_contained_by: half_bathroom_toilet
+    # starting_posture: seated
+    max_capacity: 2
+    properties:
+      age: 19
+      gender: "female"
+      mood: "curious"
+      is_alive: true
+      stamina: 50
+      health: 50
+      amount_of_vacations: 0
+      hair: "platinum"
+    relationships:
+      bernie:
+        affinity: 35
+        relationship_level: "acquaintances"
+    dialogue:
+      entry_nodes:
+        - id: friendly_greeting
+          conditions:
+            - "getRelationship(current_player_actor, 'anya', 'affinity') > 50"
+        - id: neutral_greeting
+          conditions: []
+      nodes:
+        friendly_greeting:
+          message:
+            en: "Bernie! Always good to see you."
+          options:
+            - text:
+                en: "Good to see you too."
+              effects:
+                - "setRelationship(current_player_actor, 'anya', 'affinity', getRelationship('anya', 'affinity') + 3)"
+              next: null
+            - text:
+                en: "See you around."
+              next: null
+        neutral_greeting:
+          message:
+            en: "Hey."
+          options:
+            - text:
+                en: "Hey, Anya."
+              effects:
+                - "setRelationship(current_player_actor, 'anya', 'affinity', getRelationship('anya', 'affinity') + 1)"
               next: null
             - text:
                 en: "..."

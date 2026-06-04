@@ -45,7 +45,7 @@ properties:
         Mood
   hair:
     type: string
-    possible_values: ["bald", "black", "brown", "blonde", "red", "gray", "white"]
+    possible_values: ["bald", "black", "brown", "blonde", "platinum", "red", "gray", "white"]
     default: "black"
     label:
       en: |
@@ -92,7 +92,7 @@ properties:
         Vacations
   relationship_level:
     type: string
-    possible_values: ["strangers", "acquaintances", "partners", "enemies"]
+    possible_values: ["strangers", "acquaintances", "friends", "romantic", "partners", "lovers", "rivals", "enemies"]
     default: "strangers"
     show_in_relationships: true
   affinity:
