@@ -261,31 +261,31 @@ function formatMarkupToHtml(text) {
           const tagName = tagContent.slice(1).trim().toLowerCase();
           if (stack.length > 0 && stack[stack.length - 1].name === tagName) {
             out.push(stack.pop().close);
+            i = closeIdx + 1;
+            continue;
           }
-          i = closeIdx + 1;
-          continue;
-        }
-
-        const eqIdx = tagContent.indexOf('=');
-        let tagName, tagValue;
-        if (eqIdx !== -1) {
-          tagName = tagContent.slice(0, eqIdx).trim().toLowerCase();
-          tagValue = tagContent.slice(eqIdx + 1).trim();
         } else {
-          tagName = tagContent.trim().toLowerCase();
-          tagValue = null;
-        }
+          const eqIdx = tagContent.indexOf('=');
+          let tagName, tagValue;
+          if (eqIdx !== -1) {
+            tagName = tagContent.slice(0, eqIdx).trim().toLowerCase();
+            tagValue = tagContent.slice(eqIdx + 1).trim();
+          } else {
+            tagName = tagContent.trim().toLowerCase();
+            tagValue = null;
+          }
 
-        const handler = TAG_HANDLERS[tagName];
-        if (handler) {
-          const tag = handler(tagValue);
-          if (tag) {
-            stack.push({ name: tagName, close: tag.close });
-            out.push(tag.open);
+          const handler = TAG_HANDLERS[tagName];
+          if (handler) {
+            const tag = handler(tagValue);
+            if (tag) {
+              stack.push({ name: tagName, close: tag.close });
+              out.push(tag.open);
+            }
+            i = closeIdx + 1;
+            continue;
           }
         }
-        i = closeIdx + 1;
-        continue;
       }
     }
 
