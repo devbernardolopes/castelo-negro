@@ -751,8 +751,8 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
         return { actorId: matched[0], len, phrase };
       }
       if (this._isActorStrangerToPlayer(matched[0])) {
-        if (opts.matchMode !== 'name_only' && this._getActorVisualDescriptors(matched[0]).has(p)) {
-          return { actorId: matched[0], len, phrase, _visualMatch: true };
+        if (opts.matchMode !== 'name_only' && this._getActorAliasPhrases(matched[0]).has(p)) {
+          return { actorId: matched[0], len, phrase, _aliasMatch: true };
         }
         return { _strangerBlocked: true, actorId: matched[0], len, phrase };
       }
@@ -790,6 +790,29 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
   }
 
   return null;
+};
+
+GameEngine.prototype._getActorAliasPhrases = function(actorId) {
+  const actorDef = this.definition.actors?.[actorId];
+  const aliases = new Set();
+  if (!actorDef) return aliases;
+
+  const name = this._pickLang(actorDef.name);
+  if (name) aliases.add(String(name).trim().toLowerCase());
+
+  const syn = actorDef.synonyms;
+  if (syn && typeof syn === 'object') {
+    const list = syn[this.language];
+    if (Array.isArray(list)) {
+      for (const s of list) aliases.add(String(s).trim().toLowerCase());
+    }
+  }
+
+  for (const descriptor of this._getActorVisualDescriptors(actorId)) {
+    aliases.add(String(descriptor).trim().toLowerCase());
+  }
+
+  return aliases;
 };
 
 GameEngine.prototype._tryDialogueInput = function(input) {
