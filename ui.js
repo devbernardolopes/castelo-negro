@@ -1182,6 +1182,23 @@ function renderRelationshipsList() {
     affEl.textContent = `Affinity: ${affinity}`;
     info.appendChild(affEl);
 
+    const propDefs = engine.definition.properties || {};
+    const relProps = Object.entries(propDefs).filter(([, def]) => def.show_in_relationships);
+    for (const [propKey, propDef] of relProps) {
+      if (propKey === 'relationship_level' || propKey === 'affinity') continue;
+      const value = actorData.properties?.[propKey] ?? propDef.default ?? '';
+      const label = propDef.label ? engine._pickLang(propDef.label) : null;
+      const propEl = document.createElement('div');
+      propEl.className = 'relationships-prop';
+      if (label) {
+        propEl.textContent = `${label}: ${value}`;
+      } else {
+        const strVal = String(value);
+        propEl.textContent = strVal.charAt(0).toUpperCase() + strVal.slice(1);
+      }
+      info.appendChild(propEl);
+    }
+
     row.appendChild(info);
     el.appendChild(row);
   }

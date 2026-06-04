@@ -1515,7 +1515,8 @@ body {
 }
 
 .relationships-level,
-.relationships-affinity {
+.relationships-affinity,
+.relationships-prop {
   font-size: 0.9em;
   opacity: 0.8;
 }
