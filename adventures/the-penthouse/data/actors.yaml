@@ -91,7 +91,6 @@ actors:
                 en: "See you around."
               next: null
         greeting:
-
           message:
             en: "Hey, Bernie. I'm glad you're here. What's up?"
           options:
