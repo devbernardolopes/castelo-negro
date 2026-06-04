@@ -156,3 +156,15 @@ binary:
     en: ["yes", "y", "yeah", "yep", "sure", "ok", "okay"]
   no:
     en: ["no", "n", "nope", "nah", "not really"]
+
+open_state:
+  true:
+    en: |
+      open
+    pt-br: |
+      aberto
+  false:
+    en: |
+      closed
+    pt-br: |
+      fechado

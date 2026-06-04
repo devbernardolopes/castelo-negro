@@ -235,6 +235,7 @@ items:
       side: one_way
       accessible_from:
         - penthouse_hallway_half_bathroom
+      show_current_state: true
     description:
       en: |
         A sleek wooden door that leads to the half bathroom. It has a modern design that fits the overall aesthetic of the penthouse, providing privacy and access to the bathroom facilities.

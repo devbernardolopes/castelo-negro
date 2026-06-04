@@ -153,7 +153,19 @@ class GameEngine {
     const raw = typeof item.description === 'string'
       ? item.description
       : this._pickLang(item.description?.base || item.description);
-    return raw ? this._expandItemText(itemId, raw) : '';
+    let desc = raw ? this._expandItemText(itemId, raw) : '';
+
+    const openable = item.openable;
+    if (openable && typeof openable === 'object' && openable.show_current_state === true) {
+      const isOpen = this._isItemOpen(itemId);
+      const stateKey = String(isOpen);
+      const stateStr = this._pickLang(this.definition.open_state?.[stateKey]);
+      if (stateStr) {
+        desc += (desc ? '\n' : '') + `It is currently ${stateStr}.`;
+      }
+    }
+
+    return desc;
   }
 
   _getItemResolvedName(itemId) {
