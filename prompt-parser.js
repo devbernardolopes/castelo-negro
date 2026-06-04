@@ -60,6 +60,7 @@ GameEngine.prototype.processPlayerCommand = function(input) {
     if (resolved) {
       match[slotName] = resolved.value;
       match[`${slotName}_name`] = resolved.label;
+      if (resolved.phrase) match[`_${slotName}_phrase`] = resolved.phrase;
       this._pendingSlotPrompt = null;
 
       // If the resolved value was an actor name used as an object slot,
@@ -222,7 +223,27 @@ GameEngine.prototype._executeActionFailure = function(actionId, actionDef, match
       const expanded = this._expandTemplate(String(conditional.condition || ''), match);
       if (this.evaluateCondition(expanded)) {
         const msg = this._pickLang(conditional.message);
-        if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, match));
+        if (msg) {
+          // Temporarily replace {slotName}_name with _{slotName}_phrase
+          // so failure messages use the player's raw input instead of
+          // resolved display names (avoiding information leakage).
+          const saved = {};
+          for (const key of Object.keys(match)) {
+            const m = key.match(/^_(.+)_phrase$/);
+            if (m) {
+              const nameKey = m[1] + '_name';
+              if (nameKey in match) {
+                saved[nameKey] = match[nameKey];
+                match[nameKey] = match[key];
+              }
+            }
+          }
+          this.hooks.onOutput?.(this._expandTemplate(msg, match));
+          // Restore original display names
+          for (const [k, v] of Object.entries(saved)) {
+            match[k] = v;
+          }
+        }
         this._afterTurn({ kind: 'action_failed', id: actionId });
         return true;
       }
@@ -492,6 +513,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       out[`${slotName}_name`] = this._getItemDisplayShortName(itemMatch.itemId)
         || this._getItemDisplayName(itemMatch.itemId)
         || itemMatch.phrase;
+      out[`_${slotName}_phrase`] = itemMatch.phrase;
       i += itemMatch.len;
       continue;
     }
@@ -534,6 +556,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       if (actorMatch._visualMatch) out._visualMatch = true;
       out[slotName] = actorMatch.actorId;
       out[`${slotName}_name`] = this._pickLang(this.definition.actors?.[actorMatch.actorId]?.name) || actorMatch.actorId;
+      out[`_${slotName}_phrase`] = actorMatch.phrase;
       i += actorMatch.len;
 
       // If actor was matched by stripping possessive (e.g. "sabine's" → "sabine")
@@ -1570,16 +1593,16 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
           const label = this._getItemDisplayShortName(chosen)
             || this._getItemDisplayName(chosen)
             || itemMatch.phrase;
-          return { value: chosen, label };
+          return { value: chosen, label, phrase: itemMatch.phrase };
         }
         // No candidate passes — use player's phrase as label
-        return { value: itemMatch.candidates[0], label: itemMatch.phrase };
+        return { value: itemMatch.candidates[0], label: itemMatch.phrase, phrase: itemMatch.phrase };
       }
       if (!itemMatch.ambiguous) {
         const label = this._getItemDisplayShortName(itemMatch.itemId)
           || this._getItemDisplayName(itemMatch.itemId)
           || itemMatch.phrase;
-        return { value: itemMatch.itemId, label };
+        return { value: itemMatch.itemId, label, phrase: itemMatch.phrase };
       }
     }
     // No item matched — if the input looks like an actor name, signal the
@@ -1591,7 +1614,7 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
       if (this._matchActorSlotAt(nonStopTokens, 0, ['*'])) {
         match._actorAsObject = true;
       }
-      return { value: rawVal, label: rawVal };
+      return { value: rawVal, label: rawVal, phrase: cmd };
     }
   }
 
@@ -1613,14 +1636,14 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
         if (passing.length >= 1) {
           const chosen = passing[0];
           const label = this._pickLang(this.definition.actors?.[chosen]?.name) || chosen;
-          return { value: chosen, label };
+          return { value: chosen, label, phrase: actorMatch.phrase };
         }
         return null;
       }
       if (!actorMatch.ambiguous) {
         const actorDef = this.definition.actors?.[actorMatch.actorId];
         const label = this._pickLang(actorDef?.name) || actorMatch.actorId;
-        return { value: actorMatch.actorId, label };
+        return { value: actorMatch.actorId, label, phrase: actorMatch.phrase };
       }
     }
   }
