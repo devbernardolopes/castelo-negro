@@ -93,7 +93,10 @@ GameEngine.prototype.processPlayerCommand = function(input) {
       }
     } else {
       this._pendingSlotPrompt = null;
-      if (!this._executeActionFailure(actionId, actionDef, match)) {
+      if (match._strangerBlocked) {
+        this.hooks.onOutput?.("You don't know anyone by that name.");
+        this._afterTurn({ kind: 'action_failed', id: actionId });
+      } else if (!this._executeActionFailure(actionId, actionDef, match)) {
         this.hooks.onOutput?.("You can't do that.");
         this._afterTurn({ kind: 'action_cancelled', id: actionId });
       }
@@ -315,10 +318,23 @@ GameEngine.prototype._tryActions = function(cmd) {
             const stopwords = this._getParserStopwords();
             const leftover = tokens.slice(consumed).filter(t => !stopwords.has(t));
             if (leftover.length > 0) {
-              match[slotName] = leftover.join(' ');
-              match[`${slotName}_name`] = leftover.join(' ');
+              const rawVal = leftover.join(' ');
+              // If leftover text matches an actor name and this action has no
+              // actor slot, skip the action entirely so it doesn't treat an
+              // actor name as an item (e.g. "take anya", "take sabine").
+              const actorCheck = this._matchActorSlotAt(leftover, 0, ['*']);
+              const hasActorSlot = actionDef.follow_up?.actor !== undefined
+                || actionDef.pattern?.some(s => s.actor)
+                || (actionDef.patterns && Object.values(actionDef.patterns).some(
+                    pat => Array.isArray(pat) && pat.some(s => s.actor)));
+              if (actorCheck && !hasActorSlot) {
+                match._skipAction = true;
+                break;
+              }
+              match[slotName] = rawVal;
+              match[`${slotName}_name`] = rawVal;
             }
-            continue;
+            break;
           }
 
           const msg = this._pickLang(promptMsg);
@@ -335,6 +351,9 @@ GameEngine.prototype._tryActions = function(cmd) {
         }
       }
     }
+
+    // Skip action if marked (e.g. leftover actor name used in item slot)
+    if (match._skipAction) continue;
 
     const ok = this._checkActionConditions(actionDef, match);
     if (ok) {
@@ -1558,6 +1577,12 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
   if (slotName === 'actor') {
     const actorMatch = this._matchActorSlotAt(tokens, 0, slotDef === '*' ? '*' : slotDef);
     if (actorMatch) {
+      // Stranger blocked — don't reveal the actor's name; let failure handler
+      // show "You don't know anyone by that name."
+      if (actorMatch._strangerBlocked) {
+        match._strangerBlocked = true;
+        return null;
+      }
       // Auto-resolve ambiguity: try conditions, else return null
       if (actorMatch.ambiguous && actionDef) {
         const passing = actorMatch.candidates.filter(id => {
