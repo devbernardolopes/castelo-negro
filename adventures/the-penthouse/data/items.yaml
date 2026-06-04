@@ -384,7 +384,7 @@ items:
   my_rival_my_love_part_1_book:
     name:
       en: |
-        My Rival, My Love - Part 1 Book
+        Book "My Rival, My Love - Part 1"
     short_name:
       en: |
         my rival my love book
@@ -395,7 +395,7 @@ items:
     description:
       en: |
         A paperback copy of the first part of the romance novel "My Rival, My Love". The book has a colorful cover featuring an illustration of a romantic scene between two characters, hinting at the passionate and dramatic story contained within its pages.
-    images: ["images/items/tti-2026-06-04T15-24-44-835441794.png"]
+    images: ["images/items/tti-2026-06-04T16-40-29-813343294.png"]
 
   living_room_coffee_table:
     name:
