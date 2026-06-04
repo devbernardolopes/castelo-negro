@@ -629,6 +629,8 @@ class GameEngine {
           if (!cfg || cfg === true) return false;
           if (typeof cfg !== 'object') return false;
           const methods = Array.isArray(cfg.methods) ? cfg.methods : [];
+          // No methods means privacy latch — can always be unlocked from the correct side
+          if (methods.length === 0) return true;
           for (const method of methods) {
             if (method.key) {
               if (engine.inventory.has(String(method.key))) return true;
@@ -642,6 +644,17 @@ class GameEngine {
             }
           }
           return false;
+        },
+        getProp: (itemId, field) => {
+          const def = engine.definition.items?.[String(itemId)];
+          if (!def) return undefined;
+          const parts = String(field).split('.');
+          let current = def;
+          for (const part of parts) {
+            if (current == null || typeof current !== 'object') return undefined;
+            current = current[part];
+          }
+          return current;
         }
       },
       locations: this.definition.locations || {},
@@ -1115,17 +1128,41 @@ class GameEngine {
       const cfg = this.definition.items?.[itemId]?.openable;
       if (!cfg) return;
       this.gameState.item_states[itemId] = {
-        open: false,
+        open: open,
         locked: cfg === true ? false : (cfg.locked === true),
         lockable: cfg === true ? false : (cfg.lockable === true)
       };
+    } else {
+      this.gameState.item_states[itemId].open = open;
     }
-    this.gameState.item_states[itemId].open = open;
+    // Sync legacy variable for backward compatibility
+    const varKey = `${itemId}_open`;
+    if (!this.gameState.variables[varKey]) {
+      this.gameState.variables[varKey] = { type: 'any', value: open };
+    } else {
+      this.gameState.variables[varKey].value = open;
+    }
   }
 
   _setItemLocked(itemId, locked) {
-    if (!this.gameState.item_states[itemId]) return;
-    this.gameState.item_states[itemId].locked = locked;
+    if (!this.gameState.item_states[itemId]) {
+      const cfg = this.definition.items?.[itemId]?.openable;
+      if (!cfg || cfg === true || typeof cfg !== 'object') return;
+      this.gameState.item_states[itemId] = {
+        open: cfg.initial === 'open',
+        locked: locked,
+        lockable: cfg.lockable === true
+      };
+    } else {
+      this.gameState.item_states[itemId].locked = locked;
+    }
+    // Sync legacy variable for backward compatibility
+    const varKey = `${itemId}_locked`;
+    if (!this.gameState.variables[varKey]) {
+      this.gameState.variables[varKey] = { type: 'any', value: locked };
+    } else {
+      this.gameState.variables[varKey].value = locked;
+    }
   }
 
   _isActorHidden(actorId) {

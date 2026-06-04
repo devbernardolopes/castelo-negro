@@ -137,7 +137,7 @@ actions:
       - "here.has('{object}')"
       - "items.openable('{object}')"
       - "!items.isOpen('{object}')"
-      - "!items.isLocked('{object}') or items.canOpen('{object}')"
+      - "!items.isLocked('{object}')"
     effect: "setOpen('{object}', true)"
     message:
       en: |
@@ -155,7 +155,7 @@ actions:
         message:
           en: |
             The {object_name} is already open.
-      - condition: "items.isLocked('{object}') and !items.canOpen('{object}')"
+      - condition: "items.isLocked('{object}')"
         message:
           en: |
             The {object_name} is locked.
@@ -195,6 +195,7 @@ actions:
       - "items.openable('{object}')"
       - "items.isLocked('{object}')"
       - "items.canOpen('{object}')"
+      - "items.getProp('{object}', 'openable.side') != 'one_way' or items.getProp('{object}', 'openable.accessible_from') == null or items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
     effect: "setLocked('{object}', false)"
     message:
       en: |
@@ -212,6 +213,10 @@ actions:
         message:
           en: |
             The {object_name} isn't locked.
+      - condition: "items.getProp('{object}', 'openable.side') == 'one_way' and items.getProp('{object}', 'openable.accessible_from') != null and !items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
+        message:
+          en: |
+            The {object_name} can only be unlocked from the other side.
       - condition: "!items.canOpen('{object}')"
         message:
           en: |
@@ -224,9 +229,10 @@ actions:
     conditions:
       - "here.has('{object}')"
       - "items.openable('{object}')"
-      - "items.isOpen('{object}')"
+      - "!items.isOpen('{object}')"
       - "!items.isLocked('{object}')"
       - "items.canOpen('{object}')"
+      - "items.getProp('{object}', 'openable.side') != 'one_way' or items.getProp('{object}', 'openable.accessible_from') == null or items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
     effect: "setLocked('{object}', true)"
     message:
       en: |
@@ -240,14 +246,18 @@ actions:
         message:
           en: |
             You can't lock the {object_name}.
-      - condition: "!items.isOpen('{object}')"
+      - condition: "items.isOpen('{object}')"
         message:
           en: |
-            You need to close the {object_name} before locking it.
+            The {object_name} is open. You need to close it first.
       - condition: "items.isLocked('{object}')"
         message:
           en: |
             The {object_name} is already locked.
+      - condition: "items.getProp('{object}', 'openable.side') == 'one_way' and items.getProp('{object}', 'openable.accessible_from') != null and !items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
+        message:
+          en: |
+            The {object_name} can only be locked from the other side.
       - condition: "!items.canOpen('{object}')"
         message:
           en: |
