@@ -697,9 +697,10 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
 
   let candidates;
   if (isWildcard) {
-    candidates = Object.keys(this.definition.actors || {});
+    candidates = this._getVisibleActorsInLocation(this.gameState.current_location);
   } else if (Array.isArray(slotDef)) {
-    candidates = slotDef.map(String);
+    const visible = new Set(this._getVisibleActorsInLocation(this.gameState.current_location));
+    candidates = slotDef.map(String).filter(id => visible.has(id));
   } else {
     return null;
   }
