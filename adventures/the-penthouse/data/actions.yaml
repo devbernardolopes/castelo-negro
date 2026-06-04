@@ -645,6 +645,33 @@ actions:
           en: |
             There's no one like that here.
 
+  read:
+    pattern:
+      - verb: ["read"]
+      - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Read what?"
+    conditions:
+      - "'{object}' != ''"
+      - "here.has('{object}') or inventory.has('{object}')"
+      - "items.getProp('{object}', 'readable') != null"
+    effect: []
+    message:
+      en: |
+        {readable_text}
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: "Read what?"
+      - condition: "!here.has('{object}') and !inventory.has('{object}')"
+        message:
+          en: "There's no {object_name} here."
+      - condition: "items.getProp('{object}', 'readable') == null"
+        message:
+          en: "You can't read that."
+
   fallback_generic:
     message_pool:
       en:

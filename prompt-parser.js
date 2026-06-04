@@ -118,6 +118,13 @@ GameEngine.prototype.processPlayerCommand = function(input) {
     if (this._tryDialogueInput(cmd)) return true;
   }
 
+  // If reading mode is active, intercept input for page navigation
+  if (this.gameState.reading?.active) {
+    if (this._tryReadingInput(cmd)) return true;
+    this._renderReadingChunk(this.gameState.reading.currentChunk);
+    return true;
+  }
+
   const dir = this._resolveDirection(cmd);
   if (dir) return this.go(/** @type {any} */ (dir));
 
@@ -156,6 +163,14 @@ GameEngine.prototype._executeActionSuccess = function(actionId, actionDef, match
   }
 
   if (actionDef.effect) this._applyActionEffects(actionDef.effect, resolvedMatch);
+
+  // Redirect to reading mode if a readable item was targeted
+  const objectId = resolvedMatch.object;
+  const item = objectId ? this.definition.items?.[objectId] : null;
+  if (item?.readable && !this.gameState.reading?.active) {
+    this._startReading(objectId);
+    if (this.gameState.reading?.active) return;
+  }
 
   if (actionDef.message_pool) {
     const pool = this._pickLang(actionDef.message_pool);
@@ -684,6 +699,92 @@ GameEngine.prototype._tryDialogueInput = function(input) {
   return false;
 };
 
+GameEngine.prototype._tryReadingInput = function(input) {
+  const reading = this.gameState.reading;
+  if (!reading?.active) return false;
+
+  const cmd = String(input || '').trim().toLowerCase();
+  if (!cmd) return false;
+
+  const isFirst = reading.currentChunk === 0;
+  const isLast = reading.currentChunk === reading.totalChunks - 1;
+
+  // Calculate option numbers based on position
+  // Page 1: [1] Continue, [2] Close  → 2 options
+  // Pages 2..N-1: [1] Continue, [2] Previous, [3] Close  → 3 options
+  // Page N: [1] Close, [2] Previous  → 2 options
+  // Single page: [1] Close  → 1 option
+  let optionCount;
+  if (isFirst && isLast) {
+    optionCount = 1;
+  } else if (isFirst || isLast) {
+    optionCount = 2;
+  } else {
+    optionCount = 3;
+  }
+
+  // Try text commands
+  const nextWords = ['next', 'n', 'continue', 'c'];
+  const prevWords = ['back', 'b', 'prev', 'p', 'previous'];
+  const closeWords = ['exit', 'e', 'close', 'quit', 'stop', 'end'];
+
+  if (nextWords.includes(cmd) && !isLast) {
+    this._nextReadingPage();
+    return true;
+  }
+  if (prevWords.includes(cmd) && !isFirst) {
+    this._prevReadingPage();
+    return true;
+  }
+  if (closeWords.includes(cmd)) {
+    this._endReading();
+    return true;
+  }
+
+  // Try "page N" or "go N" or "go to N" syntax
+  const pageMatch = cmd.match(/^(?:page|go(?:\s+to)?)\s+(\d+)$/);
+  if (pageMatch) {
+    const pageNum = parseInt(pageMatch[1], 10);
+    if (pageNum >= 1 && pageNum <= reading.totalChunks) {
+      this._goToReadingPage(pageNum);
+      return true;
+    }
+    return false;
+  }
+
+  // Try bare number
+  const num = parseInt(cmd, 10);
+  if (!isNaN(num) && num >= 1) {
+    if (num <= optionCount) {
+      // Map option number to action
+      // Page 1: [1]=next, [2]=close
+      // Middle: [1]=next, [2]=prev, [3]=close
+      // Last:   [1]=close, [2]=prev
+      if (isFirst && isLast && num === 1) {
+        this._endReading();
+        return true;
+      }
+      if (isFirst) {
+        if (num === 1) { this._nextReadingPage(); return true; }
+        if (num === 2) { this._endReading(); return true; }
+      } else if (isLast) {
+        if (num === 1) { this._endReading(); return true; }
+        if (num === 2) { this._prevReadingPage(); return true; }
+      } else {
+        if (num === 1) { this._nextReadingPage(); return true; }
+        if (num === 2) { this._prevReadingPage(); return true; }
+        if (num === 3) { this._endReading(); return true; }
+      }
+    } else if (num <= reading.totalChunks) {
+      // Number exceeds option count → direct page jump
+      this._goToReadingPage(num);
+      return true;
+    }
+  }
+
+  return false;
+};
+
 GameEngine.prototype._matchVerbAt = function(tokens, idx, verbIds) {
   const wantsAny = verbIds.includes('*');
   const maxLen = Math.min(3, tokens.length - idx);
@@ -873,6 +974,17 @@ GameEngine.prototype._expandTemplate = function(str, match) {
     if (actorMatch) {
       const val = this.gameState.actors_data?.[actorMatch[1]]?.properties?.[actorMatch[2]];
       if (val !== undefined) return String(val);
+    }
+
+    if (key === 'readable_text') {
+      const objectId = match?.object;
+      if (objectId && objectId !== '' && objectId !== '__location__') {
+        const item = this.definition.items?.[objectId];
+        if (item?.readable) {
+          return this.getText(item.readable);
+        }
+      }
+      return '';
     }
 
     // Fallback: contained_by_name (item name of what the player is sitting on)

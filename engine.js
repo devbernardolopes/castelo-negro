@@ -385,7 +385,8 @@ class GameEngine {
         active: false,
         actorId: null,
         nodeId: null
-      }
+      },
+      reading: null
     };
   }
 
@@ -2003,7 +2004,104 @@ class GameEngine {
     return null;
   }
 
-  _afterTurn(action) {
+  _startReading(itemId) {
+    const item = this.definition.items?.[itemId];
+    if (!item?.readable) return;
+
+    const text = this.getText(item.readable);
+    if (!text) {
+      this.hooks.onOutput?.("The book appears to be blank.");
+      return;
+    }
+
+    const chunks = text.split('---page---').map(c => c.trim()).filter(c => c.length > 0);
+    if (chunks.length === 0) {
+      this.hooks.onOutput?.("The book appears to be blank.");
+      return;
+    }
+
+    this.gameState.reading = {
+      active: true,
+      itemId,
+      chunks,
+      currentChunk: 0,
+      totalChunks: chunks.length
+    };
+
+    this._renderReadingChunk(0);
+  }
+
+  _renderReadingChunk(index) {
+    const reading = this.gameState.reading;
+    if (!reading?.active) return;
+
+    const item = this.definition.items?.[reading.itemId];
+    const title = item ? (this._pickLang(item.name) || reading.itemId) : reading.itemId;
+    const page = index + 1;
+    const total = reading.totalChunks;
+
+    this.hooks.onOutput?.(`[i]Reading "${title}" (Page ${page}/${total})[/i]`);
+    this.hooks.onOutput?.(reading.chunks[index]);
+
+    const isFirst = index === 0;
+    const isLast = index === total - 1;
+
+    const lines = [];
+    if (isFirst && isLast) {
+      lines.push(`[1] Close book`);
+    } else if (isFirst) {
+      lines.push(`[1] Continue reading`);
+      lines.push(`[2] Close book`);
+    } else if (isLast) {
+      lines.push(`[1] Close book`);
+      lines.push(`[2] Previous page`);
+    } else {
+      lines.push(`[1] Continue reading`);
+      lines.push(`[2] Previous page`);
+      lines.push(`[3] Close book`);
+    }
+    this.hooks.onOutput?.(lines.join('\n'));
+  }
+
+  _nextReadingPage() {
+    const reading = this.gameState.reading;
+    if (!reading?.active) return;
+    if (reading.currentChunk < reading.totalChunks - 1) {
+      reading.currentChunk++;
+      this._renderReadingChunk(reading.currentChunk);
+      this._afterTurn({ kind: 'reading_page', itemId: reading.itemId, page: reading.currentChunk + 1 }, { skipLocationRender: true });
+    }
+  }
+
+  _prevReadingPage() {
+    const reading = this.gameState.reading;
+    if (!reading?.active) return;
+    if (reading.currentChunk > 0) {
+      reading.currentChunk--;
+      this._renderReadingChunk(reading.currentChunk);
+      this._afterTurn({ kind: 'reading_page', itemId: reading.itemId, page: reading.currentChunk + 1 }, { skipLocationRender: true });
+    }
+  }
+
+  _goToReadingPage(pageNum) {
+    const reading = this.gameState.reading;
+    if (!reading?.active) return;
+    const idx = Math.max(0, Math.min(reading.totalChunks - 1, pageNum - 1));
+    if (idx !== reading.currentChunk) {
+      reading.currentChunk = idx;
+      this._renderReadingChunk(idx);
+      this._afterTurn({ kind: 'reading_page', itemId: reading.itemId, page: idx + 1 }, { skipLocationRender: true });
+    }
+  }
+
+  _endReading() {
+    const reading = this.gameState.reading;
+    if (!reading?.active) return;
+    this.gameState.reading = null;
+    this._afterTurn({ kind: 'reading_end', itemId: reading.itemId }, { skipLocationRender: true });
+  }
+
+  _afterTurn(action, options = {}) {
     // Turn bookkeeping
     if (this.gameState.variables.game_turn) {
       this.applyEffect('game_turn += 1');
@@ -2012,7 +2110,9 @@ class GameEngine {
     }
 
     // Render first so event messages appear after the location description
-    this.renderCurrentLocation();
+    if (!options.skipLocationRender) {
+      this.renderCurrentLocation();
+    }
 
     // Location-enter + recurring + time-based
     this._runEventsForAction(action);

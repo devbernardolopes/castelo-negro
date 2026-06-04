@@ -392,6 +392,7 @@ items:
       en: ["my rival my love book", "book", "novel"]
     takeable: true
     size: 1
+    readable: book_my_rival_my_love_part_1
     description:
       en: |
         A paperback copy of the first part of the romance novel "My Rival, My Love". The book has a colorful cover featuring an illustration of a romantic scene between two characters, hinting at the passionate and dramatic story contained within its pages.
