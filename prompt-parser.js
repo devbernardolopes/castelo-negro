@@ -751,6 +751,9 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
         return { actorId: matched[0], len, phrase };
       }
       if (this._isActorStrangerToPlayer(matched[0])) {
+        if (opts.matchMode !== 'name_only' && this._getActorVisualDescriptors(matched[0]).has(p)) {
+          return { actorId: matched[0], len, phrase, _visualMatch: true };
+        }
         return { _strangerBlocked: true, actorId: matched[0], len, phrase };
       }
       return { actorId: matched[0], len, phrase };
