@@ -141,6 +141,11 @@ function setAdventureTitle(title) {
   setText('adventure-title-row', title || '');
 }
 
+function setInputRowVisible(visible) {
+  const el = document.getElementById('input-row');
+  if (el) el.style.display = visible ? 'flex' : 'none';
+}
+
 function setDirectionalNavVisibility(visible) {
   const el = document.getElementById('directional-buttons-row');
   if (el) el.style.display = visible ? '' : 'none';
@@ -160,6 +165,7 @@ function setMapTabVisibility(visible) {
 }
 
 function resetUiForNewGame() {
+  setInputRowVisible(false);
   _outputQueue = [];
   _isPausedForSend = false;
   for (const k of Object.keys(_tabContentKeys)) delete _tabContentKeys[k];

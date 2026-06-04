@@ -894,6 +894,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);
     setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
+    setInputRowVisible(true);
     _focusGameTab();
     const textDisplay = document.getElementById('text-display-content');
     if (textDisplay) textDisplay.innerHTML = '';
@@ -1002,6 +1003,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setGameControlsEnabled(true);
     setSidebarTabsEnabled(true);
     setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
+    setInputRowVisible(true);
     _focusGameTab();
     const textDisplay = document.getElementById('text-display-content');
     if (textDisplay) textDisplay.innerHTML = '';
