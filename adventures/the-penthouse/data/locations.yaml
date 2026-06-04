@@ -85,8 +85,36 @@ locations:
             message:
               en: |
                 The half bathroom door is locked. It can only be unlocked from the inside.
-      northeast: penthouse_guest_bedroom
-      north: penthouse_master_bedroom
+      northeast:
+        location: penthouse_guest_bedroom
+        conditions:
+          - if: "items.isOpen('guest_bedroom_door')"
+            allow: true
+          - if: "!items.isOpen('guest_bedroom_door') and !items.isLocked('guest_bedroom_door')"
+            allow: false
+            message:
+              en: |
+                The guest bedroom door is closed. You need to open it first.
+          - if: "items.isLocked('guest_bedroom_door')"
+            allow: false
+            message:
+              en: |
+                The guest bedroom door is locked. It can only be unlocked from the inside.
+      north:
+        location: penthouse_master_bedroom
+        conditions:
+          - if: "items.isOpen('master_bedroom_door')"
+            allow: true
+          - if: "!items.isOpen('master_bedroom_door') and !items.isLocked('master_bedroom_door')"
+            allow: false
+            message:
+              en: |
+                The master bedroom door is closed. You need to open it first.
+          - if: "items.isLocked('master_bedroom_door')"
+            allow: false
+            message:
+              en: |
+                The master bedroom door is locked. It can only be unlocked from the inside.
     images: ["images/locations/tti-2026-06-01T18-58-40-301114127.png"]
 
   penthouse_guest_bedroom:

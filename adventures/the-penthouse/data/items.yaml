@@ -239,11 +239,6 @@ items:
     description:
       en: |
         A sleek wooden door that leads to the half bathroom. It has a modern design that fits the overall aesthetic of the penthouse, providing privacy and access to the bathroom facilities.
-      # conditions:
-      #   - if: "items.isOpen('half_bathroom_door')"
-      #     message:
-      #       en: |
-      #         It is currently open.
 
   half_bathroom_toilet:
     name:
