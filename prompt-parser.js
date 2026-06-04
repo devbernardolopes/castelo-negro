@@ -113,16 +113,16 @@ GameEngine.prototype.processPlayerCommand = function(input) {
     return true;
   }
 
-  // If conversation is active, try dialogue options first
-  if (this.gameState.conversation?.active) {
-    if (this._tryDialogueInput(cmd)) return true;
-  }
-
-  // If reading mode is active, intercept input for page navigation
+  // If reading mode is active, intercept input for page navigation first
   if (this.gameState.reading?.active) {
     if (this._tryReadingInput(cmd)) return true;
     this._renderReadingChunk(this.gameState.reading.currentChunk);
     return true;
+  }
+
+  // If conversation is active, try dialogue options next
+  if (this.gameState.conversation?.active) {
+    if (this._tryDialogueInput(cmd)) return true;
   }
 
   const dir = this._resolveDirection(cmd);
@@ -698,6 +698,8 @@ GameEngine.prototype._tryDialogueInput = function(input) {
     }
   }
 
+  // Input didn't match any dialogue option — end conversation
+  this._endConversation();
   return false;
 };
 
