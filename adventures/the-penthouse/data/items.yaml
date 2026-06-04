@@ -894,7 +894,6 @@ items:
     synonyms:
       en: ["tablet", "electronic device"]
     takeable: true
-    wearable: true
     size: 1
     description:
       en: |
@@ -928,9 +927,28 @@ items:
     synonyms:
       en: ["laptop computer", "laptop", "computer"]
     takeable: true
-    wearable: true
     size: 1
     description:
       en: |
         A sleek and powerful laptop computer, perfect for work or entertainment. It features a high-resolution display, a comfortable keyboard, and a long-lasting battery, making it an ideal device for productivity and leisure.
     images: ["images/items/tti-2026-06-04T19-45-49-492984211.png"]
+
+  dom_perignon_champagne_bottle:
+    name:
+      en: |
+        Dom Perignon Champagne Bottle
+    short_name:
+      en: |
+        champagne bottle
+    synonyms:
+      en: ["dom perignon champagne bottle", "champagne bottle", "bottle"]
+    takeable: true
+    size: 1
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+    description:
+      en: |
+        A bottle of Dom Perignon champagne, a prestigious and highly sought-after sparkling wine known for its exceptional quality and taste. The bottle features an elegant design with the iconic Dom Perignon label, making it a symbol of luxury and celebration.
+    images: ["images/items/tti-2026-06-04T19-47-33-512641027.png"]
