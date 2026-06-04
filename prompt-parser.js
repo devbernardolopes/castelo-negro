@@ -467,7 +467,7 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     if (i >= tokens.length) {
       // If we're out of tokens and this slot is optional, skip it
       if (isOptional) {
-        out[Object.keys(slotEntry)[0]] = '';  // Set to empty string
+        out[Object.keys(slotEntry)[0]] = '';
         optionalSkipped = true;
         continue;
       }
@@ -496,7 +496,24 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     if (slotName === 'object' || slotName === 'target') {
       const itemMatch = this._matchItemSlotAt(tokens, i, slotDef);
       if (!itemMatch) {
-        if (isOptional) { out[slotName] = ''; optionalSkipped = true; continue; }
+        if (isOptional) {
+          // Player typed something for this slot but it didn't match any item.
+          // Inject the raw text as the slot value so conditions can fail and
+          // conditional_messages can produce proper error responses instead of
+          // empty-slot bypass (e.g. examine: "{object} == '' or here.has(...)").
+          const remaining = tokens.slice(i).filter(t => !stopwords.has(t));
+          if (remaining.length > 0) {
+            const raw = remaining.join(' ');
+            out[slotName] = raw;
+            out[`${slotName}_name`] = raw;
+            out[`_${slotName}_phrase`] = raw;
+            i = tokens.length;
+          } else {
+            out[slotName] = '';
+            optionalSkipped = true;
+          }
+          continue;
+        }
         return null;
       }
       if (itemMatch.ambiguous) {
@@ -522,7 +539,19 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       const locationIds = Array.isArray(slotDef) ? slotDef.map(id => String(id)) : [];
       const locMatch = this._matchLocationSlotAt(tokens, i, locationIds);
       if (!locMatch) {
-        if (isOptional) { out[slotName] = ''; optionalSkipped = true; continue; }
+        if (isOptional) {
+          const remaining = tokens.slice(i).filter(t => !stopwords.has(t));
+          if (remaining.length > 0) {
+            const raw = remaining.join(' ');
+            out[slotName] = raw;
+            out[`${slotName}_name`] = raw;
+            i = tokens.length;
+          } else {
+            out[slotName] = '';
+            optionalSkipped = true;
+          }
+          continue;
+        }
         return null;
       }
       out[slotName] = locMatch.locationId;
@@ -537,7 +566,20 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
       const matchMode = slotEntry.match_mode;
       const actorMatch = this._matchActorSlotAt(tokens, i, actorIds.length ? actorIds : '*', { matchMode });
       if (!actorMatch) {
-        if (isOptional) { out[slotName] = ''; optionalSkipped = true; continue; }
+        if (isOptional) {
+          const remaining = tokens.slice(i).filter(t => !stopwords.has(t));
+          if (remaining.length > 0) {
+            const raw = remaining.join(' ');
+            out[slotName] = raw;
+            out[`${slotName}_name`] = raw;
+            out[`_${slotName}_phrase`] = raw;
+            i = tokens.length;
+          } else {
+            out[slotName] = '';
+            optionalSkipped = true;
+          }
+          continue;
+        }
         return null;
       }
       if (actorMatch.ambiguous) {
