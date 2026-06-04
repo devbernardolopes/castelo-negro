@@ -713,13 +713,17 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
 
     const matched = [];
     for (const actorId of candidates) {
-      if (p === actorId.toLowerCase()) { matched.push(actorId); continue; }
-      if (p === actorId.replace(/_/g, ' ').toLowerCase()) { matched.push(actorId); continue; }
+      if (opts.matchMode !== 'alias_only') {
+        if (p === actorId.toLowerCase()) { matched.push(actorId); continue; }
+        if (p === actorId.replace(/_/g, ' ').toLowerCase()) { matched.push(actorId); continue; }
+      }
 
       const actorDef = this.definition.actors?.[actorId];
       if (!actorDef) continue;
-      const name = this._pickLang(actorDef.name);
-      if (name && p === String(name).trim().toLowerCase()) { matched.push(actorId); continue; }
+      if (opts.matchMode !== 'alias_only') {
+        const name = this._pickLang(actorDef.name);
+        if (name && p === String(name).trim().toLowerCase()) { matched.push(actorId); continue; }
+      }
 
       if (opts.matchMode !== 'name_only') {
         const syn = actorDef.synonyms;
@@ -796,9 +800,6 @@ GameEngine.prototype._getActorAliasPhrases = function(actorId) {
   const actorDef = this.definition.actors?.[actorId];
   const aliases = new Set();
   if (!actorDef) return aliases;
-
-  const name = this._pickLang(actorDef.name);
-  if (name) aliases.add(String(name).trim().toLowerCase());
 
   const syn = actorDef.synonyms;
   if (syn && typeof syn === 'object') {

@@ -6,6 +6,27 @@
 
 items:
   # -------------------------------
+  # Dana's Items
+  # -------------------------------
+  dana_black_mini_dress:
+    name:
+      en: |
+        {owner}'s Black Mini Dress
+    short_name:
+      en: |
+        black mini dress
+    synonyms:
+      en: ["black mini dress", "mini dress", "dress", "dana's dress"]
+    takeable: true
+    wearable: true
+    owner: dana
+    size: 1
+    description:
+      en: |
+        A sleek and elegant black mini dress with a fitted silhouette and a subtle sheen. The dress features a simple yet sophisticated design, with thin spaghetti straps and a straight neckline, making it a versatile choice for various occasions, from cocktail parties to nights out on the town.
+    images: ["images/items/tti-2026-06-04T21-29-16-30909277.png"]
+
+  # -------------------------------
   # Anya's Items
   # -------------------------------
   anya_white_leggings:

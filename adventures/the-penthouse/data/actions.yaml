@@ -267,6 +267,7 @@ actions:
     pattern:
       - verb: ["examine"]
       - actor: ["*"]
+        match_mode: alias_only
     conditions:
       - "'{actor}' != '' and getActor('{actor}') != null"
       - "getActor('{actor}').current_location == current_location"
