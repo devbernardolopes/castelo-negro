@@ -26,6 +26,24 @@ items:
         A sleek and elegant black mini dress with a fitted silhouette and a subtle sheen. The dress features a simple yet sophisticated design, with thin spaghetti straps and a straight neckline, making it a versatile choice for various occasions, from cocktail parties to nights out on the town.
     images: ["images/items/tti-2026-06-04T21-29-16-30909277.png"]
 
+  dana_silver_strappy_heels:
+    name:
+      en: |
+        {owner}'s Silver Strappy Heels
+    short_name:
+      en: |
+        silver strappy heels
+    synonyms:
+      en: ["silver strappy heels", "heels", "shoes", "dana's heels"]
+    takeable: true
+    wearable: true
+    owner: dana
+    size: 1
+    description:
+      en: |
+        A pair of stunning silver strappy heels with a high stiletto heel. The shoes feature thin straps that crisscross over the foot and secure with a small buckle at the ankle, providing a stylish and comfortable fit. The silver color adds a touch of glamour, making these heels perfect for dressing up any outfit for a night out or special occasion.
+    images: ["images/items/tti-2026-06-04T21-50-28-893242673.png"]
+
   # -------------------------------
   # Anya's Items
   # -------------------------------

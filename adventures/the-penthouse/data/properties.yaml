@@ -95,7 +95,7 @@ properties:
     possible_values: ["strangers", "acquaintances", "friends", "romantic", "partners", "lovers", "rivals", "enemies"]
     default: "strangers"
     show_in_relationships: true
-  affinity:
+  affinity: # -100 to 100 scale representing how much an actor likes another actor. Roughly, -100 represents a relationship level of "enemies", 0 is "strangers", and 100 is "lovers". Used in conditions and effects to gate content based on relationships.
     type: int
     min_value: -100
     max_value: 100

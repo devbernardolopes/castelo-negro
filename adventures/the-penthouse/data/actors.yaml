@@ -23,13 +23,13 @@ actors:
       hair: "black"
     relationships:
       anya:
-        affinity: 35
+        affinity: 25
         relationship_level: "acquaintances"
       sabine:
         affinity: 25
         relationship_level: "acquaintances"
       dana:
-        affinity: 50
+        affinity: 35
         relationship_level: "friends"
 
   sabine:
@@ -52,7 +52,7 @@ actors:
     properties:
       age: 23
       gender: "female"
-      mood: "anxious"
+      mood: "neutral"
       is_alive: true
       stamina: 75
       health: 80
@@ -62,15 +62,36 @@ actors:
       bernie:
         affinity: 35
         relationship_level: "acquaintances"
-      dana:
-        affinity: -10
-        relationship_level: "strangers"
     dialogue:
       entry_nodes:
-        - id: greeting
-          conditions: []
+        - id: intoductory_greeting
+          conditions:
+            - "getRelationship('sabine', current_player_actor, 'affinity') == 0"
+            # - "getRelationship('sabine', current_player_actor, 'affinity') < 25"
+        - id: neutral_greeting
+          conditions:
+            - "getRelationship('sabine', current_player_actor, 'affinity') >= 0"
+            - "getRelationship('sabine', current_player_actor, 'affinity') < 25"
+        - id: friendly_greeting
+          conditions:
+            - "getRelationship('sabine', current_player_actor, 'affinity') >= 25"
+            - "getRelationship('sabine', current_player_actor, 'affinity') < 35"
+        # - id: friendly_greeting
+        #   conditions:
+        #     - "getRelationship('sabine', current_player_actor, 'affinity') >= 35"
       nodes:
+        neutral_greeting:
+          message:
+            en: "Oh, hey."
+          options:
+            - text:
+                en: "Hey, Sabine. How's it going?"
+              next: neutral_greeting
+            - text:
+                en: "See you around."
+              next: null
         greeting:
+
           message:
             en: "Hey, Bernie. I'm glad you're here. What's up?"
           options:
@@ -134,7 +155,7 @@ actors:
     playable: true
     images:
       portrait: "images/actors/dana/tti-2026-06-03T16-56-14-749972571.png"
-      full: "images/actors/dana/tti-2026-06-03T17-46-27-162983925.png"
+      full: "images/actors/dana/tti-2026-06-04T21-55-33-162983925.png"
     starting_location: penthouse_hallway_half_bathroom
     known_locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_half_bathroom, penthouse_living_room_balcony]
     inventory: []
