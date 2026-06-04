@@ -85,14 +85,14 @@ locations:
             message:
               en: |
                 The half bathroom door is locked. It can only be unlocked from the inside.
-      northeast: penthouse_hallway_guest_bedroom
+      northeast: penthouse_guest_bedroom
       north: penthouse_master_bedroom
     images: ["images/locations/tti-2026-06-01T18-58-40-301114127.png"]
 
-  penthouse_hallway_guest_bedroom:
+  penthouse_guest_bedroom:
     name:
       en: |
-        Penthouse - Hallway Guest Bedroom
+        Penthouse - Guest Bedroom
     map_name:
       en: |
         Guest Bedroom
@@ -158,7 +158,7 @@ locations:
     description:
       en: |
         A luxurious master bedroom with a large bed and a balcony overlooking the city.
-    contents: [master_bedroom_bed]
+    contents: [master_bedroom_bed, master_bedroom_door]
     exits:
       south: penthouse_living_room_hallway
       west: penthouse_master_ensuite
@@ -185,4 +185,4 @@ groups:
       en: |
         The Penthouse
     color: "#FFD700"
-    locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room, penthouse_living_room_hallway, penthouse_hallway_guest_bedroom, penthouse_hallway_half_bathroom, penthouse_living_room_balcony, penthouse_master_bedroom, penthouse_master_ensuite]
+    locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room, penthouse_living_room_hallway, penthouse_guest_bedroom, penthouse_hallway_half_bathroom, penthouse_living_room_balcony, penthouse_master_bedroom, penthouse_master_ensuite]
