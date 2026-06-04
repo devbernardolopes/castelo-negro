@@ -164,12 +164,14 @@ GameEngine.prototype._executeActionSuccess = function(actionId, actionDef, match
 
   if (actionDef.effect) this._applyActionEffects(actionDef.effect, resolvedMatch);
 
-  // Redirect to reading mode if a readable item was targeted
-  const objectId = resolvedMatch.object;
-  const item = objectId ? this.definition.items?.[objectId] : null;
-  if (item?.readable && !this.gameState.reading?.active) {
-    this._startReading(objectId);
-    if (this.gameState.reading?.active) return;
+  // Redirect to reading mode only if this is specifically a "read" action
+  if (actionId === 'read') {
+    const objectId = resolvedMatch.object;
+    const item = objectId ? this.definition.items?.[objectId] : null;
+    if (item?.readable && !this.gameState.reading?.active) {
+      this._startReading(objectId);
+      if (this.gameState.reading?.active) return;
+    }
   }
 
   if (actionDef.message_pool) {
