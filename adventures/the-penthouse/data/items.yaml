@@ -238,6 +238,11 @@ items:
     description:
       en: |
         A sleek wooden door that leads to the half bathroom. It has a modern design that fits the overall aesthetic of the penthouse, providing privacy and access to the bathroom facilities.
+      conditions:
+        - if: "items.isOpen('half_bathroom_door')"
+          message:
+            en: |
+              It is currently open.
 
   half_bathroom_toilet:
     name:
@@ -372,6 +377,11 @@ items:
     description:
       en: |
         A sturdy wooden door that leads to the guest bedroom. It has a sleek design that complements the modern aesthetic of the penthouse, providing privacy and security for guests staying in the guest bedroom.
+      conditions:
+        - if: "items.isOpen('guest_bedroom_door')"
+          message:
+            en: |
+              It is currently open.
 
   guest_bedroom_bed:
     name:
@@ -406,6 +416,11 @@ items:
     description:
       en: |
         A sturdy wooden door that leads to the master bedroom. It has a sleek design that complements the modern aesthetic of the penthouse, providing privacy and security for the occupants of the master bedroom.
+      conditions:
+        - if: "items.isOpen('master_bedroom_door')"
+          message:
+            en: |
+              It is currently open.
   
   master_bedroom_bed:
     name:

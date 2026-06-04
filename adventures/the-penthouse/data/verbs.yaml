@@ -123,6 +123,8 @@ verbs:
     synonyms: { en: ["greet", "say hi"], pt-br: ["cumprimentar", "dizer oi"] }
   flush:
     synonyms: { en: ["flush"], pt-br: ["dar descarga"] }
+  knock:
+    synonyms: { en: ["knock"], pt-br: ["bater"] }
 
 directions:
   north:
