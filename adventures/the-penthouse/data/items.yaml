@@ -228,8 +228,13 @@ items:
         door
     synonyms:
       en: ["door", "half bathroom door", "bathroom door"]
-    openable: true
-    takeable: false
+    openable:
+      initial: closed
+      lockable: true
+      locked: true
+      side: one_way
+      accessible_from:
+        - penthouse_hallway_half_bathroom
     description:
       en: |
         A sleek wooden door that leads to the half bathroom. It has a modern design that fits the overall aesthetic of the penthouse, providing privacy and access to the bathroom facilities.
