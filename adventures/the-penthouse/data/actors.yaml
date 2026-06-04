@@ -246,7 +246,7 @@ actors:
             - text:
                 en: "Hey, Anya."
               effects:
-                - "setRelationship(current_player_actor, 'anya', 'affinity', getRelationship('anya', 'affinity') + 1)"
+                - "setRelationship('anya', current_player_actor, 'affinity', getRelationship(current_player_actor, 'affinity') + 1)"
               next: null
             - text:
                 en: "..."
