@@ -37,7 +37,7 @@ actors:
       en: |
         Sabine
     synonyms:
-      en: ["sabine", "her", "girl", "woman", "female", "lady", "she"]
+      en: ["her", "girl", "woman", "female", "lady", "she"]
     playable: true
     images:
       portrait: "images/actors/sabine/tti-2026-06-01T21-20-00-718795545.png"
@@ -130,7 +130,7 @@ actors:
       en: |
         Dana
     synonyms:
-      en: ["dana", "her", "girl", "woman", "female", "lady", "she"]
+      en: ["her", "girl", "woman", "female", "lady", "she"]
     playable: true
     images:
       portrait: "images/actors/dana/tti-2026-06-03T16-56-14-749972571.png"
@@ -195,7 +195,7 @@ actors:
       en: |
         Anya
     synonyms:
-      en: ["anya", "her", "girl", "woman", "female", "lady", "she"]
+      en: ["her", "girl", "woman", "female", "lady", "she"]
     playable: true
     images:
       portrait: "images/actors/anya/tti-2026-06-04T09-51-13-856148239.png"
