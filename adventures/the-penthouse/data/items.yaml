@@ -381,6 +381,22 @@ items:
       en: |
         A large flat-screen TV mounted on the far wall of the living room, providing a state-of-the-art entertainment experience. The TV has a sleek design with a thin bezel and high-resolution display, perfect for watching movies, shows, or streaming content while enjoying the luxurious ambiance of the penthouse living room.
 
+  my_rival_my_love_part_1_book:
+    name:
+      en: |
+        My Rival, My Love - Part 1 Book
+    short_name:
+      en: |
+        my rival my love book
+    synonyms:
+      en: ["my rival my love book", "book", "novel"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A paperback copy of the first part of the romance novel "My Rival, My Love". The book has a colorful cover featuring an illustration of a romantic scene between two characters, hinting at the passionate and dramatic story contained within its pages.
+    images: ["images/items/tti-2026-06-04T15-24-44-835441794.png"]
+
   living_room_coffee_table:
     name:
       en: |
@@ -394,10 +410,10 @@ items:
     container_type: on
     container_capacity: 4
     actor_capacity: 1
-    contents: [tv_remote_control]
+    contents: [tv_remote_control, my_rival_my_love_part_1_book]
     description:
       en: |
-        A contemporary coffee table at the center of the living room, holding a few art books and a decorative vase. The table has a sleek design with a glass top and metal legs, adding a touch of sophistication to the space.
+        A contemporary coffee table at the center of the living room, holding a few books and a decorative vase. The table has a sleek design with a glass top and metal legs, adding a touch of sophistication to the space.
 
   living_room_bar_cart:
     name:
