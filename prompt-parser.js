@@ -866,12 +866,8 @@ GameEngine.prototype._matchAnyItemAt = function(tokens, idx) {
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
     const phrase = tokens.slice(idx, idx + len).join(' ');
     const matches = this._findAllItemIdsByNameOrSynonym(phrase);
-    if (matches.length > 0) {
-      const scoped = this._getScopedItemIds();
-      const inScope = matches.filter(id => scoped.has(id));
-      if (inScope.length === 1) return { itemId: inScope[0], len, phrase };
-      if (inScope.length > 1) return { ambiguous: true, candidates: inScope, phrase, len };
-    }
+    if (matches.length === 1) return { itemId: matches[0], len, phrase };
+    if (matches.length > 1) return { ambiguous: true, candidates: matches, phrase, len };
   }
   // Fallback: check if phrase matches the current location (by name or synonym)
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
