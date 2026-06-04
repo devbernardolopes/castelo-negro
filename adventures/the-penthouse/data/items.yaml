@@ -222,6 +222,104 @@ items:
   # Location Items
   # -------------------------------
 
+  # Entrance
+  elevator_cabin:
+    name:
+      en: |
+        Elevator Cabin
+    short_name:
+      en: |
+        elevator cabin
+    synonyms:
+      en: ["elevator cabin", "cabin", "elevator"]
+    enterable: true
+    sittable: true
+    actor_capacity: 6
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+      # side: one_way
+      # accessible_from:
+      #   - penthouse_hallway_half_bathroom
+      show_current_state: true
+    container_type: attached
+    contents: [elevator_control_panel]
+    description:
+      en: |
+        A sleek and modern elevator cabin with a polished metal interior and a control panel with buttons for each floor. The cabin is spacious enough to comfortably accommodate several people, making it a convenient way to access the different levels of the penthouse.
+
+  elevator_control_panel:
+    name:
+      en: |
+        Elevator Control Panel
+    short_name:
+      en: |
+        elevator control panel
+    synonyms:
+      en: ["elevator control panel", "control panel", "elevator buttons"]
+    container_type: attached
+    contents: [elevator_control_panel_button_lobby, elevator_control_panel_button_penthouse, elevator_control_panel_button_terrace]
+    description:
+      en: |
+        A sleek control panel located inside the elevator cabin, featuring buttons for each floor of the penthouse. The control panel allows you to easily select your desired floor and access the various levels of the penthouse with ease.
+
+  elevator_control_panel_button_lobby:
+    name:
+      en: |
+        Elevator Control Panel Button - Lobby
+    short_name:
+      en: |
+        lobby button
+    synonyms:
+      en: ["lobby button", "elevator button", "button"]
+    contents: []
+    description:
+      en: |
+        A button on the elevator control panel that allows you to select the lobby floor. Pressing this button will signal the elevator to take you directly to the lobby level, providing convenient access to the main entrance and common areas of the building.
+
+  elevator_control_panel_button_penthouse:
+    name:
+      en: |
+        Elevator Control Panel Button - Penthouse
+    short_name:
+      en: |
+        penthouse button
+    synonyms:
+      en: ["penthouse button", "elevator button", "button"]
+    contents: []
+    description:
+      en: |
+        A button on the elevator control panel that allows you to select the penthouse floor. Pressing this button will signal the elevator to take you directly to the penthouse level, providing convenient access to the luxurious living space.
+
+  elevator_control_panel_button_terrace:
+    name:
+      en: |
+        Elevator Control Panel Button - Terrace
+    short_name:
+      en: |
+        terrace button
+    synonyms:
+      en: ["terrace button", "elevator button", "button"]
+    contents: []
+    description:
+      en: |
+        A button on the elevator control panel that allows you to select the terrace floor. Pressing this button will signal the elevator to take you directly to the terrace level, providing convenient access to the outdoor space with stunning views of the city.
+
+  elevator_call_button:
+    name:
+      en: |
+        Elevator Call Button
+    short_name:
+      en: |
+        elevator call button
+    synonyms:
+      en: ["elevator call button", "call button", "elevator button"]
+    contents: []
+    description:
+      en: |
+        A button located near the entrance of the penthouse that allows you to call the elevator to your current floor. Pressing the button will signal the elevator to arrive, providing a convenient way to access the different levels of the penthouse.
+
   # Living Room
   living_room_couch:
     name:
@@ -235,6 +333,7 @@ items:
     sittable: true
     sleepable: true
     actor_capacity: 3
+    container_type: on
     container_capacity: 10
     description:
       en: |
@@ -256,6 +355,32 @@ items:
         A sleek and modern TV remote control that allows you to operate the state-of-the-art sound system and large flat-screen TV in the living room. The remote has a minimalist design with a few buttons for power, volume, channel selection, and input switching, providing a convenient way to enjoy entertainment in the penthouse living room.
     images: ["images/items/tti-2026-06-04T15-21-09-705658701.png"]
 
+  sound_system:
+    name:
+      en: |
+        Sound System
+    short_name:
+      en: |
+        sound system
+    synonyms:
+      en: ["sound system", "speakers", "audio system"]
+    description:
+      en: |
+        A state-of-the-art sound system housed in a sleek entertainment center on the far wall of the living room. The sound system includes high-quality speakers that provide immersive audio for an enhanced entertainment experience while enjoying the luxurious ambiance of the penthouse living room.
+
+  flat_screen_tv:
+    name:
+      en: |
+        Flat-Screen TV
+    short_name:
+      en: |
+        TV
+    synonyms:
+      en: ["tv", "flat-screen tv", "television"]
+    description:
+      en: |
+        A large flat-screen TV mounted on the far wall of the living room, providing a state-of-the-art entertainment experience. The TV has a sleek design with a thin bezel and high-resolution display, perfect for watching movies, shows, or streaming content while enjoying the luxurious ambiance of the penthouse living room.
+
   living_room_coffee_table:
     name:
       en: |
@@ -269,6 +394,7 @@ items:
     container_type: on
     container_capacity: 4
     actor_capacity: 1
+    contents: [tv_remote_control]
     description:
       en: |
         A contemporary coffee table at the center of the living room, holding a few art books and a decorative vase. The table has a sleek design with a glass top and metal legs, adding a touch of sophistication to the space.
@@ -282,12 +408,56 @@ items:
         bar cart
     synonyms:
       en: ["bar cart", "cart", "living room cart"]
-    takeable: false
     container_type: on
     container_capacity: 6
     description:
       en: |
         A stylish bar cart in the living room, stocked with an assortment of spirits and glassware, ready for entertaining. The bar cart has a modern design with a metal frame and glass shelves, providing a functional and attractive way to display and serve drinks for guests.
+
+  # Balcony
+  balcony_chair:
+    name:
+      en: |
+        Balcony Chair
+    short_name:
+      en: |
+        balcony chair
+    synonyms:
+      en: ["balcony chair", "chair", "balcony chair"]
+    sittable: true
+    actor_capacity: 1
+    description:
+      en: |
+        A comfortable chair on the living room balcony, providing a perfect spot to sit and enjoy the breathtaking view of the city skyline from the penthouse.
+  
+  city_skyline_view:
+    name:
+      en: |
+        City Skyline View
+    short_name:
+      en: |
+        city view
+    synonyms:
+      en: ["city skyline view", "city view", "skyline view", "view", "landscape"]
+    description:
+      en: |
+        A breathtaking view of the city skyline from the living room balcony, offering a stunning panorama of the urban landscape that can be enjoyed from the comfort of the penthouse.
+
+  balcony_table:
+    name:
+      en: |
+        Balcony Table
+    short_name:
+      en: |
+        balcony table
+    synonyms:
+      en: ["balcony table", "table", "balcony table"]
+    container_type: on
+    container_capacity: 2
+    actor_capacity: 1
+    description:
+      en: |
+        A small table on the living room balcony, providing a convenient surface for placing drinks, snacks, or other items while enjoying the stunning view of the city skyline from the penthouse.
 
   # Hallway - Half Bathroom
   half_bathroom_door:
@@ -320,7 +490,6 @@ items:
         toilet
     synonyms:
       en: ["toilet", "bathroom toilet"]
-    takeable: false
     sittable: true
     actor_capacity: 1
     container_type: in
@@ -338,7 +507,6 @@ items:
         toilet water
     synonyms:
       en: ["toilet water", "water"]
-    takeable: false
     container_type: in
     description:
       en: |
@@ -353,7 +521,6 @@ items:
         toilet roll holder
     synonyms:
       en: ["toilet paper roll holder", "toilet paper holder", "paper roll holder", "holder"]
-    takeable: false
     container_type: hanging
     container_capacity: 1
     contents: [half_bathroom_toilet_paper_roll]
@@ -375,7 +542,6 @@ items:
         sink
     synonyms:
       en: ["sink", "bathroom sink"]
-    takeable: false
     container_type: attached
     contents: [half_bathroom_faucet]
     container_capacity: 1
@@ -392,7 +558,6 @@ items:
         sink water
     synonyms:
       en: ["sink water", "water"]
-    takeable: false
     container_type: in
     description:
       en: |
@@ -407,7 +572,6 @@ items:
         faucet
     synonyms:
       en: ["faucet", "sink faucet", "bathroom faucet"]
-    takeable: false
     openable: true
     description:
       en: |
@@ -483,7 +647,6 @@ items:
         bed
     synonyms:
       en: ["bed", "guest bed", "bedroom bed"]
-    takeable: false
     sittable: true
     sleepable: true
     actor_capacity: 3
@@ -523,7 +686,6 @@ items:
         bed
     synonyms:
       en: ["bed", "master bed", "bedroom bed"]
-    takeable: false
     sittable: true
     sleepable: true
     actor_capacity: 4
@@ -542,7 +704,6 @@ items:
         bathtub
     synonyms:
       en: ["bathtub", "tub", "master tub"]
-    takeable: false
     enterable: true
     sittable: true
     container_type: in
@@ -561,7 +722,6 @@ items:
         shower
     synonyms:
       en: ["shower", "master shower"]
-    takeable: false
     enterable: true
     actor_capacity: 3
     container_capacity: 10
