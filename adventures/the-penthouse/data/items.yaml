@@ -779,3 +779,158 @@ items:
     description:
       en: |
         A spacious and modern shower in the master ensuite, featuring sleek glass doors and high-end fixtures for a refreshing bathing experience.
+
+  # Miscellaneous
+  concha_y_toro_carmin_de_peumo_wine_bottle:
+    name:
+      en: |
+        Concha y Toro Carmin de Peumo Wine Bottle
+    short_name:
+      en: |
+        wine bottle
+    synonyms:
+      en: ["concha y toro carmin de peumo wine bottle", "wine bottle", "bottle"]
+    takeable: true
+    size: 1
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+    description:
+      en: |
+        A bottle of Concha y Toro Carmin de Peumo wine, a red wine from Chile known for its rich flavor and smooth finish. The bottle has an elegant label featuring the Concha y Toro logo and the name of the wine, making it a stylish addition to any collection or a perfect choice for enjoying a glass of wine.
+    images: ["images/items/tti-2026-06-04T18-51-55-714687357.png"]
+
+  digital_wristwatch:
+    name:
+      en: |
+        Digital Wristwatch
+    short_name:
+      en: |
+        wristwatch
+    synonyms:
+      en: ["digital wristwatch", "wristwatch", "watch"]
+    takeable: true
+    wearable: true
+    size: 1
+    description:
+      en: |
+        A sleek digital wristwatch with a modern design, featuring a clear display that shows the time and date. The watch has a comfortable strap and is perfect for keeping track of time.
+    images: ["images/items/tti-2026-06-04T19-28-47-270365331.png"]
+
+  rolex_wristwatch:
+    name:
+      en: |
+        Rolex Wristwatch
+    short_name:
+      en: |
+        rolex wristwatch
+    synonyms:
+      en: ["rolex wristwatch", "rolex", "wristwatch", "watch"]
+    takeable: true
+    wearable: true
+    size: 1
+    description:
+      en: |
+        A luxurious Rolex wristwatch, known for its precision and timeless design. The watch features a stainless steel case and bracelet, with a classic dial that displays the time and date. It is a symbol of elegance and sophistication, making it a perfect accessory for any occasion.
+    images: ["images/items/tti-2026-06-04T19-29-06-994053862.png"]
+
+  womens_high_end_wristwatch:
+    name:
+      en: |
+        Women's High-End Wristwatch
+    short_name:
+      en: |
+        womens wristwatch
+    synonyms:
+      en: ["womens wristwatch", "women's wristwatch", "wristwatch", "watch"]
+    takeable: true
+    wearable: true
+    size: 1
+    description:
+      en: |
+        A sophisticated wristwatch designed for women, featuring a elegant design and high-quality materials. It is a perfect accessory for any formal or casual occasion.
+    images: ["images/items/tti-2026-06-04T19-30-01-359401919.png"]
+
+  pencil:
+    name:
+      en: |
+        Pencil
+    short_name:
+      en: |
+        pencil
+    synonyms:
+      en: ["pencil", "writing utensil"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A simple wooden pencil with a graphite core, perfect for writing or drawing.
+    images: ["images/items/tti-2026-06-04T19-34-13-638646627.png"]
+
+  pen:
+    name:
+      en: |
+        Pen
+    short_name:
+      en: |
+        pen
+    synonyms:
+      en: ["pen", "writing utensil"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A sleek ballpoint pen with a smooth writing experience, perfect for jotting down notes or signing documents.
+    images: ["images/items/tti-2026-06-04T19-39-10-842123186.png"]
+
+  tablet:
+    name:
+      en: |
+        Tablet
+    short_name:
+      en: |
+        tablet
+    synonyms:
+      en: ["tablet", "electronic device"]
+    takeable: true
+    wearable: true
+    size: 1
+    description:
+      en: |
+        A modern tablet with a sleek design and a high-resolution display, perfect for browsing the internet, watching videos, or working on the go.
+    images: ["images/items/tti-2026-06-04T19-43-32-903418567.png"]
+
+  diamond_necklace:
+    name:
+      en: |
+        Diamond Necklace
+    short_name:
+      en: |
+        diamond necklace
+    synonyms:
+      en: ["diamond necklace", "necklace", "jewelry"]
+    takeable: true
+    wearable: true
+    size: 1
+    description:
+      en: |
+        A stunning diamond necklace that exudes elegance and sophistication. The necklace features a delicate chain adorned with sparkling diamonds, making it a perfect accessory for special occasions or adding a touch of glamour to any outfit.
+    images: ["images/items/tti-2026-06-04T19-45-03-758221311.png"]
+
+  laptop_computer:
+    name:
+      en: |
+        Laptop Computer
+    short_name:
+      en: |
+        laptop computer
+    synonyms:
+      en: ["laptop computer", "laptop", "computer"]
+    takeable: true
+    wearable: true
+    size: 1
+    description:
+      en: |
+        A sleek and powerful laptop computer, perfect for work or entertainment. It features a high-resolution display, a comfortable keyboard, and a long-lasting battery, making it an ideal device for productivity and leisure.
+    images: ["images/items/tti-2026-06-04T19-45-49-492984211.png"]
