@@ -1107,13 +1107,20 @@ function renderRelationshipsList() {
   if (!engine) return;
 
   const playerId = engine._getPlayerActorId();
+  const playerData = engine.gameState.actors_data?.[playerId];
+  if (!playerData) return;
 
   const known = [];
   for (const [actorId, actorData] of Object.entries(engine.gameState.actors_data || {})) {
     if (actorId === playerId) continue;
-    const rel = actorData.relationships?.[playerId];
-    if (rel && rel.relationship_level && rel.relationship_level !== 'strangers') {
-      known.push({ actorId, relationship_level: rel.relationship_level, affinity: rel.affinity });
+    const playerRel = playerData.relationships?.[actorId];
+    if (playerRel && playerRel.relationship_level && playerRel.relationship_level !== 'strangers') {
+      const otherRel = actorData.relationships?.[playerId] || {};
+      known.push({
+        actorId,
+        relationship_level: otherRel.relationship_level || 'strangers',
+        affinity: otherRel.affinity ?? 0
+      });
     }
   }
 
@@ -1139,8 +1146,7 @@ function renderRelationshipsList() {
   for (const entry of known) {
     const actorDef = engine.definition.actors?.[entry.actorId];
     const name = engine._pickLang(actorDef?.name) || entry.actorId;
-    const level = String(entry.relationship_level || '');
-    const affinity = entry.affinity ?? 0;
+    const ad = engine.gameState.actors_data?.[entry.actorId];
 
     const row = document.createElement('div');
     row.className = 'relationships-item';
@@ -1172,21 +1178,15 @@ function renderRelationshipsList() {
     nameEl.textContent = name;
     info.appendChild(nameEl);
 
-    const levelEl = document.createElement('div');
-    levelEl.className = 'relationships-level';
-    levelEl.textContent = `${level.charAt(0).toUpperCase() + level.slice(1)}`;
-    info.appendChild(levelEl);
-
-    const affEl = document.createElement('div');
-    affEl.className = 'relationships-affinity';
-    affEl.textContent = `Affinity: ${affinity}`;
-    info.appendChild(affEl);
-
     const propDefs = engine.definition.properties || {};
     const relProps = Object.entries(propDefs).filter(([, def]) => def.show_in_relationships);
     for (const [propKey, propDef] of relProps) {
-      if (propKey === 'relationship_level' || propKey === 'affinity') continue;
-      const value = actorData.properties?.[propKey] ?? propDef.default ?? '';
+      let value;
+      if (propKey === 'relationship_level' || propKey === 'affinity') {
+        value = entry[propKey] ?? propDef.default ?? '';
+      } else {
+        value = ad?.properties?.[propKey] ?? propDef.default ?? '';
+      }
       const label = propDef.label ? engine._pickLang(propDef.label) : null;
       const propEl = document.createElement('div');
       propEl.className = 'relationships-prop';

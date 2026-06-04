@@ -90,7 +90,7 @@ properties:
     label:
       en: |
         Vacations
-    relationship_level:
+  relationship_level:
     type: string
     possible_values: ["strangers", "acquaintances", "partners", "enemies"]
     default: "strangers"
