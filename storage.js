@@ -190,6 +190,7 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
     onDebugRender: renderDebugPanel,
     onMapRender: renderMap,
     onRelationshipsRender: renderRelationshipsList,
+    onActorsRender: renderActorsList,
     onStatsRender: renderStatsList
   });
   setAdventureTitle(parsed?.metadata?.title || file.name);
@@ -247,6 +248,7 @@ async function loadAdventureFromUrl(yamlUrl) {
     onDebugRender: renderDebugPanel,
     onMapRender: renderMap,
     onRelationshipsRender: renderRelationshipsList,
+    onActorsRender: renderActorsList,
     onStatsRender: renderStatsList
   });
   setAdventureTitle(parsed?.metadata?.title || yamlUrl);

@@ -41,6 +41,9 @@ metadata:
     map:
       en: "Map"
       visible: true
+    actors:
+      en: "Actors"
+      visible: true
 
 # Syntax	                                                        Produces
 # [b]text[/b]	                                                    <strong>text</strong>

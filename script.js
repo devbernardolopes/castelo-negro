@@ -879,6 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
       onDebugRender: renderDebugPanel,
       onMapRender: renderMap,
       onRelationshipsRender: renderRelationshipsList,
+      onActorsRender: renderActorsList,
       onStatsRender: renderStatsList
     });
     resetUiForNewGame();
@@ -986,6 +987,7 @@ document.addEventListener('DOMContentLoaded', () => {
       onDebugRender: renderDebugPanel,
       onMapRender: renderMap,
       onRelationshipsRender: renderRelationshipsList,
+      onActorsRender: renderActorsList,
       onStatsRender: renderStatsList
     });
     resetUiForNewGame();

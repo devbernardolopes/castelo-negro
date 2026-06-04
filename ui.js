@@ -169,6 +169,7 @@ function resetUiForNewGame() {
   clearEl('debug-panel');
   clearEl('map-grid');
   clearEl('relationships-list');
+  clearEl('actors-list');
   clearEl('stats-list');
   _mapPanX = 0;
   _mapPanY = 0;
@@ -1204,6 +1205,106 @@ function renderRelationshipsList() {
   }
 
   if (_isTabContentChanged('relationships', contentKey)) _markTabUpdate('relationships');
+}
+
+/**
+ * Re-render the actors tab listing all playable actors except the current player.
+ */
+function renderActorsList() {
+  const el = document.getElementById('actors-list');
+  if (!el) return;
+  if (!engine) return;
+
+  const playerId = engine._getPlayerActorId();
+  const playable = [];
+
+  for (const [actorId, actorDef] of Object.entries(engine.definition.actors || {})) {
+    if (actorId === playerId) continue;
+    if (actorDef.playable !== true) continue;
+    const actorData = engine.gameState.actors_data?.[actorId];
+    const locId = actorData?.current_location;
+    const locName = locId ? (engine._pickLang(engine.definition.locations?.[locId]?.name) || locId) : 'Unknown';
+    playable.push({ actorId, actorDef, locName });
+  }
+
+  playable.sort((a, b) => {
+    const na = engine._pickLang(a.actorDef?.name) || a.actorId;
+    const nb = engine._pickLang(b.actorDef?.name) || b.actorId;
+    return na.localeCompare(nb);
+  });
+
+  const contentKey = playable.map(a => a.actorId).join(',');
+
+  while (el.firstChild) el.removeChild(el.firstChild);
+
+  if (playable.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'relationships-empty';
+    empty.textContent = 'No other playable actors.';
+    el.appendChild(empty);
+    if (_isTabContentChanged('actors', contentKey)) _markTabUpdate('actors');
+    return;
+  }
+
+  for (const entry of playable) {
+    const name = (engine._pickLang(entry.actorDef?.name) || entry.actorId).trim();
+
+    const row = document.createElement('div');
+    row.className = 'relationships-item';
+    row.style.cursor = 'pointer';
+
+    const portraitUrl = entry.actorDef?.images?.portrait;
+    if (portraitUrl) {
+      const img = document.createElement('img');
+      img.className = 'relationships-portrait';
+      img.alt = '';
+      engine.resolveAssetUrl(portraitUrl).then(url => {
+        if (url) img.src = url;
+      });
+      img.onerror = () => { img.style.display = 'none'; };
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (typeof window.showImageModal === 'function') {
+          engine.resolveAssetUrl(portraitUrl).then(url => {
+            if (url) window.showImageModal(url, name);
+          });
+        }
+      });
+      row.appendChild(img);
+    }
+
+    const info = document.createElement('div');
+    info.className = 'relationships-info';
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'relationships-name';
+    nameEl.textContent = name;
+    info.appendChild(nameEl);
+
+    const locEl = document.createElement('div');
+    locEl.className = 'relationships-prop';
+    locEl.textContent = entry.locName;
+    info.appendChild(locEl);
+
+    row.appendChild(info);
+
+    row.addEventListener('click', () => {
+      if (_isPausedForSend) return;
+      const prompt = `switch to ${name.toLowerCase()}`;
+      savePromptToHistory(prompt);
+      appendPlayerPrompt(prompt);
+      selectedWords = [];
+      renderCommandBuilder();
+      const directInput = document.getElementById('direct-text-input');
+      if (directInput) directInput.value = '';
+      syncSendButtonEnabled();
+      engine.processPlayerCommand(prompt);
+    });
+
+    el.appendChild(row);
+  }
+
+  if (_isTabContentChanged('actors', contentKey)) _markTabUpdate('actors');
 }
 
 /**

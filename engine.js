@@ -61,6 +61,7 @@ class GameEngine {
  *   onMemoryRender?: ()=>void,
  *   onDebugRender?: ()=>void,
  *   onRelationshipsRender?: ()=>void,
+ *   onActorsRender?: ()=>void,
  *   onStatsRender?: ()=>void
  * }} hooks
    */
@@ -1701,6 +1702,7 @@ class GameEngine {
     this.hooks.onMemoryRender?.();
     this.hooks.onMapRender?.();
     this.hooks.onRelationshipsRender?.();
+    this.hooks.onActorsRender?.();
     this.hooks.onStatsRender?.();
   }
 
@@ -1866,6 +1868,7 @@ class GameEngine {
     this.hooks.onDebugRender?.();
     this.hooks.onMapRender?.();
     this.hooks.onRelationshipsRender?.();
+    this.hooks.onActorsRender?.();
     this.hooks.onStatsRender?.();
     this.hooks.onLocationRender?.(locationId);
   }
