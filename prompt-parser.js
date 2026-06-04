@@ -243,8 +243,9 @@ GameEngine.prototype._tryActions = function(cmd) {
         // Check if conditions failed due to empty follow-up slots
         let hasEmptyFollowUp = false;
         if (actionDef.follow_up) {
-          for (const [slotName] of Object.entries(actionDef.follow_up)) {
-            if (!match.partialMatch[slotName] || match.partialMatch[slotName] === '') {
+          for (const [fSlotName] of Object.entries(actionDef.follow_up)) {
+            if (fSlotName === match.slotName) continue;
+            if (!match.partialMatch[fSlotName] || match.partialMatch[fSlotName] === '') {
               hasEmptyFollowUp = true;
               break;
             }
@@ -570,6 +571,8 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
   let candidates;
   if (isWildcard) {
     candidates = Object.keys(this.definition.actors || {});
+    const playerId = this._getPlayerActorId();
+    candidates = candidates.filter(id => id !== playerId);
   } else if (Array.isArray(slotDef)) {
     candidates = slotDef.map(String);
   } else {
@@ -1518,10 +1521,25 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
 
   if (slotName === 'actor') {
     const actorMatch = this._matchActorSlotAt(tokens, 0, slotDef === '*' ? '*' : slotDef);
-    if (actorMatch && !actorMatch.ambiguous) {
-      const actorDef = this.definition.actors?.[actorMatch.actorId];
-      const label = this._pickLang(actorDef?.name) || actorMatch.actorId;
-      return { value: actorMatch.actorId, label };
+    if (actorMatch) {
+      // Auto-resolve ambiguity: try conditions, else return null
+      if (actorMatch.ambiguous && actionDef) {
+        const passing = actorMatch.candidates.filter(id => {
+          const testMatch = { ...match, [slotName]: id, [`${slotName}_name`]: actorMatch.phrase };
+          return this._checkActionConditions(actionDef, testMatch);
+        });
+        if (passing.length >= 1) {
+          const chosen = passing[0];
+          const label = this._pickLang(this.definition.actors?.[chosen]?.name) || chosen;
+          return { value: chosen, label };
+        }
+        return null;
+      }
+      if (!actorMatch.ambiguous) {
+        const actorDef = this.definition.actors?.[actorMatch.actorId];
+        const label = this._pickLang(actorDef?.name) || actorMatch.actorId;
+        return { value: actorMatch.actorId, label };
+      }
     }
   }
 
