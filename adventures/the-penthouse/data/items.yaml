@@ -398,6 +398,40 @@ items:
         A paperback copy of the first part of the romance novel "My Rival, My Love". The book has a colorful cover featuring an illustration of a romantic scene between two characters, hinting at the passionate and dramatic story contained within its pages.
     images: ["images/items/tti-2026-06-04T16-40-29-813343294.png"]
 
+  the_voices_of_mary_book:
+    name:
+      en: |
+        Book "The Voices of Mary"
+    short_name:
+      en: |
+        the voices of mary book
+    synonyms:
+      en: ["the voices of mary book", "book", "novel"]
+    takeable: true
+    size: 1
+    readable: book_the_voices_of_mary
+    description:
+      en: |
+        A short poetry collection titled "The Voices of Mary". The book has a simple yet elegant cover design.
+    images: ["images/items/tti-2026-06-04T16-39-29-1025048165.png"]
+
+  the_strange_case_of_dr_jekyll_and_mr_hyde_book:
+    name:
+      en: |
+        Book "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    short_name:
+      en: |
+        dr jekyll and mr hyde book
+    synonyms:
+      en: ["dr jekyll and mr hyde book", "the strange case of dr jekyll and mr hyde book", "book", "novel"]
+    takeable: true
+    size: 1
+    readable: book_the_strange_case_of_dr_jekyll_and_mr_hyde
+    description:
+      en: |
+        A classic novel titled "The Strange Case of Dr. Jekyll and Mr. Hyde" by Robert Louis Stevenson. The book has a vintage cover design, reflecting its status as a timeless piece of literature.
+    images: ["images/items/tti-2026-06-04T17-51-51-274436556.png"]
+
   living_room_coffee_table:
     name:
       en: |
@@ -409,9 +443,9 @@ items:
       en: ["coffee table", "table", "living room table"]
     sittable: true
     container_type: on
-    container_capacity: 4
+    container_capacity: 6
     actor_capacity: 1
-    contents: [tv_remote_control, my_rival_my_love_part_1_book]
+    contents: [tv_remote_control, my_rival_my_love_part_1_book, the_voices_of_mary_book, the_strange_case_of_dr_jekyll_and_mr_hyde_book]
     description:
       en: |
         A contemporary coffee table at the center of the living room, holding a few books and a decorative vase. The table has a sleek design with a glass top and metal legs, adding a touch of sophistication to the space.
