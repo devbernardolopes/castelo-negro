@@ -205,6 +205,7 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
   setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
   _focusOnGameTab();
   resetUiForNewGame();
+  setInputRowVisible(true);
   const textDisplay = document.getElementById('text-display-content');
   if (textDisplay) textDisplay.innerHTML = '';
   appendGameMetadata(parsed?.metadata);
@@ -264,6 +265,7 @@ async function loadAdventureFromUrl(yamlUrl) {
   setDirectInputMode(!!parsed?.metadata?.allow_direct_input);
   _focusOnGameTab();
   resetUiForNewGame();
+  setInputRowVisible(true);
   const textDisplay = document.getElementById('text-display-content');
   if (textDisplay) textDisplay.innerHTML = '';
   appendGameMetadata(parsed?.metadata);
