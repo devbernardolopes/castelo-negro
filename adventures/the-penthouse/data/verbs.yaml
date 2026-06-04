@@ -151,6 +151,8 @@ directions:
     synonyms: { en: ["up", "u"], pt-br: ["cima", "c"] }
   down:
     synonyms: { en: ["down", "d"], pt-br: ["baixo", "b"] }
+  wait:
+    synonyms: { en: ["wait", "pass time"], pt-br: ["esperar", "passar o tempo"] }
 
 self:
   en: ["self", "me", "myself", "my", "mine"]
