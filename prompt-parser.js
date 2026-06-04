@@ -58,6 +58,20 @@ GameEngine.prototype.processPlayerCommand = function(input) {
     const { actionId, actionDef, match, slotName, slotDef } = this._pendingSlotPrompt;
     const resolved = this._resolveSlotPrompt(slotName, slotDef, cmd, actionDef, match);
     if (resolved) {
+      if (resolved.ambiguous) {
+        this._pendingSlotPrompt = null;
+        this._pendingAmbiguity = {
+          actionId,
+          actionDef,
+          match,
+          slotName,
+          candidates: resolved.candidates,
+          phrase: resolved.phrase
+        };
+        const msg = this._buildDisambiguationMessage(resolved.candidates, resolved.phrase, false);
+        if (msg) this.hooks.onOutput?.(msg);
+        return true;
+      }
       match[slotName] = resolved.value;
       match[`${slotName}_name`] = resolved.label;
       if (resolved.phrase) match[`_${slotName}_phrase`] = resolved.phrase;
@@ -1640,28 +1654,21 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
   if (slotName === 'object' || slotName === 'target') {
     const itemMatch = this._matchItemSlotAt(tokens, 0, slotDef || '*');
     if (itemMatch) {
-      // Auto-resolve ambiguity: try conditions, else pick first candidate
-      if (itemMatch.ambiguous && actionDef) {
-          const passing = itemMatch.candidates.filter(id => {
-          const testMatch = { ...match, [slotName]: id, [`${slotName}_name`]: itemMatch.phrase };
-          return this._checkActionConditions(actionDef, testMatch);
-        });
-        if (passing.length >= 1) {
-          const chosen = passing[0];
-          const label = this._getItemDisplayShortName(chosen)
-            || this._getItemDisplayName(chosen)
-            || itemMatch.phrase;
-          return { value: chosen, label, phrase: itemMatch.phrase };
-        }
-        // No candidate passes — use player's phrase as label
-        return { value: itemMatch.candidates[0], label: itemMatch.phrase, phrase: itemMatch.phrase };
+      if (itemMatch.ambiguous) {
+        return {
+          ambiguous: true,
+          candidates: itemMatch.candidates,
+          phrase: itemMatch.phrase,
+          slotName,
+          actionDef,
+          match,
+          slotDef
+        };
       }
-      if (!itemMatch.ambiguous) {
-        const label = this._getItemDisplayShortName(itemMatch.itemId)
-          || this._getItemDisplayName(itemMatch.itemId)
-          || itemMatch.phrase;
-        return { value: itemMatch.itemId, label, phrase: itemMatch.phrase };
-      }
+      const label = this._getItemDisplayShortName(itemMatch.itemId)
+        || this._getItemDisplayName(itemMatch.itemId)
+        || itemMatch.phrase;
+      return { value: itemMatch.itemId, label, phrase: itemMatch.phrase };
     }
     // No item matched — if the input looks like an actor name, signal the
     // caller to skip this action and fall through to legacy handling.
@@ -1685,24 +1692,20 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
         match._strangerBlocked = true;
         return null;
       }
-      // Auto-resolve ambiguity: try conditions, else return null
-      if (actorMatch.ambiguous && actionDef) {
-        const passing = actorMatch.candidates.filter(id => {
-          const testMatch = { ...match, [slotName]: id, [`${slotName}_name`]: actorMatch.phrase };
-          return this._checkActionConditions(actionDef, testMatch);
-        });
-        if (passing.length >= 1) {
-          const chosen = passing[0];
-          const label = this._pickLang(this.definition.actors?.[chosen]?.name) || chosen;
-          return { value: chosen, label, phrase: actorMatch.phrase };
-        }
-        return null;
+      if (actorMatch.ambiguous) {
+        return {
+          ambiguous: true,
+          candidates: actorMatch.candidates,
+          phrase: actorMatch.phrase,
+          slotName,
+          actionDef,
+          match,
+          slotDef
+        };
       }
-      if (!actorMatch.ambiguous) {
-        const actorDef = this.definition.actors?.[actorMatch.actorId];
-        const label = this._pickLang(actorDef?.name) || actorMatch.actorId;
-        return { value: actorMatch.actorId, label, phrase: actorMatch.phrase };
-      }
+      const actorDef = this.definition.actors?.[actorMatch.actorId];
+      const label = this._pickLang(actorDef?.name) || actorMatch.actorId;
+      return { value: actorMatch.actorId, label, phrase: actorMatch.phrase };
     }
   }
 
