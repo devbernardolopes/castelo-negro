@@ -636,7 +636,7 @@ items:
       en: |
         toilet paper roll
     synonyms:
-      en: ["toilet paper roll", "toilet paper", "paper roll", "paper"]
+      en: ["toilet paper roll", "toilet paper", "paper roll", "paper", "roll"]
     takeable: true
     size: 1
     description:
