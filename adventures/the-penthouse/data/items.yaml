@@ -231,7 +231,7 @@ items:
     openable:
       initial: closed
       lockable: true
-      locked: false
+      locked: true
       side: one_way
       accessible_from:
         - penthouse_hallway_half_bathroom
