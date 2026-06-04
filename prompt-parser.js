@@ -93,8 +93,10 @@ GameEngine.prototype.processPlayerCommand = function(input) {
       }
     } else {
       this._pendingSlotPrompt = null;
-      this.hooks.onOutput?.("You can't do that.");
-      this._afterTurn({ kind: 'action_cancelled', id: actionId });
+      if (!this._executeActionFailure(actionId, actionDef, match)) {
+        this.hooks.onOutput?.("You can't do that.");
+        this._afterTurn({ kind: 'action_cancelled', id: actionId });
+      }
     }
     return true;
   }
@@ -286,11 +288,9 @@ GameEngine.prototype._tryActions = function(cmd) {
 
     // Stranger blocked: player used a name for someone they don't know
     if (match._strangerBlocked) {
-      if (actionId === 'examine_actor') {
-        this.hooks.onOutput?.("You don't know anyone by that name.");
-        this._afterTurn({ kind: 'action_failed', id: actionId });
-        return true;
-      }
+      this.hooks.onOutput?.("You don't know anyone by that name.");
+      this._afterTurn({ kind: 'action_failed', id: actionId });
+      return true;
     }
 
     // Catch-all actions (no pattern, empty match) — defer to lowest priority
@@ -303,6 +303,24 @@ GameEngine.prototype._tryActions = function(cmd) {
     if (actionDef.follow_up) {
       for (const [slotName, promptMsg] of Object.entries(actionDef.follow_up)) {
         if (!match[slotName] || match[slotName] === '') {
+          // If the player already attempted to fill this slot (leftover tokens
+          // in the command that weren't consumed by any slot), use the leftover
+          // text as the slot value so conditions / conditional_messages can
+          // produce proper error messages (e.g. "There's no sabinekl here.")
+          // instead of prompting again.
+          const consumed = match._consumedTokens || 0;
+          const total = match._totalTokens || 0;
+          if (consumed < total) {
+            const tokens = String(cmd || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+            const stopwords = this._getParserStopwords();
+            const leftover = tokens.slice(consumed).filter(t => !stopwords.has(t));
+            if (leftover.length > 0) {
+              match[slotName] = leftover.join(' ');
+              match[`${slotName}_name`] = leftover.join(' ');
+            }
+            continue;
+          }
+
           const msg = this._pickLang(promptMsg);
           if (msg) this.hooks.onOutput?.(msg);
           this._pendingSlotPrompt = {
@@ -514,8 +532,9 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
   }
 
   skipStops();
+  out._consumedTokens = i;
+  out._totalTokens = tokens.length;
   if (i < tokens.length) {
-    if (optionalSkipped) return null;
     for (let j = i; j < tokens.length; j++) {
       if (this._verbsIndex.has(tokens[j])) return null;
     }
@@ -571,8 +590,6 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
   let candidates;
   if (isWildcard) {
     candidates = Object.keys(this.definition.actors || {});
-    const playerId = this._getPlayerActorId();
-    candidates = candidates.filter(id => id !== playerId);
   } else if (Array.isArray(slotDef)) {
     candidates = slotDef.map(String);
   } else {
@@ -608,8 +625,22 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
       }
     }
 
+    if (matched.length > 1) {
+      const playerId = this._getPlayerActorId();
+      const idx = matched.indexOf(playerId);
+      if (idx !== -1) matched.splice(idx, 1);
+    }
+    if (matched.length === 0) {
+      const selfWords = ['myself', 'me', 'yourself'];
+      if (selfWords.includes(p)) {
+        matched.push(this._getPlayerActorId());
+      }
+    }
     if (matched.length === 1) {
       const playerId = this._getPlayerActorId();
+      if (matched[0] === playerId) {
+        return { actorId: matched[0], len, phrase };
+      }
       if (this._isActorStrangerToPlayer(matched[0])) {
         return { _strangerBlocked: true, actorId: matched[0], len, phrase };
       }
@@ -635,6 +666,11 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
       if (descriptors.has(p)) matched.push(actorId);
     }
 
+    if (matched.length > 1) {
+      const playerId = this._getPlayerActorId();
+      const idx = matched.indexOf(playerId);
+      if (idx !== -1) matched.splice(idx, 1);
+    }
     if (matched.length === 1) return { actorId: matched[0], len, phrase, _visualMatch: true };
     if (matched.length > 1) {
       return { ambiguous: true, candidates: matched, len, phrase, _isStrangerAmbiguity: true };
@@ -1496,15 +1532,19 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
     if (itemMatch) {
       // Auto-resolve ambiguity: try conditions, else pick first candidate
       if (itemMatch.ambiguous && actionDef) {
-        const passing = itemMatch.candidates.filter(id => {
+          const passing = itemMatch.candidates.filter(id => {
           const testMatch = { ...match, [slotName]: id, [`${slotName}_name`]: itemMatch.phrase };
           return this._checkActionConditions(actionDef, testMatch);
         });
-        const chosen = passing.length === 1 ? passing[0] : itemMatch.candidates[0];
-        const label = this._getItemDisplayShortName(chosen)
-          || this._getItemDisplayName(chosen)
-          || itemMatch.phrase;
-        return { value: chosen, label };
+        if (passing.length >= 1) {
+          const chosen = passing[0];
+          const label = this._getItemDisplayShortName(chosen)
+            || this._getItemDisplayName(chosen)
+            || itemMatch.phrase;
+          return { value: chosen, label };
+        }
+        // No candidate passes — use player's phrase as label
+        return { value: itemMatch.candidates[0], label: itemMatch.phrase };
       }
       if (!itemMatch.ambiguous) {
         const label = this._getItemDisplayShortName(itemMatch.itemId)
