@@ -398,7 +398,7 @@ items:
         Master Bedroom Door
     short_name:
       en: |
-        door
+        master bedroom door
     synonyms:
       en: ["door", "bedroom door"]
     openable: true
