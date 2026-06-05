@@ -1307,6 +1307,7 @@ body {
     flex-direction: row;
     gap: 4px;
     flex: 0 1 auto;
+    padding-bottom: 16px;
   }
 
   .directional-buttons {
