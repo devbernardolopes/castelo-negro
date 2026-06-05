@@ -271,7 +271,7 @@ items:
     contents: [bernie_jeans_pants_pocket]
     description:
       en: |
-        A pair of men's slim straight-leg jeans in dark wash. They have a comfortable fit and are made of durable denim fabric.
+        A pair of men's slim straight-leg jeans in dark wash. They have a comfortable fit and are made of durable denim fabric. A single back pocket is available.
       conditions:
         - if: "containerHas(bernie_jeans_pants, bernie_jeans_pants_pocket) and current_player_actor != 'bernie'"
           message:
@@ -1287,7 +1287,7 @@ items:
       en: ["black backpack", "backpack", "bag"]
     takeable: true
     wearable: true
-    size: 1
+    size: 10
     openable:
       initial: closed
       lockable: false
