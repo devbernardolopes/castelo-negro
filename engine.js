@@ -1025,6 +1025,67 @@ class GameEngine {
         continue;
       }
 
+      // addWornItem('actorId', 'itemId') or addWornItem(actorId, 'itemId')
+      const addWornMatch = line.match(/^addWornItem\(\s*([^,]+)\s*,\s*(.+)\s*\)\s*$/);
+      if (addWornMatch) {
+        const rawActor = String(this._evalExpression(addWornMatch[1]) ?? '');
+        const actorId = rawActor || this._getPlayerActorId();
+        const itemId = String(addWornMatch[2]).trim().replace(/^['"]|['"]$/g, '');
+        const itemDef = this.definition.items?.[itemId];
+        const itemName = this._getItemDisplayShortName(itemId) || this._getItemDisplayName(itemId) || itemId;
+
+        if (!itemDef || !itemDef.wearable) {
+          this.hooks.onOutput?.(rawActor ? "You can't put that on anyone." : "You can't wear that.");
+          continue;
+        }
+
+        let data = this.gameState.actors_data?.[actorId];
+        if (!data) continue;
+
+        if (!rawActor) {
+          // Self: check inventory, not already worn, then wear
+          if (!Array.isArray(data.inventory) || !data.inventory.includes(itemId)) {
+            this.hooks.onOutput?.("You don't have that.");
+            continue;
+          }
+          if (Array.isArray(data.wearing) && data.wearing.includes(itemId)) {
+            this.hooks.onOutput?.("You're already wearing that.");
+            continue;
+          }
+          const invIdx = data.inventory.indexOf(itemId);
+          if (invIdx !== -1) data.inventory.splice(invIdx, 1);
+          if (!Array.isArray(data.wearing)) data.wearing = [];
+          data.wearing.push(itemId);
+          this.hooks.onOutput?.(`You put on ${itemName}.`);
+        } else {
+          // Other actor: item must be in their inventory and not already worn
+          if (!Array.isArray(data.inventory) || !data.inventory.includes(itemId)) {
+            const subj = this._getSubjectPronoun(actorId);
+            const subjCap = subj.charAt(0).toUpperCase() + subj.slice(1);
+            const have = subj === 'you' ? 'don\'t' : 'doesn\'t';
+            this.hooks.onOutput?.(`${subjCap} ${have} have that.`);
+            continue;
+          }
+          if (Array.isArray(data.wearing) && data.wearing.includes(itemId)) {
+            const subj = this._getSubjectPronoun(actorId);
+            const subjCap = subj.charAt(0).toUpperCase() + subj.slice(1);
+            const be = subj === 'you' ? 'are' : 'is';
+            this.hooks.onOutput?.(`${subjCap} ${be} already wearing that.`);
+            continue;
+          }
+          const invIdx = data.inventory.indexOf(itemId);
+          if (invIdx !== -1) data.inventory.splice(invIdx, 1);
+          if (!Array.isArray(data.wearing)) data.wearing = [];
+          data.wearing.push(itemId);
+
+          const actorName = this._pickLang(this.definition.actors?.[actorId]?.name) || actorId;
+          const possessive = this._getPossessiveForm(actorName);
+          const isSelf = actorId === this._getPlayerActorId();
+          this.hooks.onOutput?.(`You put ${possessive} ${itemName} on ${isSelf ? 'yourself' : actorName}.`);
+        }
+        continue;
+      }
+
       // startConversation('actorId') or startConversation(actorId)
       const startConvMatch = line.match(/^startConversation\(\s*(.+)\s*\)\s*$/);
       if (startConvMatch) {

@@ -333,6 +333,34 @@ actions:
           en: |
             You can't drop the {object_name}.
 
+  wear:
+    patterns:
+      to_actor:
+        - verb: ["put"]
+        - object: ["*"]
+        - actor: ["*"]
+      own:
+        - verb: ["wear", "put on"]
+        - object: ["*"]
+          optional: true
+    follow_up:
+      object:
+        en: "Wear what?"
+    conditions:
+      - "'{object}' != ''"
+      - "'{actor}' == '' or (getActor('{actor}') != null and getActor('{actor}').current_location == current_location)"
+    effect:
+      - "addWornItem('{actor}', '{object}')"
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: |
+            Wear what?
+      - condition: "'{actor}' != '' and (getActor('{actor}') == null or getActor('{actor}').current_location != current_location)"
+        message:
+          en: |
+            There's no one like that here.
+
   put:
     patterns:
       obj_then_target:

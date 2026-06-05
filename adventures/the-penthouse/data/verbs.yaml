@@ -52,7 +52,7 @@ verbs:
   throw:
     synonyms: { en: ["throw", "toss"], pt-br: ["jogar", "arremessar"] }
   wear:
-    synonyms: { en: ["wear", "put on"], pt-br: ["vestir", "colocar"] }
+    synonyms: { en: ["wear", "put on", "don", "slip on", "throw on"], pt-br: ["vestir", "colocar"] }
   press:
     synonyms: { en: ["press", "push"], pt-br: ["pressionar", "empurrar"] }
   cut:
