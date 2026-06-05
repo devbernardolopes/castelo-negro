@@ -60,7 +60,7 @@ actors:
       hair: "brown"
     relationships:
       bernie:
-        affinity: 35
+        affinity: 25
         relationship_level: "acquaintances"
     dialogue:
       entry_nodes:

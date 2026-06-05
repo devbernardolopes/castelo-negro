@@ -499,7 +499,8 @@ items:
     synonyms:
       en: ["bar cart", "cart", "living room cart"]
     container_type: on
-    container_capacity: 6
+    contents: [concha_y_toro_carmin_de_peumo_wine_bottle, woodford_reserve_bourbon_whiskey_bottle, grey_goose_vodka_bottle, hendricks_gin_bottle, martini_rosso_vermouth_bottle, campari_aperitif_bottle, whiskey_glass, wine_glass, cocktail_glass, common_glass]
+    container_capacity: 12
     description:
       en: |
         A stylish bar cart in the living room, stocked with an assortment of spirits and glassware, ready for entertaining. The bar cart has a modern design with a metal frame and glass shelves, providing a functional and attractive way to display and serve drinks for guests.
@@ -991,3 +992,175 @@ items:
       en: |
         A bottle of Dom Perignon champagne, a prestigious and highly sought-after sparkling wine known for its exceptional quality and taste. The bottle features an elegant design with the iconic Dom Perignon label, making it a symbol of luxury and celebration.
     images: ["images/items/tti-2026-06-04T19-47-33-512641027.png"]
+
+  woodword_reserve_bourbon_whiskey_bottle:
+    name:
+      en: |
+        Woodford Reserve Bourbon Whiskey Bottle
+    short_name:
+      en: |
+        bourbon whiskey bottle
+    synonyms:
+      en: ["woodford reserve bourbon whiskey bottle", "bourbon whiskey bottle", "whiskey bottle", "bottle"]
+    takeable: true
+    size: 1
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+    description:
+      en: |
+        A bottle of Woodford Reserve Bourbon Whiskey, a premium American whiskey known for its rich flavor and smooth finish. The bottle features a distinctive design with the Woodford Reserve logo, making it a stylish addition to any collection or a perfect choice for enjoying a glass of bourbon.
+    images: ["images/items/tti-2026-06-04T23-57-07-794477057.png"]
+
+  grey_goose_vodka_bottle:
+    name:
+      en: |
+        Grey Goose Vodka Bottle
+    short_name:
+      en: |
+        vodka bottle
+    synonyms:
+      en: ["grey goose vodka bottle", "vodka bottle", "bottle"]
+    takeable: true
+    size: 1
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+    description:
+      en: |
+        A bottle of Grey Goose Vodka, a premium French vodka known for its smooth and refined taste. The bottle features a sleek design with the iconic Grey Goose logo, making it a stylish addition to any collection or a perfect choice for enjoying a glass of vodka.
+    images: ["images/items/tti-2026-06-04T23-58-27-862697064.png"]
+
+  hendricks_gin_bottle:
+    name:
+      en: |
+        Hendrick's Gin Bottle
+    short_name:
+      en: |
+        gin bottle
+    synonyms:
+      en: ["hendrick's gin bottle", "gin bottle", "bottle"]
+    takeable: true
+    size: 1
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+    description:
+      en: |
+        A bottle of Hendrick's Gin, a premium Scottish gin known for its unique flavor profile and distinctive packaging. The bottle features a vintage-inspired design with the Hendrick's logo, making it a stylish addition to any collection or a perfect choice for enjoying a glass of gin.
+    images: ["images/items/tti-2026-06-05T00-00-21-358733218.png"]
+
+  martini_rosso_vermouth_bottle:
+    name:
+      en: |
+        Martini Rosso Vermouth Bottle
+    short_name:
+      en: |
+        vermouth bottle
+    synonyms:
+      en: ["martini rosso vermouth bottle", "vermouth bottle", "bottle"]
+    takeable: true
+    size: 1
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+    description:
+      en: |
+        A bottle of Martini Rosso Vermouth, a classic Italian vermouth known for its rich and complex flavor. The bottle features a distinctive design with the Martini logo, making it a stylish addition to any collection or a perfect choice for enjoying a glass of vermouth.
+    images: ["images/items/tti-2026-06-05T00-01-46-648298943.png"]
+
+  campari_aperitif_bottle:
+    name:
+      en: |
+        Campari Aperitif Bottle
+    short_name:
+      en: |
+        aperitif bottle
+    synonyms:
+      en: ["campari aperitif bottle", "aperitif bottle", "bottle"]
+    takeable: true
+    size: 1
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+    description:
+      en: |
+        A bottle of Campari Aperitif, a popular Italian aperitif known for its bitter and refreshing taste. The bottle features a vibrant red design with the Campari logo, making it a stylish addition to any collection or a perfect choice for enjoying a glass of aperitif.
+    images: ["images/items/tti-2026-06-05T00-03-37-474552358.png"]
+
+  wine_glass:
+    name:
+      en: |
+        Wine Glass
+    short_name:
+      en: |
+        wine glass
+    synonyms:
+      en: ["wine glass", "glass"]
+    takeable: true
+    size: 1
+    container_type: on
+    container_capacity: 1
+    description:
+      en: |
+        A delicate wine glass with a long stem and a wide bowl, perfect for enjoying a glass of wine. The glass is made of clear crystal, allowing you to fully appreciate the color and aroma of the wine as you sip it.
+    images: ["images/items/tti-2026-06-05T00-05-52-781641178.png"]
+
+  martini_cocktail_glass:
+    name:
+      en: |
+        Martini Cocktail Glass
+    short_name:
+      en: |
+        martini glass
+    synonyms:
+      en: ["martini cocktail glass", "martini glass", "cocktail glass", "glass"]
+    takeable: true
+    size: 1
+    container_type: on
+    container_capacity: 1
+    description:
+      en: |
+        A stylish martini cocktail glass with a long stem and a wide, shallow bowl, perfect for serving martinis and other cocktails. The glass is made of clear crystal, adding a touch of elegance to any cocktail experience.
+    images: ["images/items/tti-2026-06-05T00-07-35-170454010.png"]
+
+  regular_cocktail_glass:
+    name:
+      en: |
+        Regular Cocktail Glass
+    short_name:
+      en: |
+        cocktail glass
+    synonyms:
+      en: ["regular cocktail glass", "cocktail glass", "glass"]
+    takeable: true
+    size: 1
+    container_type: on
+    container_capacity: 1
+    description:
+      en: |
+        A classic cocktail glass with a long stem and a wide bowl, perfect for serving a variety of cocktails. The glass is made of clear crystal, providing a timeless look for any drinking experience.
+    images: ["images/items/tti-2026-06-05T00-09-12-381185713.png"]
+
+  common_glass:
+    name:
+      en: |
+        Common Glass
+    short_name:
+      en: |
+        glass
+    synonyms:
+      en: ["common glass", "glass"]
+    takeable: true
+    size: 1
+    container_type: on
+    container_capacity: 1
+    description:
+      en: |
+        A simple and versatile common glass, perfect for serving water, juice, or any other beverage. The glass is made of clear material, making it a practical choice for everyday use.
+    images: ["images/items/tti-2026-06-05T00-07-14-614929041.png"]
