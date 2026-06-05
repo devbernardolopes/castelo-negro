@@ -375,6 +375,9 @@ actions:
       - "'{target}' == '__location__' or here.has('{target}') or inventory.has('{target}')"
       - "'{target}' == '__location__' or items.container_capacity('{target}') != null"
       - "'{target}' == '__location__' or !items.openable('{target}') or items.isOpen('{target}')"
+      - "'{object}' != '{target}'"
+      - "'{target}' == '__location__' or !items.isAncestor('{object}', '{target}')"
+      - "'{target}' == '__location__' or items.container_count('{target}') + items.item_size('{object}') <= items.container_capacity('{target}')"
     effect:
       - "inventory.remove('{object}')"
       - "putInTarget('{target}', '{object}')"
@@ -398,7 +401,15 @@ actions:
         message:
           en: |
             The {target_name} is closed. You need to open it first.
-      - condition: "'{target}' != '__location__' and items.container_count('{target}') >= items.container_capacity('{target}')"
+      - condition: "'{object}' == '{target}'"
+        message:
+          en: |
+            You can't put the {object_name} inside itself.
+      - condition: "'{target}' != '__location__' and items.isAncestor('{object}', '{target}')"
+        message:
+          en: |
+            You can't put the {object_name} there.
+      - condition: "'{target}' != '__location__' and items.container_count('{target}') + items.item_size('{object}') > items.container_capacity('{target}')"
         message:
           en: |
             The {target_name} is full. You can't put anything else in it.

@@ -695,6 +695,22 @@ class GameEngine {
         actor_capacity: (itemId) => engine.definition.items?.[String(itemId)]?.actor_capacity ?? Infinity,
         isOpen: (itemId) => engine._isItemOpen(String(itemId)),
         isLocked: (itemId) => engine._isItemLocked(String(itemId)),
+        isAncestor: (ancestorId, descendantId) => {
+          const visited = new Set();
+          const queue = [String(ancestorId)];
+          while (queue.length) {
+            const current = queue.shift();
+            if (visited.has(current)) continue;
+            visited.add(current);
+            const children = engine.gameState.container_contents?.[current];
+            if (!Array.isArray(children)) continue;
+            for (const child of children) {
+              if (child === String(descendantId)) return true;
+              queue.push(child);
+            }
+          }
+          return false;
+        },
         canOpen: (itemId) => {
           const id = String(itemId);
           if (!engine._isItemLocked(id)) return true;
