@@ -1976,7 +1976,6 @@ class GameEngine {
     if (this.definition.metadata?.auto_container_description) {
       const visible = this._getContainerVisibleContents(itemId);
       if (visible.length > 0) {
-        // const names = visible.map(id => this._getItemDisplayName(id) || id);
         const names = visible.map(id => this._getItemDisplayShortName(id) || id);
         const headers = {
           in: 'Inside you see:',
@@ -1985,7 +1984,7 @@ class GameEngine {
           attached: 'Attached to it:'
         };
         const type = this._getContainerType(itemId);
-        result += '\n' + (headers[type] || headers.in) + ' ' + names.join(', ') + '.';
+        result += (result ? '\n' : '') + (headers[type] || headers.in) + ' ' + names.join(', ') + '.';
       }
     }
 
