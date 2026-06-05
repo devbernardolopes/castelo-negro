@@ -498,6 +498,46 @@ class GameEngine {
     return String(maybeBilingual);
   }
 
+  _getDialogueTemplateContext(actorId) {
+    const targetId = String(actorId || '');
+    const playerId = this._getPlayerActorId();
+    const actorData = this.gameState.actors_data?.[targetId] || {};
+    const playerData = this.gameState.actors_data?.[playerId] || {};
+    const relationshipToPlayer = targetId ? this.gameState.actors_data?.[targetId]?.relationships?.[playerId] || {} : {};
+    const playerRelationshipToTarget = targetId ? this.gameState.actors_data?.[playerId]?.relationships?.[targetId] || {} : {};
+
+    return {
+      actor: targetId,
+      actor_id: targetId,
+      current_actor: targetId,
+      current_actor_id: targetId,
+      actor_name: this._pickLang(this.definition.actors?.[targetId]?.name) || targetId,
+      actor_gender: actorData?.properties?.gender || '',
+      actor_mood: actorData?.properties?.mood || '',
+      current_player_actor: playerId,
+      current_player_actor_id: playerId,
+      current_player_actor_name: this._pickLang(this.definition.actors?.[playerId]?.name) || playerId,
+      current_player_actor_gender: playerData?.properties?.gender || '',
+      current_player_actor_mood: playerData?.properties?.mood || '',
+      relationship_affinity: relationshipToPlayer?.affinity,
+      relationship_level: relationshipToPlayer?.relationship_level,
+      player_relationship_affinity: playerRelationshipToTarget?.affinity,
+      player_relationship_level: playerRelationshipToTarget?.relationship_level,
+      game_turn: this.gameState.variables?.game_turn?.value
+    };
+  }
+
+  _expandDialogueText(text, actorId, match = null) {
+    const raw = this._pickLang(text);
+    if (!raw) return '';
+    const expanded = this._getDialogueTemplateContext(actorId);
+    const merged = { ...expanded, ...(match || {}) };
+    if (typeof this._expandTemplate === 'function') {
+      return this._expandTemplate(raw, merged);
+    }
+    return raw;
+  }
+
   /** Resolve a direction alias (ID or synonym) to its canonical ID */
   _resolveDirection(input) {
     const lower = String(input || '').trim().toLowerCase();
@@ -601,6 +641,7 @@ class GameEngine {
     return {
       ...vars,
       ...(playerData.properties || {}),
+      current_actor_id: this.gameState.conversation?.actorId || '',
       current_location: this.gameState.current_location,
       game_turn: this.gameState.game_turn,
       inventory: inventoryObj,
@@ -682,6 +723,15 @@ class GameEngine {
         playerData.relationships?.[otherActorId]?.[propName],
       getRelationshipBetween: (actorId1, actorId2, propName) =>
         engine.gameState.actors_data?.[actorId1]?.relationships?.[actorId2]?.[propName],
+      currentActor: {
+        get id() {
+          return engine.gameState.conversation?.actorId || '';
+        },
+        get name() {
+          const id = engine.gameState.conversation?.actorId || '';
+          return engine._pickLang(engine.definition.actors?.[id]?.name) || id;
+        }
+      },
       isWorn: (itemId) => {
         const loc = engine.gameState.current_location;
         for (const ad of Object.values(engine.gameState.actors_data || {})) {
@@ -1532,7 +1582,7 @@ class GameEngine {
     if (!node) { this._endConversation(); return; }
 
     const actorName = this._pickLang(actorDef.name) || conv.actorId;
-    const msg = this._pickLang(node.message);
+    const msg = this._expandDialogueText(node.message, conv.actorId);
     if (msg) {
       const output = `${actorName}: "${msg}"`;
       this.hooks.onOutput?.(output);
@@ -1540,12 +1590,16 @@ class GameEngine {
 
     if (Array.isArray(node.options) && node.options.length > 0) {
       const lines = [];
+      let visibleIndex = 0;
       for (let i = 0; i < node.options.length; i++) {
         const opt = node.options[i];
         const conds = Array.isArray(opt.conditions) ? opt.conditions : [];
         if (conds.length > 0 && !conds.every(c => this.evaluateCondition(String(c)))) continue;
-        const text = this._pickLang(opt.text);
-        if (text) lines.push(`[${i + 1}] ${text}`);
+        const text = this._expandDialogueText(opt.text, conv.actorId);
+        if (text) {
+          visibleIndex++;
+          lines.push(`[${visibleIndex}] ${text}`);
+        }
       }
       if (lines.length) this.hooks.onOutput?.(lines.join('\n'));
     }
