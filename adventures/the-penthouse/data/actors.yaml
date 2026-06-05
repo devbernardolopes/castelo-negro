@@ -38,7 +38,7 @@ actors:
         Sabine
     synonyms:
       en: ["her", "girl", "woman", "female", "lady", "she"]
-    playable: false
+    playable: true
     images:
       portrait: "images/actors/sabine/tti-2026-06-01T21-20-00-718795545.png"
       full: "images/actors/sabine/tti-2026-06-01T21-24-07-779765986.png"
