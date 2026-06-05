@@ -186,7 +186,7 @@ locations:
     description:
       en: |
         A luxurious master bedroom with a large bed and a balcony overlooking the city.
-    contents: [master_bedroom_bed, master_bedroom_door]
+    contents: [master_bedroom_bed, master_bedroom_door, master_bedroom_bedside_table, master_bedroom_closet]
     exits:
       south: penthouse_living_room_hallway
       west: penthouse_master_ensuite

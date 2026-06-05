@@ -793,11 +793,76 @@ items:
     sittable: true
     sleepable: true
     actor_capacity: 4
-    container_capacity: 10
+    container_capacity: 20
+    contents: [black_backpack]
     description:
       en: |
         A luxurious king-sized bed with a plush headboard and high-quality linens. The bed is adorned with decorative pillows and a cozy duvet, creating an inviting and comfortable sleeping area in the master bedroom of the penthouse.
   
+  master_bedroom_closet:
+    name:
+      en: |
+        Master Bedroom Closet
+    short_name:
+      en: |
+        closet
+    synonyms:
+      en: ["closet", "wardrobe", "master bedroom closet"]
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+      side: two_way
+      accessible_from:
+        - penthouse_master_bedroom
+    container_type: in
+    actor_capacity: 2
+    container_capacity: 10
+    description:
+      en: |
+        A spacious walk-in closet in the master bedroom, providing ample storage space for clothes, shoes, and accessories. The closet features built-in shelves, hanging rods, and drawers, allowing for organized storage of the occupant's wardrobe and belongings.
+
+  master_bedroom_bedside_table:
+    name:
+      en: |
+        Master Bedroom Bedside Table
+    short_name:
+      en: |
+        bedside table
+    synonyms:
+      en: ["bedside table", "nightstand", "bedroom table"]
+    container_type: on
+    container_capacity: 4
+    actor_capacity: 1
+    sittable: true
+    contents: [rolex_wristwatch]
+    description:
+      en: |
+        A sleek bedside table next to the master bedroom bed, providing a convenient surface for placing items such as a lamp, alarm clock, or personal belongings. The table has a modern design with a glass top, a drawer, and metal legs, complementing the luxurious aesthetic of the master bedroom in the penthouse.
+
+  master_bedroom_bedside_table_drawer:
+    name:
+      en: |
+        Master Bedroom Bedside Table Drawer
+    short_name:
+      en: |
+        bedside table drawer
+    synonyms:
+      en: ["bedside table drawer", "drawer", "bedroom drawer"]
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+      # side: one_way
+      # accessible_from:
+      #   - master_bedroom_bedside_table
+    container_type: in
+    container_capacity: 4
+    contents: [pencil, pen]
+    description:
+      en: |
+        A drawer built into the master bedroom bedside table, providing additional storage space for personal items and belongings. The drawer is easily accessible and can hold various items such as a wristwatch, writing utensils, or a tablet, keeping them organized and within reach for the occupant of the master bedroom.
+
   # Master Ensuite
   master_ensuite_bathtub:
     name:
@@ -1208,6 +1273,7 @@ items:
     size: 1
     container_type: in
     container_capacity: 10
+    contents: [tablet, laptop_computer]
     description:
       en: |
         A sleek black backpack with multiple compartments and sturdy straps, perfect for carrying your belongings in style. The backpack is made of durable material, making it a practical choice for everyday use or travel.
