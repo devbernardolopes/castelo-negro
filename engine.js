@@ -1566,6 +1566,7 @@ class GameEngine {
     const dialogue = actorDef?.dialogue;
     if (!dialogue?.nodes) return;
 
+    this.gameState.conversation = { active: true, actorId, nodeId: null };
     const entryNodes = Array.isArray(dialogue.entry_nodes) ? dialogue.entry_nodes : [{ id: 'greeting', conditions: [] }];
     let entryId = null;
     for (const entry of entryNodes) {
@@ -1573,9 +1574,12 @@ class GameEngine {
       const allOk = conds.length === 0 || conds.every(c => this.evaluateCondition(String(c)));
       if (allOk) { entryId = entry.id; break; }
     }
-    if (!entryId || !dialogue.nodes[entryId]) return;
+    if (!entryId || !dialogue.nodes[entryId]) {
+      this._endConversation();
+      return;
+    }
 
-    this.gameState.conversation = { active: true, actorId, nodeId: entryId };
+    this.gameState.conversation.nodeId = entryId;
     this._renderDialogueNode(entryId);
   }
 
