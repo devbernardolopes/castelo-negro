@@ -70,13 +70,13 @@ actors:
             - "getActorProp(current_actor_id, 'mood') == 'busy' or getActorProp(current_actor_id, 'mood') == 'annoyed'"
         - id: introductory_greeting
           conditions:
-            - "getRelationshipBetween(current_actor_id, current_player_actor, 'relationship_level') == 'strangers'"
+            - "getRelationshipBetween(current_actor_id, current_player_actor, 'relationship_level') == 'strangers' and getRelationshipBetween(current_player_actor, current_actor_id, 'relationship_level') == 'strangers'"
         - id: repeat_greeting
           conditions:
             - "game_turn - getActorProp(current_actor_id, 'last_spoke_turn') <= 1"
         - id: friendly_greeting
           conditions:
-            - "getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') >= 50"
+            - "getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') >= 50 or getRelationshipBetween(current_player_actor, current_actor_id, 'affinity') >= 50"
         - id: neutral_greeting
           conditions: []
       nodes:
