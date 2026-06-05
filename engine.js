@@ -719,10 +719,20 @@ class GameEngine {
       getActor: (id) => engine.gameState.actors_data?.[id],
       getActorProp: (actorId, propName) =>
         engine.gameState.actors_data?.[actorId]?.properties?.[propName],
-      getRelationship: (otherActorId, propName) =>
-        playerData.relationships?.[otherActorId]?.[propName],
-      getRelationshipBetween: (actorId1, actorId2, propName) =>
-        engine.gameState.actors_data?.[actorId1]?.relationships?.[actorId2]?.[propName],
+      getRelationship: (otherActorId, propName) => {
+        const value = playerData.relationships?.[otherActorId]?.[propName];
+        if (value !== undefined) return value;
+        if (propName === 'relationship_level') return 'strangers';
+        if (propName === 'affinity') return 0;
+        return undefined;
+      },
+      getRelationshipBetween: (actorId1, actorId2, propName) => {
+        const value = engine.gameState.actors_data?.[actorId1]?.relationships?.[actorId2]?.[propName];
+        if (value !== undefined) return value;
+        if (propName === 'relationship_level') return 'strangers';
+        if (propName === 'affinity') return 0;
+        return undefined;
+      },
       currentActor: {
         get id() {
           return engine.gameState.conversation?.actorId || '';
