@@ -43,6 +43,8 @@ actors:
     images:
       portrait: "images/actors/sabine/tti-2026-06-01T21-20-00-718795545.png"
       full: "images/actors/sabine/tti-2026-06-01T21-24-07-779765986.png"
+      full_01: "images/actors/sabine/tti-2026-06-04T04-49-59-779765986.png"
+      full_02: "images/actors/sabine/tti-2026-06-04T04-44-23-779765986.png"
     starting_location: penthouse_living_room
     known_locations: [penthouse_private_elevator, penthouse_vestibule, penthouse_living_room]
     inventory: []

@@ -616,6 +616,21 @@ class GameEngine {
     }
   }
 
+  _evaluateActorCondition(conditionString, actorId) {
+    const expr = String(conditionString || '').trim();
+    if (!expr) return true;
+    const ctx = this._buildEvalContext();
+    ctx.current_actor_id = actorId;
+    const jsExpr = this._translateConditionToJs(expr);
+    try {
+      const fn = new Function('ctx', `with (ctx) { return (${jsExpr}); }`);
+      return Boolean(fn(ctx));
+    } catch (err) {
+      console.warn('[engine] Failed to evaluate actor condition:', expr, err);
+      return false;
+    }
+  }
+
   _buildEvalContext() {
     const engine = this;
     const vars = {};
@@ -1553,6 +1568,28 @@ class GameEngine {
     }
 
     return parts.join('\n');
+  }
+
+  _resolveActorDisplayImage(actorId) {
+    const actorDef = this.definition.actors?.[actorId];
+    if (!actorDef) return null;
+
+    const displayRules = actorDef.display_image;
+    if (Array.isArray(displayRules) && displayRules.length > 0) {
+      for (const rule of displayRules) {
+        const conditions = rule.conditions;
+        const allPass = !Array.isArray(conditions) || conditions.length === 0 ||
+          conditions.every(c => this._evaluateActorCondition(c, actorId));
+        if (allPass) {
+          const imageKey = rule.image;
+          if (imageKey && actorDef.images?.[imageKey]) {
+            return actorDef.images[imageKey];
+          }
+        }
+      }
+    }
+
+    return actorDef.images?.full || null;
   }
 
   _buildActorPresenceDescription(locationId) {

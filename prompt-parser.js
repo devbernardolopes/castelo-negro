@@ -233,8 +233,7 @@ GameEngine.prototype._executeActionSuccess = function(actionId, actionDef, match
   if (actionId === 'examine_actor') {
     const actorId = resolvedMatch.actor;
     if (actorId) {
-      const actorDef = this.definition.actors?.[actorId];
-      const fullPath = actorDef?.images?.full;
+      const fullPath = this._resolveActorDisplayImage(actorId);
       if (fullPath) {
         this.hooks.onActorExamineRender?.(actorId, fullPath);
       }
