@@ -170,7 +170,7 @@ items:
       en: |
         jeans
     synonyms:
-      en: ["jeans", "pants", "sabine's jeans", "sabine's pants"]
+      en: ["jeans", "pants", "jeans pants", "👖"]
     takeable: true
     wearable: true
     owner: sabine
@@ -207,7 +207,7 @@ items:
       en: |
         silver strappy sandals
     synonyms:
-      en: ["silver strappy sandals", "sandals", "shoes", "sabine's sandals"]
+      en: ["silver strappy sandals", "sandals", "shoes", "strappy sandals", "silver sandals", "silver shoes", "strappy shoes"]
     takeable: true
     wearable: true
     owner: sabine
@@ -222,12 +222,13 @@ items:
   # -------------------------------
   bernie_credit_card:
     name:
-      # Previously: Bernie's Credit Card
-      # Review if the possessive form is necessary or if "Bernie's" can be omitted since the owner is already specified in the item definition.
       en: |
         {owner}'s Credit Card
+    short_name:
+      en: |
+        credit card
     synonyms:
-      en: ["credit card", "card", "bernie's card"]
+      en: ["credit card", "card"]
     takeable: true
     owner: bernie
     size: 1
@@ -239,18 +240,20 @@ items:
   bernie_jeans_pants_pocket:
     name:
       en: |
-        Bernie's Jeans Pants Pocket
+        {owner}'s Jeans Pants Pocket
     short_name:
       en: |
         back pocket
     synonyms:
-      en: ["pocket", "bernie's pocket", "jeans pocket", "pants pocket", "bernie's jeans pocket", "bernie's pants pocket"]
+      en: ["pocket", "jeans pocket", "pants pocket"]
     contents: [bernie_credit_card]
     container_capacity: 1
     show_in_inventory: false
+    show_in_auto_container_description: false
+    owner: bernie
     description:
       en: |
-        The back pocket of Bernie's jeans pants.
+        The back pocket of {owner}'s jeans pants.
   
   bernie_jeans_pants:
     name:
@@ -258,9 +261,9 @@ items:
         {owner}'s Jeans Pants
     short_name:
       en: |
-        jeans
+        jeans pants
     synonyms:
-      en: ["jeans", "pants", "bernie's jeans", "bernie's pants", "jeans pants", "👖"]
+      en: ["jeans", "pants", "jeans pants", "👖"]
     takeable: true
     wearable: true
     owner: bernie
