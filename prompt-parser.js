@@ -66,9 +66,10 @@ GameEngine.prototype.processPlayerCommand = function(input) {
           match,
           slotName,
           candidates: resolved.candidates,
-          phrase: resolved.phrase
+          phrase: resolved.phrase,
+          _isStrangerAmbiguity: Boolean(resolved._isStrangerAmbiguity)
         };
-        const msg = this._buildDisambiguationMessage(resolved.candidates, resolved.phrase, false);
+        const msg = this._buildDisambiguationMessage(resolved.candidates, resolved.phrase, Boolean(resolved._isStrangerAmbiguity));
         if (msg) this.hooks.onOutput?.(msg);
         return true;
       }
@@ -1725,6 +1726,7 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
           ambiguous: true,
           candidates: actorMatch.candidates,
           phrase: actorMatch.phrase,
+          _isStrangerAmbiguity: Boolean(actorMatch._isStrangerAmbiguity),
           slotName,
           actionDef,
           match,
