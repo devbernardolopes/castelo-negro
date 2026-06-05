@@ -21,6 +21,7 @@ actors:
       health: 100
       amount_of_vacations: 5
       hair: "black"
+      ethnicity: "North American"
     relationships:
       anya:
         affinity: 25
@@ -59,6 +60,7 @@ actors:
       health: 80
       amount_of_vacations: 0
       hair: "brown"
+      ethnicity: "Lebanese"
     relationships:
       bernie:
         affinity: 25
@@ -242,6 +244,7 @@ actors:
       health: 80
       amount_of_vacations: 0
       hair: "black"
+      ethnicity: "Moroccan"
     relationships:
       bernie:
         affinity: 52
@@ -303,6 +306,7 @@ actors:
       health: 50
       amount_of_vacations: 0
       hair: "platinum"
+      ethnicity: "Russian"
     relationships:
       bernie:
         affinity: 35

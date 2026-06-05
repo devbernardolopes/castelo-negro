@@ -360,6 +360,19 @@ items:
         A button located near the entrance of the penthouse that allows you to call the elevator to your current floor. Pressing the button will signal the elevator to arrive, providing a convenient way to access the different levels of the penthouse.
 
   # Living Room
+  living_room_intercom:
+    name:
+      en: |
+        Living Room Intercom
+    short_name:
+      en: |
+        intercom
+    synonyms:
+      en: ["living room intercom", "intercom", "speaker"]
+    description:
+      en: |
+        A sleek intercom system located in the living room, allowing you to communicate with other areas of the penthouse or with visitors at the entrance. The intercom has a modern design and provides clear audio for easy communication throughout the penthouse.
+
   living_room_couch:
     name:
       en: |
@@ -831,7 +844,7 @@ items:
     synonyms:
       en: ["concha y toro carmin de peumo wine bottle", "wine bottle", "bottle"]
     takeable: true
-    size: 1
+    size: 2
     openable:
       initial: closed
       lockable: false
@@ -967,7 +980,7 @@ items:
     synonyms:
       en: ["laptop computer", "laptop", "computer"]
     takeable: true
-    size: 1
+    size: 3
     description:
       en: |
         A sleek and powerful laptop computer, perfect for work or entertainment. It features a high-resolution display, a comfortable keyboard, and a long-lasting battery, making it an ideal device for productivity and leisure.
@@ -983,7 +996,7 @@ items:
     synonyms:
       en: ["dom perignon champagne bottle", "champagne bottle", "bottle"]
     takeable: true
-    size: 1
+    size: 2
     openable:
       initial: closed
       lockable: false
@@ -1003,7 +1016,7 @@ items:
     synonyms:
       en: ["woodford reserve bourbon whiskey bottle", "bourbon whiskey bottle", "whiskey bottle", "bottle"]
     takeable: true
-    size: 1
+    size: 2
     openable:
       initial: closed
       lockable: false
@@ -1023,7 +1036,7 @@ items:
     synonyms:
       en: ["grey goose vodka bottle", "vodka bottle", "bottle"]
     takeable: true
-    size: 1
+    size: 2
     openable:
       initial: closed
       lockable: false
@@ -1043,7 +1056,7 @@ items:
     synonyms:
       en: ["hendrick's gin bottle", "gin bottle", "bottle"]
     takeable: true
-    size: 1
+    size: 2
     openable:
       initial: closed
       lockable: false
@@ -1063,7 +1076,7 @@ items:
     synonyms:
       en: ["martini rosso vermouth bottle", "vermouth bottle", "bottle"]
     takeable: true
-    size: 1
+    size: 2
     openable:
       initial: closed
       lockable: false
@@ -1083,7 +1096,7 @@ items:
     synonyms:
       en: ["campari aperitif bottle", "aperitif bottle", "bottle"]
     takeable: true
-    size: 1
+    size: 2
     openable:
       initial: closed
       lockable: false
@@ -1164,3 +1177,38 @@ items:
       en: |
         A simple and versatile common glass, perfect for serving water, juice, or any other beverage. The glass is made of clear material, making it a practical choice for everyday use.
     images: ["images/items/tti-2026-06-05T00-07-14-614929041.png"]
+
+  flathead_screwdriver:
+    name:
+      en: |
+        Flathead Screwdriver
+    short_name:
+      en: |
+        flathead screwdriver
+    synonyms:
+      en: ["flathead screwdriver", "screwdriver", "tool"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A basic flathead screwdriver with a simple design, perfect for tightening or loosening screws with a flat head. It is a handy tool to have for various household tasks and repairs.
+    images: ["images/items/tti-2026-06-05T16-54-21-958627277.png"]
+
+  black_backpack:
+    name:
+      en: |
+        Black Backpack
+    short_name:
+      en: |
+        backpack
+    synonyms:
+      en: ["black backpack", "backpack", "bag"]
+    takeable: true
+    wearable: true
+    size: 1
+    container_type: in
+    container_capacity: 10
+    description:
+      en: |
+        A sleek black backpack with multiple compartments and sturdy straps, perfect for carrying your belongings in style. The backpack is made of durable material, making it a practical choice for everyday use or travel.
+    images: ["images/items/tti-2026-06-05T16-56-53-882642940.png"]

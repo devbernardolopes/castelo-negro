@@ -104,3 +104,8 @@ properties:
     label:
       en: |
         Affinity
+  ethnicity: # Ethnicity is being used loosely here to represent cultural background, which can influence a character's worldview, values, and behaviors. It is not meant to be a comprehensive or definitive categorization of identity, but rather a tool for adding depth and nuance to characters in the context of the story.
+    type: string
+    possible_values: ["North American", "Moroccan", "Brazilian", "Japanese", "Nigerian", "Indian", "Chinese", "Russian", "Lebanese", "Egyptian", "Turkish", "French", "German", "Italian", "Spanish", "Korean", "Vietnamese", "Filipino", "Indonesian", "Pakistani", "Bangladeshi", "Other"]
+    default: "North American"
+    show_in_relationships: true
