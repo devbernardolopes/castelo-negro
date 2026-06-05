@@ -835,7 +835,7 @@ items:
     container_capacity: 4
     actor_capacity: 1
     sittable: true
-    contents: [rolex_wristwatch]
+    contents: [master_bedroom_bedside_table_drawer, rolex_wristwatch]
     description:
       en: |
         A sleek bedside table next to the master bedroom bed, providing a convenient surface for placing items such as a lamp, alarm clock, or personal belongings. The table has a modern design with a glass top, a drawer, and metal legs, complementing the luxurious aesthetic of the master bedroom in the penthouse.
