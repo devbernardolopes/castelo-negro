@@ -1363,7 +1363,8 @@ function handleActorExamineImage(actorId, imagePath) {
   if (!el) return;
   const container = document.createElement('div');
   container.className = 'log-entry';
-  container.style.textAlign = 'center';
+  container.style.display = 'flex';
+  container.style.justifyContent = 'center';
   const img = document.createElement('img');
   img.className = 'actor-examine-thumbnail';
   img.alt = '';
@@ -1371,13 +1372,16 @@ function handleActorExamineImage(actorId, imagePath) {
   img.addEventListener('click', () => {
     if (window.showImageModal) window.showImageModal(img.src);
   });
+  img.onload = () => {
+    img.style.display = 'block';
+    const scrollEl = document.getElementById('text-display');
+    if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+  };
+  img.onerror = () => { img.style.display = 'none'; };
   container.appendChild(img);
   el.appendChild(document.createElement('br'));
   el.appendChild(container);
   engine.resolveAssetUrl(imagePath).then(url => {
-    if (url) { img.src = url; img.style.display = 'block'; }
+    if (url) img.src = url;
   });
-  img.onerror = () => { img.style.display = 'none'; };
-  const scrollEl = document.getElementById('text-display');
-  if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
 }
