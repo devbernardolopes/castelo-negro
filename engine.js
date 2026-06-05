@@ -1154,7 +1154,11 @@ class GameEngine {
     if (!Array.isArray(contents)) return [];
     const def = this.definition.items?.[containerId];
     if (def?.openable && !this._isItemOpen(containerId)) return [];
-    return contents.filter(itemId => this._isContainerItemVisible(containerId, itemId));
+    return contents.filter(itemId => {
+      const itemDef = this.definition.items?.[itemId];
+      if (itemDef?.show_in_auto_container_description === false) return false;
+      return this._isContainerItemVisible(containerId, itemId);
+    });
   }
 
   _itemExistsInLocationScope(itemId) {
