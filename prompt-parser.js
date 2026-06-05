@@ -1036,9 +1036,11 @@ GameEngine.prototype._getScopedItemIds = function() {
 };
 
 GameEngine.prototype._matchAnyItemAt = function(tokens, idx) {
+  const scoped = this._getScopedItemIds();
   for (let len = Math.min(5, tokens.length - idx); len >= 1; len--) {
     const phrase = tokens.slice(idx, idx + len).join(' ');
-    const matches = this._findAllItemIdsByNameOrSynonym(phrase);
+    const global = this._findAllItemIdsByNameOrSynonym(phrase);
+    const matches = global.filter(id => scoped.has(id));
     if (matches.length === 1) return { itemId: matches[0], len, phrase };
     if (matches.length > 1) return { ambiguous: true, candidates: matches, phrase, len };
   }
