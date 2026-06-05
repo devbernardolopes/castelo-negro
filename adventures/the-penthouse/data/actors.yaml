@@ -66,20 +66,31 @@ actors:
       entry_nodes:
         - id: intoductory_greeting
           conditions:
-            - "getRelationship('sabine', current_player_actor, 'affinity') == 0"
-            # - "getRelationship('sabine', current_player_actor, 'affinity') < 25"
+            - "getRelationship('sabine', current_player_actor, 'affinity') >= 0"
+            # TODO: Get actor's mood in conditions to gate content based on that (in this case, when "angry" this actor won't introduce itself).
+            # TODO: Get relationship_level in conditions to gate content based on that (in this case, only when the relationship is at the "strangers" level this actor will introduce itself).
         - id: neutral_greeting
           conditions:
             - "getRelationship('sabine', current_player_actor, 'affinity') >= 0"
-            - "getRelationship('sabine', current_player_actor, 'affinity') < 25"
-        - id: friendly_greeting
-          conditions:
-            - "getRelationship('sabine', current_player_actor, 'affinity') >= 25"
-            - "getRelationship('sabine', current_player_actor, 'affinity') < 35"
+            # - "getRelationship('sabine', current_player_actor, 'affinity') < 25"
         # - id: friendly_greeting
         #   conditions:
-        #     - "getRelationship('sabine', current_player_actor, 'affinity') >= 35"
+        #     - "getRelationship('sabine', current_player_actor, 'affinity') >= 25"
+        #     - "getRelationship('sabine', current_player_actor, 'affinity') < 35"
       nodes:
+        intoductory_greeting:
+          message:
+            en: "Oh, hey. I'm getActor()." # TODO: Does 'getActor()' exists? What are the internal functions available to use in dialogue content? We should have a way to list them in the documentation. In this case here, it should return the name of the actor, so the message would be something like "Oh, hey. I'm Sabine."
+          options:
+            - text:
+                en: "Hey, getActor(). I'm getActor(current_player_actor). Nice to meet you." # TODO: Again, we need to confirm if 'getActor()' and 'getActor(current_player_actor)' functions exist and work as expected. The message should ideally be something like "Hey, Sabine. I'm Bernie. Nice to meet you.". Or whatever the current player actor's name is.
+              effects: []
+                # TODO: Here the affinity increase must occur on both sides, meaning that we need to increase the affinity of the current player actor towards Sabine and also the affinity of Sabine towards the current player actor.
+                # TODO: Also, 'relationship_level' should change from "strangers" to "acquaintances" for both actors. Currently, 'relationship_level' is a list (array) but they're not neccesarily sequential. Some levels are "negative" (like "enemies") and some are "positive" (like "friends").
+              next: neutral_greeting
+            - text:
+                en: "See you around."
+              next: null
         neutral_greeting:
           message:
             en: "Oh, hey."
@@ -174,9 +185,6 @@ actors:
       bernie:
         affinity: 52
         relationship_level: "friends"
-      sabine:
-        affinity: -21
-        relationship_level: "strangers"
     dialogue:
       entry_nodes:
         - id: friendly_greeting
