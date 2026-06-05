@@ -1278,3 +1278,35 @@ items:
       en: |
         A sleek black backpack with multiple compartments and sturdy straps, perfect for carrying your belongings in style. The backpack is made of durable material, making it a practical choice for everyday use or travel.
     images: ["images/items/tti-2026-06-05T16-56-53-882642940.png"]
+
+  dark_red_nail_polish:
+    name:
+      en: |
+        Dark Red Nail Polish
+    short_name:
+      en: |
+        nail polish
+    synonyms:
+      en: ["dark red nail polish", "nail polish", "polish"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A bottle of dark red nail polish, perfect for adding a touch of elegance and sophistication to your manicure. The nail polish has a rich, deep color that complements any outfit and is ideal for both casual and formal occasions.
+    images: ["images/items/tti-2026-06-05T19-26-41-631630889.png"]
+
+  charcoal_nail_polish:
+    name:
+      en: |
+        Charcoal Nail Polish
+    short_name:
+      en: |
+        charcoal nail polish
+    synonyms:
+      en: ["charcoal nail polish", "nail polish", "polish"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A bottle of charcoal nail polish, perfect for adding a bold and edgy touch to your manicure. The nail polish has a dark, smoky color that makes a statement and is ideal for those who want to stand out with their nail art.
+    images: ["images/items/tti-2026-06-05T19-25-03-302448174.png"]

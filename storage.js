@@ -191,7 +191,8 @@ async function loadAdventureFromFile(file, handleForRemember, dirHandleForAssets
     onMapRender: renderMap,
     onRelationshipsRender: renderRelationshipsList,
     onActorsRender: renderActorsList,
-    onStatsRender: renderStatsList
+    onStatsRender: renderStatsList,
+    onActorExamineRender: handleActorExamineImage
   });
   setAdventureTitle(parsed?.metadata?.title || file.name);
   setMenuButtonsEnabled(true);
@@ -251,7 +252,8 @@ async function loadAdventureFromUrl(yamlUrl) {
     onMapRender: renderMap,
     onRelationshipsRender: renderRelationshipsList,
     onActorsRender: renderActorsList,
-    onStatsRender: renderStatsList
+    onStatsRender: renderStatsList,
+    onActorExamineRender: handleActorExamineImage
   });
   setAdventureTitle(parsed?.metadata?.title || yamlUrl);
   setMenuButtonsEnabled(true);

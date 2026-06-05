@@ -1358,7 +1358,7 @@ function renderStatsList() {
   if (_isTabContentChanged('stats', contentKey)) _markTabUpdate('stats');
 }
 
-function handleActorExamineImage(actorId, imageUrl) {
+function handleActorExamineImage(actorId, imagePath) {
   const el = document.getElementById('text-display-content');
   if (!el) return;
   const container = document.createElement('div');
@@ -1366,12 +1366,18 @@ function handleActorExamineImage(actorId, imageUrl) {
   container.style.textAlign = 'center';
   const img = document.createElement('img');
   img.className = 'actor-examine-thumbnail';
-  img.src = imageUrl;
   img.alt = '';
-  img.addEventListener('click', () => showImageModal(imageUrl));
+  img.style.display = 'none';
+  img.addEventListener('click', () => {
+    if (window.showImageModal) window.showImageModal(img.src);
+  });
   container.appendChild(img);
   el.appendChild(document.createElement('br'));
   el.appendChild(container);
+  engine.resolveAssetUrl(imagePath).then(url => {
+    if (url) { img.src = url; img.style.display = 'block'; }
+  });
+  img.onerror = () => { img.style.display = 'none'; };
   const scrollEl = document.getElementById('text-display');
   if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
 }

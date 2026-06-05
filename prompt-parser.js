@@ -205,20 +205,6 @@ GameEngine.prototype._executeActionSuccess = function(actionId, actionDef, match
     }
   }
 
-  // Fire actor examine image hook after examine_actor output
-  if (actionId === 'examine_actor') {
-    const actorId = resolvedMatch.actor;
-    if (actorId) {
-      const actorDef = this.definition.actors?.[actorId];
-      const fullPath = actorDef?.images?.full;
-      if (fullPath) {
-        this.resolveAssetUrl(fullPath).then(url => {
-          if (url) this.hooks.onActorExamineRender?.(actorId, url);
-        });
-      }
-    }
-  }
-
   if (actionDef.message_pool) {
     const pool = this._pickLang(actionDef.message_pool);
     if (Array.isArray(pool) && pool.length) {
@@ -240,6 +226,18 @@ GameEngine.prototype._executeActionSuccess = function(actionId, actionDef, match
       if (pm.effect) this._applyActionEffects(pm.effect, resolvedMatch);
       const msg = this._pickLang(pm.message);
       if (msg) this.hooks.onOutput?.(this._expandTemplate(msg, resolvedMatch));
+    }
+  }
+
+  // Fire actor examine image hook after all output
+  if (actionId === 'examine_actor') {
+    const actorId = resolvedMatch.actor;
+    if (actorId) {
+      const actorDef = this.definition.actors?.[actorId];
+      const fullPath = actorDef?.images?.full;
+      if (fullPath) {
+        this.hooks.onActorExamineRender?.(actorId, fullPath);
+      }
     }
   }
 
@@ -759,9 +757,33 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
       if (idx !== -1) matched.splice(idx, 1);
     }
     if (matched.length === 0) {
+      const playerId = this._getPlayerActorId();
       const selfWords = ['myself', 'me', 'yourself'];
       if (selfWords.includes(p)) {
-        matched.push(this._getPlayerActorId());
+        matched.push(playerId);
+      } else if (p === playerId.toLowerCase() || p === playerId.replace(/_/g, ' ').toLowerCase()) {
+        matched.push(playerId);
+      } else {
+        const playerDef = this.definition.actors?.[playerId];
+        if (playerDef) {
+          if (opts.matchMode !== 'alias_only') {
+            const playerName = this._pickLang(playerDef.name);
+            if (playerName && p === String(playerName).trim().toLowerCase()) {
+              matched.push(playerId);
+            }
+          }
+          if (matched.length === 0 && opts.matchMode !== 'name_only') {
+            const syn = playerDef.synonyms;
+            if (syn && typeof syn === 'object') {
+              const langList = syn[this.language];
+              if (Array.isArray(langList)) {
+                for (const s of langList) {
+                  if (p === String(s).trim().toLowerCase()) { matched.push(playerId); break; }
+                }
+              }
+            }
+          }
+        }
       }
     }
     if (matched.length === 1) {
