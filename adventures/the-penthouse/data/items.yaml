@@ -830,7 +830,7 @@ items:
       en: |
         bedside table
     synonyms:
-      en: ["bedside table", "nightstand", "bedroom table"]
+      en: ["bedside table", "nightstand", "bedroom table", "table"]
     container_type: on
     container_capacity: 4
     actor_capacity: 1
