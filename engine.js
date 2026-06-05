@@ -1956,7 +1956,8 @@ class GameEngine {
     if (this.definition.metadata?.auto_container_description) {
       const visible = this._getContainerVisibleContents(itemId);
       if (visible.length > 0) {
-        const names = visible.map(id => this._getItemDisplayName(id) || id);
+        // const names = visible.map(id => this._getItemDisplayName(id) || id);
+        const names = visible.map(id => this._getItemDisplayShortName(id) || id);
         const headers = {
           in: 'Inside you see:',
           on: 'On it you see:',

@@ -55,7 +55,7 @@ items:
       en: |
         white leggings
     synonyms:
-      en: ["white leggings", "leggings", "anya's leggings"]
+      en: ["white leggings", "leggings"]
     takeable: true
     wearable: true
     owner: anya
@@ -73,7 +73,7 @@ items:
       en: |
         white sneakers
     synonyms:
-      en: ["white sneakers", "sneakers", "shoes", "anya's sneakers"]
+      en: ["white sneakers", "sneakers", "shoes", "white shoes"]
     takeable: true
     wearable: true
     owner: anya
@@ -91,7 +91,7 @@ items:
       en: |
         black cropped sweater
     synonyms:
-      en: ["black cropped sweater", "cropped sweater", "sweater", "anya's sweater"]
+      en: ["black cropped sweater", "cropped sweater", "sweater"]
     takeable: true
     wearable: true
     owner: anya
@@ -109,7 +109,7 @@ items:
       en: |
         {owner}'s Cell Phone
     synonyms:
-      en: ["cell phone", "phone", "sabine's phone"]
+      en: ["cell phone", "phone"]
     takeable: true
     owner: sabine
     size: 1
@@ -139,18 +139,19 @@ items:
   sabine_jeans_pants_pocket:
     name:
       en: |
-        Sabine's Jeans Pants Pocket
+        {owner}'s Jeans Pants Pocket
     short_name:
       en: |
         front pocket
     synonyms:
-      en: ["pocket", "sabine's pocket", "jeans pocket", "pants pocket", "sabine's jeans pocket", "sabine's pants pocket"]
+      en: ["pocket", "jeans pocket", "pants pocket"]
     contents: [sabine_cell_phone]
     show_in_inventory: false
     container_capacity: 1
+    owner: sabine
     description:
       en: |
-        The front pocket of Sabine's jeans pants.
+        The front pocket of {owner}'s jeans pants.
       conditions:
         - if: "containerHas('sabine_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor != 'sabine'"
           message:
@@ -296,9 +297,6 @@ items:
       initial: closed
       lockable: false
       locked: false
-      # side: one_way
-      # accessible_from:
-      #   - penthouse_hallway_half_bathroom
       show_current_state: true
     container_type: attached
     contents: [elevator_control_panel]
@@ -786,7 +784,7 @@ items:
       en: |
         master bedroom door
     synonyms:
-      en: ["door", "bedroom door"]
+      en: ["door", "bedroom door", "master door"]
     openable:
       initial: closed
       lockable: true
@@ -871,9 +869,7 @@ items:
       initial: closed
       lockable: false
       locked: false
-      # side: one_way
-      # accessible_from:
-      #   - master_bedroom_bedside_table
+      show_current_state: true
     container_type: in
     container_capacity: 4
     contents: [pencil, pen]
@@ -1289,6 +1285,11 @@ items:
     takeable: true
     wearable: true
     size: 1
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+      show_current_state: true
     container_type: in
     container_capacity: 10
     contents: [tablet, laptop_computer]
@@ -1343,4 +1344,44 @@ items:
     description:
       en: |
         A sleek black leather wallet with multiple compartments for cards, cash, and coins. The wallet is made of high-quality leather, providing durability and a sophisticated look for everyday use.
-    images: ["images/items/tti-2026-06-05T19-41-22-111803065.png"]f
+    images: ["images/items/tti-2026-06-05T19-41-22-111803065.png"]
+
+  red_lace_panties:
+    name:
+      en: |
+        Red Lace Panties
+    short_name:
+      en: |
+        red lace panties
+    synonyms:
+      en: ["red lace panties", "red panties", "lace panties", "panties"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A pair of delicate women's underwear made of thin red lace. The fabric is sheer enough that it leaves little to the imagination. The waistband is thin and elastic, designed to hug snugly against the hips.
+    images: ["images/items/tti-2026-06-05T21-52-17-728805169.png"]
+
+  black_leather_purse:
+    name:
+      en: |
+        Black Leather Purse
+    short_name:
+      en: |
+        black leather purse
+    synonyms:
+      en: ["black leather purse", "black purse", "leather purse", "purse"]
+    takeable: true
+    wearable: true
+    container_type: in
+    container_capacity: 6
+    size: 1
+    description:
+      en: |
+        A sleek, minimalist purse made of black leather.
+    images: ["images/items/tti-2026-06-05T22-02-34-207571073.png"]
+
+
+# - **Pink Women's Purse** — A soft pink canvas purse with a gold chain strap. It features a magnetic snap closure and an interior with two card slots and a center pocket for cash. Lightly scuffed at the corners.
+
+# - **Light Caramel Women's Purse** — A structured tote-style purse in light caramel leather. It has a double zipper closure and a short handle. A small monogrammed initial is embossed on the front panel.
