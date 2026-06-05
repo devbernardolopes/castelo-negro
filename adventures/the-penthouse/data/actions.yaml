@@ -270,7 +270,6 @@ actions:
     conditions:
       - "'{actor}' != '' and getActor('{actor}') != null"
       - "getActor('{actor}').current_location == current_location"
-      - "'{actor}' != current_player_actor"
       - "!isActorHidden('{actor}')"
     message:
       en: |

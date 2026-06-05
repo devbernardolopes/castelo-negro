@@ -205,6 +205,20 @@ GameEngine.prototype._executeActionSuccess = function(actionId, actionDef, match
     }
   }
 
+  // Fire actor examine image hook after examine_actor output
+  if (actionId === 'examine_actor') {
+    const actorId = resolvedMatch.actor;
+    if (actorId) {
+      const actorDef = this.definition.actors?.[actorId];
+      const fullPath = actorDef?.images?.full;
+      if (fullPath) {
+        this.resolveAssetUrl(fullPath).then(url => {
+          if (url) this.hooks.onActorExamineRender?.(actorId, url);
+        });
+      }
+    }
+  }
+
   if (actionDef.message_pool) {
     const pool = this._pickLang(actionDef.message_pool);
     if (Array.isArray(pool) && pool.length) {

@@ -62,7 +62,8 @@ class GameEngine {
  *   onDebugRender?: ()=>void,
  *   onRelationshipsRender?: ()=>void,
  *   onActorsRender?: ()=>void,
- *   onStatsRender?: ()=>void
+ *   onStatsRender?: ()=>void,
+ *   onActorExamineRender?: (actorId:string, imageUrl:string)=>void
  * }} hooks
    */
   constructor(definition, hooks = {}) {

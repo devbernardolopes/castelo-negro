@@ -1357,3 +1357,21 @@ function renderStatsList() {
 
   if (_isTabContentChanged('stats', contentKey)) _markTabUpdate('stats');
 }
+
+function handleActorExamineImage(actorId, imageUrl) {
+  const el = document.getElementById('text-display-content');
+  if (!el) return;
+  const container = document.createElement('div');
+  container.className = 'log-entry';
+  container.style.textAlign = 'center';
+  const img = document.createElement('img');
+  img.className = 'actor-examine-thumbnail';
+  img.src = imageUrl;
+  img.alt = '';
+  img.addEventListener('click', () => showImageModal(imageUrl));
+  container.appendChild(img);
+  el.appendChild(document.createElement('br'));
+  el.appendChild(container);
+  const scrollEl = document.getElementById('text-display');
+  if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+}
