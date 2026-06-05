@@ -335,7 +335,7 @@ actions:
   wear:
     patterns:
       to_actor:
-        - verb: ["put"]
+        - verb: ["wear"]
         - object: ["*"]
         - actor: ["*"]
       own:

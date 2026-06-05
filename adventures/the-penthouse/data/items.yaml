@@ -458,7 +458,7 @@ items:
         Book "My Rival, My Love - Part 1"
     short_name:
       en: |
-        my rival my love book
+        "My Rival, My Love - Part 1" book
     synonyms:
       en: ["my rival my love book", "book", "novel"]
     takeable: true
@@ -475,7 +475,7 @@ items:
         Book "The Voices of Mary"
     short_name:
       en: |
-        the voices of mary book
+        "The Voices of Mary" book
     synonyms:
       en: ["the voices of mary book", "book", "novel"]
     takeable: true
@@ -492,7 +492,7 @@ items:
         Book "The Strange Case of Dr. Jekyll and Mr. Hyde"
     short_name:
       en: |
-        dr jekyll and mr hyde book
+        "The Strange Case of Dr. Jekyll and Mr. Hyde" book
     synonyms:
       en: ["dr jekyll and mr hyde book", "the strange case of dr jekyll and mr hyde book", "book", "novel"]
     takeable: true
