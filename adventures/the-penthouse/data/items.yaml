@@ -512,7 +512,7 @@ items:
     synonyms:
       en: ["bar cart", "cart", "living room cart"]
     container_type: on
-    contents: [concha_y_toro_carmin_de_peumo_wine_bottle, woodford_reserve_bourbon_whiskey_bottle, grey_goose_vodka_bottle, hendricks_gin_bottle, martini_rosso_vermouth_bottle, campari_aperitif_bottle, whiskey_glass, wine_glass, cocktail_glass, common_glass]
+    contents: [concha_y_toro_carmin_de_peumo_wine_bottle, woodford_reserve_bourbon_whiskey_bottle, grey_goose_vodka_bottle, hendricks_gin_bottle, martini_rosso_vermouth_bottle, campari_aperitif_bottle, wine_glass, regular_cocktail_glass, common_glass]
     container_capacity: 12
     description:
       en: |
@@ -835,7 +835,7 @@ items:
     container_capacity: 4
     actor_capacity: 1
     sittable: true
-    contents: [master_bedroom_bedside_table_drawer, rolex_wristwatch]
+    contents: [master_bedroom_bedside_table_drawer, rolex_wristwatch, black_leather_wallet]
     description:
       en: |
         A sleek bedside table next to the master bedroom bed, providing a convenient surface for placing items such as a lamp, alarm clock, or personal belongings. The table has a modern design with a glass top, a drawer, and metal legs, complementing the luxurious aesthetic of the master bedroom in the penthouse.
@@ -1071,7 +1071,7 @@ items:
         A bottle of Dom Perignon champagne, a prestigious and highly sought-after sparkling wine known for its exceptional quality and taste. The bottle features an elegant design with the iconic Dom Perignon label, making it a symbol of luxury and celebration.
     images: ["images/items/tti-2026-06-04T19-47-33-512641027.png"]
 
-  woodword_reserve_bourbon_whiskey_bottle:
+  woodford_reserve_bourbon_whiskey_bottle:
     name:
       en: |
         Woodford Reserve Bourbon Whiskey Bottle
@@ -1310,3 +1310,19 @@ items:
       en: |
         A bottle of charcoal nail polish, perfect for adding a bold and edgy touch to your manicure. The nail polish has a dark, smoky color that makes a statement and is ideal for those who want to stand out with their nail art.
     images: ["images/items/tti-2026-06-05T19-25-03-302448174.png"]
+
+  black_leather_wallet:
+    name:
+      en: |
+        Black Leather Wallet
+    short_name:
+      en: |
+        wallet
+    synonyms:
+      en: ["black leather wallet", "wallet", "leather wallet"]
+    takeable: true
+    size: 1
+    description:
+      en: |
+        A sleek black leather wallet with multiple compartments for cards, cash, and coins. The wallet is made of high-quality leather, providing durability and a sophisticated look for everyday use.
+    images: ["images/items/tti-2026-06-05T19-41-22-111803065.png"]f
