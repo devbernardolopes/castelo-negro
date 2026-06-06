@@ -784,6 +784,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) el.style.display = visible ? 'flex' : 'none';
   }
 
+  // Image zoom/pan state
+  let _imgTx = 0, _imgTy = 0, _imgScale = 1;
+
+  function _applyImgTransform() {
+    const el = document.getElementById('img-modal-view');
+    if (el) el.style.transform = `translate(${_imgTx}px, ${_imgTy}px) scale(${_imgScale})`;
+  }
+
+  function _resetImgTransform() {
+    _imgTx = 0;
+    _imgTy = 0;
+    _imgScale = 1;
+    const el = document.getElementById('img-modal-view');
+    if (el) el.dataset.scale = '1';
+    _applyImgTransform();
+  }
+
   function showImageModal(src, title) {
     if (!src) return;
     const backdrop = document.getElementById('img-modal-backdrop');
@@ -793,11 +810,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (title && titleEl) titleEl.textContent = title;
 
-    img.style.transform = 'scale(1)';
+    _resetImgTransform();
     img.src = src;
-
-    const body = document.querySelector('.img-modal-body');
-    if (body) { body.scrollTop = 0; body.scrollLeft = 0; }
 
     setImageModalVisible(true);
   }
@@ -826,23 +840,128 @@ document.addEventListener('DOMContentLoaded', () => {
 
   {
     const imgView = document.getElementById('img-modal-view');
+    const modalBody = document.querySelector('.img-modal-body');
     let _imgLastTap = 0;
-    if (imgView) {
+
+    // Drag state (mouse)
+    let _dragActive = false;
+    let _dragStartX = 0, _dragStartY = 0;
+    let _dragOrigX = 0, _dragOrigY = 0;
+
+    // Touch state
+    let _touchActive = false;
+    let _touchStartX = 0, _touchStartY = 0;
+    let _touchOrigX = 0, _touchOrigY = 0;
+    let _pinching = false;
+    let _pinchDist = 0, _pinchBaseScale = 1;
+
+    function _centerZoom(newScale) {
+      const rect = modalBody.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const imgRect = imgView.getBoundingClientRect();
+      const iox = (cx - imgRect.left - _imgTx) / _imgScale;
+      const ioy = (cy - imgRect.top - _imgTy) / _imgScale;
+      _imgTx = cx - imgRect.left - iox * newScale;
+      _imgTy = cy - imgRect.top - ioy * newScale;
+      _imgScale = newScale;
+    }
+
+    function _pinchZoom(newScale, mx, my) {
+      const imgRect = imgView.getBoundingClientRect();
+      const iox = (mx - imgRect.left - _imgTx) / _imgScale;
+      const ioy = (my - imgRect.top - _imgTy) / _imgScale;
+      _imgTx = mx - imgRect.left - iox * newScale;
+      _imgTy = my - imgRect.top - ioy * newScale;
+      _imgScale = newScale;
+    }
+
+    if (imgView && modalBody) {
+      // ---- Mouse wheel (centered zoom) ----
       imgView.addEventListener('wheel', (e) => {
         e.preventDefault();
-        let scale = parseFloat(imgView.dataset.scale) || 1;
         const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        scale = Math.max(0.25, Math.min(5, scale + delta));
-        imgView.dataset.scale = String(scale);
-        imgView.style.transform = 'scale(' + scale + ')';
+        const ns = Math.max(0.25, Math.min(5, _imgScale + delta));
+        _centerZoom(ns);
+        imgView.dataset.scale = String(_imgScale);
+        _applyImgTransform();
       }, { passive: false });
 
+      // ---- Mouse drag to pan ----
+      imgView.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        _dragActive = true;
+        _dragStartX = e.clientX;
+        _dragStartY = e.clientY;
+        _dragOrigX = _imgTx;
+        _dragOrigY = _imgTy;
+        imgView.style.cursor = 'grabbing';
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!_dragActive) return;
+        _imgTx = _dragOrigX + (e.clientX - _dragStartX);
+        _imgTy = _dragOrigY + (e.clientY - _dragStartY);
+        _applyImgTransform();
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (_dragActive) {
+          _dragActive = false;
+          imgView.style.cursor = 'grab';
+        }
+      });
+
+      // ---- Touch: pan (1 finger) + pinch zoom (2 fingers) ----
+      imgView.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          _touchActive = true;
+          _pinching = false;
+          _touchStartX = e.touches[0].clientX;
+          _touchStartY = e.touches[0].clientY;
+          _touchOrigX = _imgTx;
+          _touchOrigY = _imgTy;
+        } else if (e.touches.length === 2) {
+          _touchActive = false;
+          _pinching = true;
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          _pinchDist = Math.sqrt(dx * dx + dy * dy);
+          _pinchBaseScale = _imgScale;
+        }
+      }, { passive: true });
+
+      imgView.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1 && _touchActive) {
+          _imgTx = _touchOrigX + (e.touches[0].clientX - _touchStartX);
+          _imgTy = _touchOrigY + (e.touches[0].clientY - _touchStartY);
+          _applyImgTransform();
+        } else if (e.touches.length === 2 && _pinching) {
+          e.preventDefault();
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const ns = Math.max(0.25, Math.min(5, _pinchBaseScale * (dist / _pinchDist)));
+          const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          _pinchZoom(ns, mx, my);
+          imgView.dataset.scale = String(_imgScale);
+          _applyImgTransform();
+        }
+      }, { passive: false });
+
+      imgView.addEventListener('touchend', () => {
+        _touchActive = false;
+        _pinching = false;
+      });
+
+      // ---- Double-tap / double-click to reset ----
       imgView.addEventListener('click', function () {
         const now = Date.now();
         if (now - _imgLastTap < 300) {
           _imgLastTap = 0;
-          this.dataset.scale = '1';
-          this.style.transform = 'scale(1)';
+          _resetImgTransform();
         } else {
           _imgLastTap = now;
         }

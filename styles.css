@@ -1425,7 +1425,7 @@ body {
 
 .img-modal-body {
   flex: 1;
-  overflow: auto;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -1441,7 +1441,8 @@ body {
   width: auto;
   height: auto;
   transform-origin: 0 0;
-  /* cursor: zoom-in; */
+  cursor: grab;
+  touch-action: none;
   user-select: none;
   -webkit-user-drag: none;
 }
