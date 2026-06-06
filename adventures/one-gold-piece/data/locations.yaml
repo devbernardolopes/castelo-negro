@@ -1,135 +1,342 @@
 locations:
-  penthouse_living_room:
+
+  # ─────────────────────────────────────────────
+  # GROUP: Village Outskirts
+  # ─────────────────────────────────────────────
+
+  cottage_doorstep:
     name:
       en: |
-        Penthouse - Living Room
+        Aldric's Cottage - Doorstep
     map_name:
       en: |
-        Living Room
+        Cottage Doorstep
     synonyms:
-      en: ["penthouse living room", "living room", "room"]
+      en: ["doorstep", "cottage", "home", "house", "porch"]
     description:
       en: |
-        A high-end living room with modern furniture and elegant decor. Floor to ceiling windows offer a stunning view of the city. A large sectional sofa is positioned centrally, providing a comfortable seating area for guests. On the far wall, a sleek entertainment center houses a state-of-the-art sound system and a large flat-screen TV. In the corner, a stylish bar cart is stocked with an assortment of spirits and glassware, ready for entertaining. At the center of the room, a contemporary coffee table holds a few books and a decorative vase.
+        This is where your adventure begins, which is perhaps the most damning thing that can be said about it.
 
-        To the north is a long and dimly lit hallway that leads to the master bedroom of the penthouse. To the east is a balcony with a breathtaking view of the city skyline. To the south is the vestibule, which serves as the entry point to the penthouse. Mounted on the wall near the entrance is an intercom system that allows communication with the building's security and concierge services.
-    contents: [living_room_couch, living_room_coffee_table, living_room_bar_cart, flat_screen_tv, sound_system, living_room_windows, living_room_rug, living_room_painting, living_room_lamp, living_room_intercom]
+        You are standing on the doorstep of your cottage — a modest structure that has never been accused of architectural ambition. The door behind you hangs slightly crooked, a problem you have been meaning to fix for three years. The morning sun has the cheerful indifference of a thing that has never gambled and lost seventeen gold pieces to a man named Brom.
+
+        Your neighbor Gerald is tending his vegetable patch across the lane. He waves. He always waves. It is unclear if Gerald is aware that anything in the world is ever wrong.
+
+        The road north leads out of the village toward the hills. You are wearing your leather satchel and carrying a sword. You bought the sword secondhand. The previous owner sold it because it was, and this is a direct quote, "not very good."
+    contents: [cottage_door, cottage_window, neighbor_gerald, aldrics_vegetable_patch, aldrics_well]
     exits:
-      # south: penthouse_vestibule
-      north: penthouse_living_room_hallway
-      # east: penthouse_living_room_balcony
-    images: ["images/locations/tti-2026-05-31T01-35-07-370740316.png"]
-  
-  penthouse_living_room_hallway:
+      north: old_crossroads
+    images: ["images/locations/cottage_doorstep.png"]
+
+  old_crossroads:
     name:
       en: |
-        Penthouse - Living Room Hallway
+        The Old Crossroads
     map_name:
       en: |
-        Hallway
+        Crossroads
+    synonyms:
+      en: ["crossroads", "signpost", "fork", "road", "intersection"]
     description:
       en: |
-        A long, dimly lit hallway that connects the living room to the master bedroom at the end. The walls are adorned with modern art pieces, and a sleek console table runs along one side, decorated with a few tasteful accessories. The hallway has a quiet, intimate atmosphere, providing a sense of separation from the bustling city outside.
+        A weathered wooden signpost stands at the junction where the village road meets the hill path. Someone, at some point, put considerable effort into this signpost. That effort has not aged gracefully.
 
-        There are two doors on the right side of the hallway. The first door, to the east, leads to a small half bathroom, while the second door to the northeast opens into a cozy guest bedroom.
-    contents: [master_bedroom_door, half_bathroom_door, guest_bedroom_door]
+        One arm reads VILLAGE (with an arrow pointing south), though the paint is peeling badly and the "E" has fallen off, making it VILLAG. A second arm points north and reads THE HILLS (PROBABLY FINE), which was added more recently, judging by the handwriting — optimistic, slightly unhinged. A third arm points directly at you. It reads CERTAIN DOOM. You examine it more closely. It does not appear to be referring to the road.
+
+        A stray dog is sitting nearby, regarding you with the quiet, appraising look of a creature evaluating whether you are worth following. The hills are visible to the north, purple and unhelpfully large against the morning sky.
+    contents: [signpost, stray_dog, hilltop_view]
     exits:
-      south: penthouse_living_room
-      east:
-        location: penthouse_hallway_half_bathroom
-        conditions:
-          - if: "items.isOpen('half_bathroom_door')"
-            allow: true
-          - if: "!items.isOpen('half_bathroom_door') and !items.isLocked('half_bathroom_door')"
-            allow: false
-            message:
-              en: |
-                The half bathroom door is closed. You need to open it first.
-          - if: "items.isLocked('half_bathroom_door')"
-            allow: false
-            message:
-              en: |
-                The half bathroom door is locked. It can only be unlocked from the inside.
-      northeast:
-        location: penthouse_guest_bedroom
-        conditions:
-          - if: "items.isOpen('guest_bedroom_door')"
-            allow: true
-          - if: "!items.isOpen('guest_bedroom_door') and !items.isLocked('guest_bedroom_door')"
-            allow: false
-            message:
-              en: |
-                The guest bedroom door is closed. You need to open it first.
-          - if: "items.isLocked('guest_bedroom_door')"
-            allow: false
-            message:
-              en: |
-                The guest bedroom door is locked. It can only be unlocked from the inside.
-      # north:
-      #   location: penthouse_master_bedroom
-      #   conditions:
-      #     - if: "items.isOpen('master_bedroom_door')"
-      #       allow: true
-      #     - if: "!items.isOpen('master_bedroom_door') and !items.isLocked('master_bedroom_door')"
-      #       allow: false
-      #       message:
-      #         en: |
-      #           The master bedroom door is closed. You need to open it first.
-      #     - if: "items.isLocked('master_bedroom_door')"
-      #       allow: false
-      #       message:
-      #         en: |
-      #           The master bedroom door is locked. It can only be unlocked from the inside.
-    images: ["images/locations/tti-2026-06-01T18-58-40-301114127.png"]
+      south: cottage_doorstep
+      north: hillside_path
+    images: ["images/locations/old_crossroads.png"]
 
-  penthouse_guest_bedroom:
+  # ─────────────────────────────────────────────
+  # GROUP: The Hills
+  # ─────────────────────────────────────────────
+
+  hillside_path:
     name:
       en: |
-        Penthouse - Guest Bedroom
+        The Hillside Path
     map_name:
       en: |
-        Guest Bedroom
+        Hillside Path
+    synonyms:
+      en: ["hillside", "path", "hill", "trail", "slope"]
     description:
       en: |
-        A cozy guest bedroom located off the hallway. The room features a comfortable bed, a small nightstand with a lamp, and a dresser for storage. The decor is simple yet elegant, with soft lighting and neutral tones that create a welcoming atmosphere for guests.
-    contents: [guest_bedroom_closet, guest_bedroom_bed, guest_bedroom_door]
-    exits:
-      southwest: penthouse_living_room_hallway
-    images: ["images/locations/tti-2026-06-01T19-45-01-595181002.png"]
+        The path winds steeply upward through scrubby grass and loose gravel that seems personally invested in making you fall. Your calves are already issuing a formal complaint. The village is visible below — small, peaceful, and entirely unaware of what you are about to attempt.
 
-  penthouse_hallway_half_bathroom:
+        Sheep graze on a nearby slope with the glazed contentment of creatures who have never made a single financial decision. One of them looks at you. You look away first.
+
+        Beside the path, partially obscured by a gorse bush, lies a battered leather journal. It appears to have belonged to someone who came this way before you. The final entry is visible from where you stand, the ink slightly scorched at the edges. It reads: "Found cave. Going in. Probably fine."
+
+        The path continues upward to the north, toward the cave mouth. The crossroads lie to the south.
+    contents: [adventurers_journal, hillside_sheep, loose_gravel, gorse_bush, distant_village_view]
+    exits:
+      south: old_crossroads
+      north: cave_mouth
+    images: ["images/locations/hillside_path.png"]
+
+  cave_mouth:
     name:
       en: |
-        Penthouse - Half Bathroom
+        The Cave Mouth
     map_name:
       en: |
-        Half Bathroom
+        Cave Mouth
+    synonyms:
+      en: ["cave mouth", "cave entrance", "entrance", "cave", "opening"]
     description:
       en: |
-        A small, stylish half bathroom located off the hallway. It features a modern sink with a sleek faucet, a wall-mounted mirror, and a toilet. The decor is minimalist, with clean lines and a neutral color palette that complements the overall aesthetic of the penthouse.
-    contents: [half_bathroom_door, half_bathroom_sink, half_bathroom_toilet, half_bathroom_toilet_paper_roll_holder]
+        The entrance to the cave is, by any measure, dramatic. The rock around the opening is scorched black in broad, sweeping patterns that suggest something very large once breathed here — and, statistically speaking, still does. Deep claw marks score the stone on either side, each groove wider than your forearm. The smell of sulfur hangs in the air like a polite but firm suggestion that you reconsider your life choices.
+
+        Someone has erected a small wooden sign beside the entrance. It reads: LAIR — NO SOLICITING. Beneath that, in smaller, more cramped handwriting: This means you, Gerald.
+
+        The cave mouth yawns open before you, dark and deeply unimpressed. The narrow passage beyond descends north into the hill. Behind you, the hillside path leads south.
+    contents: [scorched_rock, claw_marks, no_soliciting_sign, sulfur_smell, cave_mouth_rubble]
     exits:
-      west:
-        location: penthouse_living_room_hallway
+      south: hillside_path
+      north: narrow_passage
+    images: ["images/locations/cave_mouth.png"]
+
+  narrow_passage:
+    name:
+      en: |
+        The Narrow Passage
+    map_name:
+      en: |
+        Narrow Passage
+    synonyms:
+      en: ["narrow passage", "passage", "tunnel", "corridor"]
+    description:
+      en: |
+        The passage is narrow, low-ceilinged, and dark in the particular way that darkness is when it is trying to make a point. The walls are warm to the touch, which is interesting in the sense that it is not comforting at all.
+
+        An iron torch sconce is bolted to the wall. It is empty, though the sconce itself is of surprisingly fine craftsmanship — decorative scrollwork, a small engraved motif of a flame. Someone cared about this sconce once. That someone is no longer here.
+
+        Propped against the wall beside the sconce is a skeleton. It is dressed in the remains of what was once a sensible outfit — leather armor, a belt, boots. In its lap rests a clipboard. The top sheet reads APPOINTMENTS - WEEK OF THE HARVEST MOON, followed by a neatly organized schedule in careful handwriting, the most recent entry of which has been crossed out and annotated in a different, larger hand: CANCELLED (ALL OF THEM).
+
+        The antechamber lies to the north. The cave mouth is to the south.
+    contents: [torch_sconce, appointments_skeleton, appointments_clipboard, warm_cave_walls]
+    exits:
+      south: cave_mouth
+      north: antechamber
+    images: ["images/locations/narrow_passage.png"]
+
+  # ─────────────────────────────────────────────
+  # GROUP: The Dragon's Lair
+  # ─────────────────────────────────────────────
+
+  antechamber:
+    name:
+      en: |
+        The Antechamber
+    map_name:
+      en: |
+        Antechamber
+    synonyms:
+      en: ["antechamber", "waiting room", "foyer", "entrance room", "outer chamber"]
+    description:
+      en: |
+        You were not expecting this.
+
+        The antechamber is tidy. Not merely clean — tidy, in the considered, deliberate sense of a space that belongs to someone with opinions about where things go. The stalagmites have been arranged in a rough semicircle with clear aesthetic intention, the floor swept of loose stone, and a low ledge along one wall serves as a kind of shelf, bearing a small collection of objects organized by apparent category: adventurer helms in one cluster, swords in another, one very sad lute propped at an angle.
+
+        On the wall, hammered into the rock with a masonry spike, is a cork notice board. Several items are pinned to it. A schedule. A short list of rules, headed DO NOT. A small hand-drawn map of the cave system, annotated extensively in a cramped, precise script. Someone has drawn a small red arrow pointing to the main chamber and labeled it: here be me (obviously).
+
+        The main chamber lies to the north. The narrow passage is back to the south. To the east, a heavier passage leads to the treasury.
+    contents: [notice_board, adventurers_trophy_shelf, arranged_stalagmites, cave_rules_list, cave_map_pinned]
+    exits:
+      south: narrow_passage
+      north: dragons_chamber
+      east: treasury
+    images: ["images/locations/antechamber.png"]
+
+  treasury:
+    name:
+      en: |
+        The Treasury
+    map_name:
+      en: |
+        Treasury
+    synonyms:
+      en: ["treasury", "hoard", "treasure room", "gold room", "treasure"]
+    description:
+      en: |
+        The gold is, if nothing else, real.
+
+        It fills the chamber in a great glittering heap from wall to wall, taller than you are in places, catching the faint ambient glow of the cave walls and throwing it back in a thousand directions. There is more gold here than you have ever seen. There is more gold here than you previously believed existed. The number seventeen, which is how many gold pieces you owe, suddenly seems very small and very far away.
+
+        However.
+
+        On a stone lectern near the entrance, angled toward the room with quiet authority, sits an open ledger. It is enormous — the size of a small table — and its pages are dense with handwritten columns of figures. Each coin in this hoard has a line. Each gem, each goblet, each candlestick. The inventory is current to what appears to be this morning. A quill pen rests in an ink pot beside it. The ink is fresh.
+
+        You have the distinct impression that taking anything would be noticed. The impression is very specific about this.
+    contents: [gold_hoard, treasury_ledger, treasury_quill, gemstone_pile, silver_goblets, coin_sacks]
+    exits:
+      west: antechamber
+    images: ["images/locations/treasury.png"]
+
+  dragons_chamber:
+    name:
+      en: |
+        The Dragon's Chamber
+    map_name:
+      en: |
+        Dragon's Chamber
+    synonyms:
+      en: ["dragon chamber", "main chamber", "lair", "dragon room", "dragon", "vermithrax"]
+    description:
+      en: |
+        Vermithrax is here.
+
+        He is enormous, red, and old in the way that mountains are old — not decrepitly, but with a quality of permanence that makes the concept of you feel briefly hypothetical. He is curled in the center of the chamber with the relaxed authority of something that has never, in its entire life, needed to worry about anything. One eye, the size of a cartwheel and the color of molten copper, is open and looking at you.
+
+        He does not appear surprised. Beside his left foreleg, within easy reach of a claw, sits a leather-bound appointment book. It is open to today's date. Your name — or rather, A VILLAGER (DEBT-RELATED, PROBABLY) — is written in the noon slot, underlined twice.
+
+        "You're eleven minutes early," Vermithrax says. His voice is the sound of a very large fire explaining something to a very small piece of wood. "I find that presumptuous."
+
+        To the south, the antechamber. To the east, a side passage leads to what might be a private room. There appears to be a loose rock in the northern wall, but given everything else, it seems unwise to lead with that.
+    contents: [vermithrax, appointment_book, dragon_firepit, loose_rock_north_wall, claw_marks_floor]
+    exits:
+      south: antechamber
+      east: dragons_study
+      north:
+        location: back_passage
         conditions:
-          - if: "items.isOpen('half_bathroom_door')"
+          - if: "variables.loose_rock_moved == true"
             allow: true
-          - if: "!items.isOpen('half_bathroom_door') and !items.isLocked('half_bathroom_door')"
+          - if: "variables.loose_rock_moved != true"
             allow: false
             message:
               en: |
-                The half bathroom door is closed. You need to open it first.
-          - if: "items.isLocked('half_bathroom_door')"
-            allow: false
-            message:
-              en: |
-                The half bathroom door is locked. You need to unlock it first.
-    images: ["images/locations/tti-2026-06-01T19-38-36-39720164.png"]
+                The loose rock is firmly in place. You'd need to move it first — though doing that in front of a dragon requires a certain kind of confidence, or a certain kind of stupidity. The two are often indistinguishable.
+    images: ["images/locations/dragons_chamber.png"]
+
+  dragons_study:
+    name:
+      en: |
+        The Dragon's Study
+    map_name:
+      en: |
+        Dragon's Study
+    synonyms:
+      en: ["study", "side chamber", "dragon study", "private room", "side room"]
+    description:
+      en: |
+        The room is, against all reason, cozy.
+
+        A reading chair — the size of a small barn and upholstered in something that was once red velvet and is now mostly red velvet with opinions — faces a low shelf carved directly into the cave wall. The shelf holds scrolls organized by some system you cannot immediately decode: perhaps by subject, perhaps by size, perhaps by a quality only legible to a creature who has been alive since before your village was a meadow.
+
+        On a flat stone desk, a half-finished letter rests beneath a paperweight that is, on inspection, a small crown. The letter begins: Dear Mum. The second line has been crossed out. Then crossed out again. Then crossed out a third time with what appears to be escalating frustration. The fourth attempt reads: I am well. The cave is fine. The mortals keep coming. You were right about the filing system.
+
+        There is a soft quality to this room. Vermithrax's voice, slightly muffled from the main chamber, sounds different from here — less like fire explaining things, and more like someone who has simply been at this for a very long time.
+    contents: [dragons_reading_chair, scroll_shelf, letter_to_mum, small_crown_paperweight, stone_desk]
+    exits:
+      west: dragons_chamber
+    images: ["images/locations/dragons_study.png"]
+
+  back_passage:
+    name:
+      en: |
+        The Back Passage
+    map_name:
+      en: |
+        Back Passage
+    synonyms:
+      en: ["back passage", "back tunnel", "hidden passage", "secret tunnel", "back cave"]
+    description:
+      en: |
+        The passage behind the loose rock is short, low, and leads to a small alcove that smells faintly of old paper and dry stone. It has clearly not been visited in some time — a thin layer of dust covers the floor, undisturbed except for one very large, very deliberate claw print directly in the center, pointing at the alcove ahead, as if someone marked it.
+
+        The alcove contains a small stone box. The box is not locked. Inside the stone box is a folded piece of parchment. The parchment is a promissory note — made out to "the holder of this document," in careful handwriting, for the sum of twenty gold pieces, redeemable at any recognized merchant house in the kingdom. It is signed, at the bottom, in a signature that requires a moment to decipher: Vermithrax R., Esq.
+
+        There is also a small note tucked beneath the box, written in the same hand: For whoever actually makes it this far without being annoying about it. — V.
+
+        This does not feel like a coincidence.
+    contents: [stone_box, promissory_note, hidden_alcove_dust, vermithrax_small_note]
+    exits:
+      south: dragons_chamber
+    images: ["images/locations/back_passage.png"]
+
+  # ─────────────────────────────────────────────
+  # GROUP: Resolution
+  # ─────────────────────────────────────────────
+
+  cave_exit:
+    name:
+      en: |
+        The Cave Exit
+    map_name:
+      en: |
+        Cave Exit
+    synonyms:
+      en: ["cave exit", "exit", "outside", "cave opening", "way out"]
+    description:
+      en: |
+        You are out. This is, statistically speaking, not what usually happens.
+
+        The afternoon light hits you with the mild surprise of a world that had not necessarily been keeping a seat warm. The scorched rock and claw marks look different from this side — less threatening, more like a very emphatic punctuation mark on an experience you are still processing.
+
+        The no-soliciting sign sways gently in the breeze. You notice, for the first time, that the phrase "This means you, Gerald" has been written on both sides.
+
+        The stray dog from the crossroads is sitting at the bottom of the hillside path. It regards you with an expression that is difficult to read but is possibly respect. The hillside path leads south toward the crossroads. The cave mouth is behind you to the north, should you wish to go back in, which the narrator strongly advises against, not for dramatic reasons, but simply because Vermithrax has a three o'clock.
+    contents: [no_soliciting_sign, scorched_rock_exit, stray_dog, afternoon_light]
+    exits:
+      south: hillside_path
+      north: cave_mouth
+    images: ["images/locations/cave_exit.png"]
+
+  old_crossroads_return:
+    name:
+      en: |
+        The Old Crossroads
+    map_name:
+      en: |
+        Crossroads
+    synonyms:
+      en: ["crossroads", "signpost", "fork", "road", "intersection"]
+    description:
+      en: |
+        The crossroads again. The signpost is as you left it, more or less. The arm that read CERTAIN DOOM is now pointing west, toward an unremarkable stretch of scrubland. This is either a profound metaphor or the hinge worked itself loose. Given the day you have had, you are inclined to accept either explanation.
+
+        The village is visible to the south, small and golden in the afternoon light. Smoke rises from a few chimneys. Brom the tavern keeper is presumably somewhere in there, keeping track of time in the way that men who are owed money keep track of time: precisely, and with feeling.
+
+        You look at what you are carrying. You look at the village. The sun has moved. It is not yet sundown.
+
+        It occurs to you that this might, in fact, be fine.
+    contents: [signpost_return, stray_dog, village_view_afternoon]
+    exits:
+      south: cottage_doorstep
+      north: hillside_path
+    images: ["images/locations/old_crossroads_return.png"]
+
 
 groups:
-  penthouse:
+  village_outskirts:
     name:
       en: |
-        The Penthouse
-    color: "#FFD700"
-    locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_guest_bedroom, penthouse_hallway_half_bathroom]
+        Village Outskirts
+    color: "#8BC34A"
+    locations: [cottage_doorstep, old_crossroads]
+
+  the_hills:
+    name:
+      en: |
+        The Hills
+    color: "#795548"
+    locations: [hillside_path, cave_mouth, narrow_passage]
+
+  dragons_lair:
+    name:
+      en: |
+        The Dragon's Lair
+    color: "#B71C1C"
+    locations: [antechamber, treasury, dragons_chamber, dragons_study, back_passage]
+
+  resolution:
+    name:
+      en: |
+        Resolution
+    color: "#F9A825"
+    locations: [cave_exit, old_crossroads_return]

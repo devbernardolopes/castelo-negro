@@ -1,56 +1,32 @@
 actors:
-  protagonist:
+  aldric:
     name:
       en: |
-        Player
+        Aldric
     playable: true
     images:
-      portrait: "images/actors/protagonist/tti-2026-06-03T19-03-48-859248176.png"
-      full: "images/actors/protagonist/tti-2026-06-03T19-02-12-433302665.png"
-    starting_location: penthouse_living_room
-    known_locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_guest_bedroom, penthouse_hallway_half_bathroom]
+      portrait: "images/actors/aldric/tti-2026-06-03T19-03-48-859248176.png"
+    starting_location: cottage_doorstep
+    known_locations: [cottage_doorstep, old_crossroads]
     inventory: []
     wearing: [black_backpack]
     max_capacity: 2
-    # properties:
-    #   age: 44
-    #   gender: "male"
-    #   mood: "neutral"
-    #   is_alive: true
-    #   stamina: 100
-    #   health: 100
-    #   amount_of_vacations: 5
-    #   hair: "black"
-    #   ethnicity: "North American"
-    # relationships:
-    #   anya:
-    #     affinity: 25
-    #     relationship_level: "acquaintances"
-    #   sabine:
-    #     affinity: 25
-    #     relationship_level: "acquaintances"
-    #   dana:
-    #     affinity: 35
-    #     relationship_level: "friends"
 
-  sabine:
+  vermithrax:
     name:
       en: |
-        Sabine
+        Vermithrax
     synonyms:
       en: ["her", "girl", "woman", "female", "lady", "she"]
     playable: false
     images:
-      portrait: "images/actors/sabine/tti-2026-06-01T21-20-00-718795545.png"
-      full: "images/actors/sabine/tti-2026-06-01T21-24-07-779765986.png"
-      full_01: "images/actors/sabine/tti-2026-06-04T04-49-59-779765986.png"
-      full_02: "images/actors/sabine/tti-2026-06-04T04-44-23-779765986.png"
-    starting_location: penthouse_living_room
-    known_locations: [penthouse_living_room]
+      portrait: "images/actors/vermithrax/tti-2026-06-01T21-20-00-718795545.png"
+    starting_location: dragons_chamber
+    # known_locations: [dragons_chamber]
     inventory: []
-    starting_contained_by: living_room_couch
-    starting_posture: seated
-    wearing: [sabine_jeans_pants, sabine_tank_top, sabine_silver_strappy_sandals]
+    # starting_contained_by: living_room_couch
+    # starting_posture: seated
+    # wearing: [sabine_jeans_pants, sabine_tank_top, sabine_silver_strappy_sandals]
     max_capacity: 2
     # properties:
     #   age: 23

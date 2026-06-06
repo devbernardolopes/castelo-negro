@@ -1,5 +1,10 @@
 [
   {
+    "id": "one-gold-piece",
+    "title": "One Gold Piece",
+    "yaml": "adventures/one-gold-piece/one-gold-piece.yaml"
+  },
+  {
     "id": "the-penthouse",
     "title": "The Penthouse",
     "yaml": "adventures/the-penthouse/the-penthouse.yaml"
