@@ -1,0 +1,665 @@
+# conditional_messages are evaluated before effects
+# conditional_messages only runs on action failure
+# progressive_messages are evaluated after effects
+
+actions:
+  # -------------------------------
+  # This game specific actions
+  # -------------------------------
+
+  # -------------------------------
+  # General actions
+  # -------------------------------  
+  give:
+    patterns:
+      obj_then_target:
+        - verb: ["give"]
+        - object: ["*"]
+          optional: true
+        - actor: ["*"]
+          optional: true
+      target_then_obj:
+        - verb: ["give"]
+        - actor: ["*"]
+          optional: true
+        - object: ["*"]
+          optional: true
+    follow_up:
+      object:
+        en: "Give what?"
+      actor:
+        en: "To whom?"
+    conditions:
+      - "'{object}' != ''"
+      - "'{actor}' != '' and getActor('{actor}') != null and '{actor}' != current_player_actor"
+      - "getActor('{actor}').current_location == current_location"
+      - "inventory.has('{object}')"
+      - "!isWornBy(current_player_actor, '{object}')"
+      - "getActor('{actor}').inventory.length < actors.{actor}.max_capacity"
+    effect:
+      - "inventory.remove('{object}')"
+      - "actorInventoryAdd('{actor}', '{object}')"
+    message:
+      en: |
+        You give the {object_name} to {actor_name}.
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: |
+            Give what?
+      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+        message:
+          en: |
+            There's no one here by that name.
+      - condition: "'{actor}' == current_player_actor"
+        message:
+          en: |
+            You can't give something to yourself.
+      - condition: "getActor('{actor}').current_location != current_location"
+        message:
+          en: |
+            {actor_name} isn't here.
+      - condition: "isWornBy(current_player_actor, '{object}')"
+        message:
+          en: |
+            You need to remove the {object_name} first.
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: |
+            You don't have the {object_name}.
+      - condition: "getActor('{actor}').inventory.length >= actors.{actor}.max_capacity"
+        message:
+          en: |
+            {actor_name} can't hold any more items.
+
+  open:
+    pattern:
+      - verb: ["open"]
+      - object: ["*"]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "!items.isOpen('{object}')"
+      - "!items.isLocked('{object}')"
+    effect: "setOpen('{object}', true)"
+    message:
+      en: |
+        You open the {object_name}.
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't open the {object_name}.
+      - condition: "items.isOpen('{object}')"
+        message:
+          en: |
+            The {object_name} is already open.
+      - condition: "items.isLocked('{object}')"
+        message:
+          en: |
+            The {object_name} is locked.
+
+  close:
+    pattern:
+      - verb: ["close"]
+      - object: ["*"]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "items.isOpen('{object}')"
+    effect: "setOpen('{object}', false)"
+    message:
+      en: |
+        You close the {object_name}.
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't close the {object_name}.
+      - condition: "!items.isOpen('{object}')"
+        message:
+          en: |
+            The {object_name} is already closed.
+
+  unlock:
+    pattern:
+      - verb: ["unlock"]
+      - object: ["*"]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "items.isLocked('{object}')"
+      - "items.canOpen('{object}')"
+      - "items.getProp('{object}', 'openable.side') != 'one_way' or items.getProp('{object}', 'openable.accessible_from') == null or items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
+    effect: "setLocked('{object}', false)"
+    message:
+      en: |
+        You unlock the {object_name}.
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't unlock the {object_name}.
+      - condition: "!items.isLocked('{object}')"
+        message:
+          en: |
+            The {object_name} isn't locked.
+      - condition: "items.getProp('{object}', 'openable.side') == 'one_way' and items.getProp('{object}', 'openable.accessible_from') != null and !items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
+        message:
+          en: |
+            The {object_name} can only be unlocked from the other side.
+      - condition: "!items.canOpen('{object}')"
+        message:
+          en: |
+            You don't have the right item to unlock the {object_name}.
+
+  lock:
+    pattern:
+      - verb: ["lock"]
+      - object: ["*"]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "!items.isOpen('{object}')"
+      - "!items.isLocked('{object}')"
+      - "items.canOpen('{object}')"
+      - "items.getProp('{object}', 'openable.side') != 'one_way' or items.getProp('{object}', 'openable.accessible_from') == null or items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
+    effect: "setLocked('{object}', true)"
+    message:
+      en: |
+        You lock the {object_name}.
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't lock the {object_name}.
+      - condition: "items.isOpen('{object}')"
+        message:
+          en: |
+            The {object_name} is open. You need to close it first.
+      - condition: "items.isLocked('{object}')"
+        message:
+          en: |
+            The {object_name} is already locked.
+      - condition: "items.getProp('{object}', 'openable.side') == 'one_way' and items.getProp('{object}', 'openable.accessible_from') != null and !items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
+        message:
+          en: |
+            The {object_name} can only be locked from the other side.
+      - condition: "!items.canOpen('{object}')"
+        message:
+          en: |
+            You don't have the right item to lock the {object_name}.
+
+  examine_actor:
+    pattern:
+      - verb: ["examine"]
+      - actor: ["*"]
+    conditions:
+      - "'{actor}' != '' and getActor('{actor}') != null"
+      - "getActor('{actor}').current_location == current_location"
+      - "!isActorHidden('{actor}')"
+    message:
+      en: |
+        {actor_examine_output}
+    conditional_messages:
+      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+        message:
+          en: |
+            You don't see anyone like that here.
+      - condition: "isActorHidden('{actor}')"
+        message:
+          en: |
+            You don't see anyone like that here.
+      - condition: "getActor('{actor}') != null and getActor('{actor}').current_location != current_location"
+        message:
+          en: |
+            {actor_name} isn't here.
+
+  examine:
+    pattern:
+      - verb: ["examine"]
+      - object: ["*"]
+        optional: true
+    conditions:
+      - "'{object}' == '' or here.has('{object}') or inventory.has('{object}')"
+    effect: []
+    message:
+      en: |
+        {location_or_object_description}
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+
+  drop:
+    pattern:
+      - verb: ["drop"]
+      - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Drop what?"
+    conditions:
+      - "inventory.has('{object}')"
+      - "items.droppable('{object}')"
+    effect:
+      - "inventory.remove('{object}')"
+      - "here.add('{object}')"
+    message:
+      en: |
+        You drop the {object_name}.
+    conditional_messages:
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: |
+            You don't have the {object_name}.
+      - condition: "!items.droppable('{object}')"
+        message:
+          en: |
+            You can't drop the {object_name}.
+
+  wear:
+    patterns:
+      to_actor:
+        - verb: ["wear"]
+        - object: ["*"]
+        - actor: ["*"]
+      own:
+        - verb: ["wear", "put on"]
+        - object: ["*"]
+          optional: true
+    follow_up:
+      object:
+        en: "Wear what?"
+    conditions:
+      - "'{object}' != ''"
+      - "'{actor}' == '' or (getActor('{actor}') != null and getActor('{actor}').current_location == current_location)"
+    effect:
+      - "addWornItem('{actor}', '{object}')"
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: |
+            Wear what?
+      - condition: "'{actor}' != '' and (getActor('{actor}') == null or getActor('{actor}').current_location != current_location)"
+        message:
+          en: |
+            There's no one like that here.
+
+  put:
+    patterns:
+      obj_then_target:
+        - verb: ["put"]
+        - object: ["*"]
+        - target: ["*"]
+      target_then_obj:
+        - verb: ["put"]
+        - target: ["*"]
+        - object: ["*"]
+    conditions:
+      - "inventory.has('{object}')"
+      - "'{target}' == '__location__' or here.has('{target}') or inventory.has('{target}')"
+      - "'{target}' == '__location__' or items.container_capacity('{target}') != null"
+      - "'{target}' == '__location__' or !items.openable('{target}') or items.isOpen('{target}')"
+      - "'{object}' != '{target}'"
+      - "'{target}' == '__location__' or !items.isAncestor('{object}', '{target}')"
+      - "'{target}' == '__location__' or items.container_count('{target}') + items.item_size('{object}') <= items.container_capacity('{target}')"
+    effect:
+      - "inventory.remove('{object}')"
+      - "putInTarget('{target}', '{object}')"
+    message:
+      en: |
+        You place the {object_name} in the {target_name}.
+    conditional_messages:
+      - condition: "!inventory.has('{object}')"
+        message:
+          en: |
+            You don't have the {object_name}.
+      - condition: "'{target}' != '__location__' and !here.has('{target}') and !inventory.has('{target}')"
+        message:
+          en: |
+            There's no {target_name} here.
+      - condition: "'{target}' != '__location__' and items.container_capacity('{target}') == null"
+        message:
+          en: |
+            You can't put things in the {target_name}.
+      - condition: "'{target}' != '__location__' and items.openable('{target}') and !items.isOpen('{target}')"
+        message:
+          en: |
+            The {target_name} is closed. You need to open it first.
+      - condition: "'{object}' == '{target}'"
+        message:
+          en: |
+            You can't put the {object_name} inside itself.
+      - condition: "'{target}' != '__location__' and items.isAncestor('{object}', '{target}')"
+        message:
+          en: |
+            You can't put the {object_name} there.
+      - condition: "'{target}' != '__location__' and items.container_count('{target}') + items.item_size('{object}') > items.container_capacity('{target}')"
+        message:
+          en: |
+            The {target_name} is full. You can't put anything else in it.
+
+  take:
+    pattern:
+      - verb: ["take"]
+      - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Take what?"
+    conditions:
+      - "items.takeable('{object}')"
+      - "here.has('{object}')"
+      - "!isWorn('{object}')"
+      - "inventory.length < inventory.max_capacity"
+      - "!inventory.has('{object}')"
+    effect: "inventory.add('{object}')"
+    message:
+      en: |
+        You take the {object_name}.
+    conditional_messages:
+      - condition: "inventory.has('{object}')"
+        message:
+          en: |
+            You already have the {object_name}.
+      - condition: "isWorn('{object}')"
+        message:
+          en: |
+            You need to remove the {object_name} first.
+      - condition: "!here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.takeable('{object}')"
+        message:
+          en: |
+            You can't take the {object_name}.
+      - condition: "inventory.length >= inventory.max_capacity"
+        message:
+          en: |
+            You can't carry any more items.
+
+  talk:
+    pattern:
+      - verb: ["talk", "greet"]
+      - actor: ["*"]
+        optional: true
+    follow_up:
+      actor:
+        en: "To whom?"
+    conditions:
+      - "'{actor}' != '' and getActor('{actor}') != null"
+      - "'{actor}' != current_player_actor"
+      - "getActor('{actor}').current_location == current_location"
+    effect: "startConversation('{actor}')"
+    message:
+      en: ""
+    conditional_messages:
+      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+        message:
+          en: |
+            There's no one here by that name.
+      - condition: "'{actor}' == current_player_actor"
+        message:
+          en: |
+            You can't talk to yourself.
+      - condition: "getActor('{actor}').current_location != current_location"
+        message:
+          en: |
+            {actor_name} isn't here.
+
+  stand:
+    pattern:
+      - verb: ["stand", "stand up", "get up"]
+    conditions:
+      - "isSeated(current_player_actor)"
+    effect: "releaseActor(current_player_actor)"
+    message:
+      en: |
+        You stand up from the {contained_by_name}.
+    conditional_messages:
+      - condition: "!isSeated(current_player_actor)"
+        message:
+          en: |
+            You're already standing.
+
+  sit:
+    pattern:
+      - verb: ["sit", "sit down"]
+      - target: ["*"]
+    conditions:
+      - "!isSeated(current_player_actor)"
+      - "items.sittable('{target}')"
+      - "here.has('{target}')"
+      - "getContainerOccupantsCount('{target}') < items.actor_capacity('{target}')"
+    effect: "containActor(current_player_actor, '{target}', 'seated')"
+    message:
+      en: |
+        You sit down on the {target_name}.
+    conditional_messages:
+      - condition: "isSeated(current_player_actor)"
+        message:
+          en: |
+            You're already sitting.
+      - condition: "'{target}' != '' and !items.sittable('{target}')"
+        message:
+          en: |
+            You can't sit on that.
+      - condition: "'{target}' != '' and !here.has('{target}')"
+        message:
+          en: |
+            There's no {target_name} here.
+      - condition: "getContainerOccupantsCount('{target}') >= items.actor_capacity('{target}')"
+        message:
+          en: |
+            There's no room on the {target_name}.
+
+  lie:
+    pattern:
+      - verb: ["lie", "lie down"]
+      - target: ["*"]
+        optional: true
+    follow_up:
+      target:
+        en: "Lie down on what?"
+    conditions:
+      - "getPosture(current_player_actor) != 'lying'"
+      - "items.sleepable('{target}')"
+      - "here.has('{target}')"
+      - "getContainerOccupantsCount('{target}') < items.actor_capacity('{target}')"
+    effect: "containActor(current_player_actor, '{target}', 'lying')"
+    message:
+      en: |
+        You lie down on the {target_name}.
+    conditional_messages:
+      - condition: "getPosture(current_player_actor) == 'lying'"
+        message:
+          en: |
+            You're already lying down.
+      - condition: "'{target}' != '' and !items.sleepable('{target}')"
+        message:
+          en: |
+            That's not a good place to lie down.
+      - condition: "'{target}' != '' and !here.has('{target}')"
+        message:
+          en: |
+            There's no {target_name} here.
+
+  switch:
+    pattern:
+      - verb: ["switch"]
+      - actor: ["*"]
+        match_mode: name_only
+        optional: true
+    follow_up:
+      actor:
+        en: "Switch to whom?"
+    conditions:
+      - "'{actor}' != '' and getActor('{actor}') != null"
+      - "'{actor}' != current_player_actor"
+    effect:
+      - "setPlayerActor('{actor}')"
+    message:
+      en: |
+        You switch to playing as {actor_name}.
+    conditional_messages:
+      - condition: "'{actor}' == current_player_actor"
+        message:
+          en: |
+            You're already playing as {actor_name}.
+
+  attack:
+    pattern:
+      - verb: ["attack"]
+      - actor: ["*"]
+        optional: true
+    follow_up:
+      actor:
+        en: "Attack whom?"
+    confirmation:
+      en: "Are you sure you want to attack {actor_name}?"
+    conditions:
+      - "'{actor}' != '' and getActor('{actor}') != null"
+      - "getActor('{actor}').current_location == current_location"
+      - "'{actor}' != current_player_actor"
+    effect: ""
+    message:
+      en: |
+        You attack {actor_name}!
+    conditional_messages:
+      - condition: "'{actor}' == '' or getActor('{actor}') == null"
+        message:
+          en: |
+            There's no one here by that name.
+      - condition: "getActor('{actor}').current_location != current_location"
+        message:
+          en: |
+            {actor_name} isn't here.
+      - condition: "'{actor}' == current_player_actor"
+        message:
+          en: |
+            You can't attack yourself.
+
+  enter:
+    pattern:
+      - verb: ["enter"]
+      - target: ["*"]
+        optional: true
+    follow_up:
+      target:
+        en: "Enter what?"
+    conditions:
+      - "items.enterable('{target}')"
+      - "here.has('{target}')"
+    effect: "containActor(current_player_actor, '{target}', 'standing')"
+    message:
+      en: |
+        You enter the {target_name}.
+    conditional_messages:
+      - condition: "'{target}' != '' and !items.enterable('{target}')"
+        message:
+          en: |
+            You can't enter that.
+      - condition: "'{target}' != '' and !here.has('{target}')"
+        message:
+          en: |
+            There's no {target_name} here.
+
+  exit:
+    pattern:
+      - verb: ["exit"]
+    conditions:
+      - "isSeated(current_player_actor)"
+    effect: "releaseActor(current_player_actor)"
+    message:
+      en: |
+        You get out.
+    conditional_messages:
+      - condition: "!isSeated(current_player_actor)"
+        message:
+          en: |
+            You're not inside anything.
+
+  remove:
+    patterns:
+      from_actor:
+        - verb: ["remove", "take off"]
+        - object: ["*"]
+        - actor: ["*"]
+      own:
+        - verb: ["remove", "take off"]
+        - object: ["*"]
+          optional: true
+    follow_up:
+      object:
+        en: "Remove what?"
+    conditions:
+      - "'{object}' != ''"
+      - "'{actor}' == '' or (getActor('{actor}') != null and getActor('{actor}').current_location == current_location)"
+    effect:
+      - "removeWornItem('{actor}', '{object}')"
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: |
+            Remove what?
+      - condition: "'{actor}' != '' and (getActor('{actor}') == null or getActor('{actor}').current_location != current_location)"
+        message:
+          en: |
+            There's no one like that here.
+
+  read:
+    pattern:
+      - verb: ["read"]
+      - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Read what?"
+    conditions:
+      - "'{object}' != ''"
+      - "here.has('{object}') or inventory.has('{object}')"
+      - "items.getProp('{object}', 'readable') != null"
+    effect: []
+    message:
+      en: |
+        {readable_text}
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: "Read what?"
+      - condition: "!here.has('{object}') and !inventory.has('{object}')"
+        message:
+          en: "There's no {object_name} here."
+      - condition: "items.getProp('{object}', 'readable') == null"
+        message:
+          en: "You can't read that."
+
+  fallback_generic:
+    message_pool:
+      en:
+        - "I don't understand what you mean."
+        - "That makes no sense in this context."
+        - "You're not sure how to do that here."
+        - "That idea doesn't seem to lead anywhere."
+        - "You can't quite figure out how to make that work."
+    effect:
+      - "invalid_attempt_count += 1"

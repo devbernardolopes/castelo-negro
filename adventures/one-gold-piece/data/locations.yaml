@@ -1,0 +1,135 @@
+locations:
+  penthouse_living_room:
+    name:
+      en: |
+        Penthouse - Living Room
+    map_name:
+      en: |
+        Living Room
+    synonyms:
+      en: ["penthouse living room", "living room", "room"]
+    description:
+      en: |
+        A high-end living room with modern furniture and elegant decor. Floor to ceiling windows offer a stunning view of the city. A large sectional sofa is positioned centrally, providing a comfortable seating area for guests. On the far wall, a sleek entertainment center houses a state-of-the-art sound system and a large flat-screen TV. In the corner, a stylish bar cart is stocked with an assortment of spirits and glassware, ready for entertaining. At the center of the room, a contemporary coffee table holds a few books and a decorative vase.
+
+        To the north is a long and dimly lit hallway that leads to the master bedroom of the penthouse. To the east is a balcony with a breathtaking view of the city skyline. To the south is the vestibule, which serves as the entry point to the penthouse. Mounted on the wall near the entrance is an intercom system that allows communication with the building's security and concierge services.
+    contents: [living_room_couch, living_room_coffee_table, living_room_bar_cart, flat_screen_tv, sound_system, living_room_windows, living_room_rug, living_room_painting, living_room_lamp, living_room_intercom]
+    exits:
+      # south: penthouse_vestibule
+      north: penthouse_living_room_hallway
+      # east: penthouse_living_room_balcony
+    images: ["images/locations/tti-2026-05-31T01-35-07-370740316.png"]
+  
+  penthouse_living_room_hallway:
+    name:
+      en: |
+        Penthouse - Living Room Hallway
+    map_name:
+      en: |
+        Hallway
+    description:
+      en: |
+        A long, dimly lit hallway that connects the living room to the master bedroom at the end. The walls are adorned with modern art pieces, and a sleek console table runs along one side, decorated with a few tasteful accessories. The hallway has a quiet, intimate atmosphere, providing a sense of separation from the bustling city outside.
+
+        There are two doors on the right side of the hallway. The first door, to the east, leads to a small half bathroom, while the second door to the northeast opens into a cozy guest bedroom.
+    contents: [master_bedroom_door, half_bathroom_door, guest_bedroom_door]
+    exits:
+      south: penthouse_living_room
+      east:
+        location: penthouse_hallway_half_bathroom
+        conditions:
+          - if: "items.isOpen('half_bathroom_door')"
+            allow: true
+          - if: "!items.isOpen('half_bathroom_door') and !items.isLocked('half_bathroom_door')"
+            allow: false
+            message:
+              en: |
+                The half bathroom door is closed. You need to open it first.
+          - if: "items.isLocked('half_bathroom_door')"
+            allow: false
+            message:
+              en: |
+                The half bathroom door is locked. It can only be unlocked from the inside.
+      northeast:
+        location: penthouse_guest_bedroom
+        conditions:
+          - if: "items.isOpen('guest_bedroom_door')"
+            allow: true
+          - if: "!items.isOpen('guest_bedroom_door') and !items.isLocked('guest_bedroom_door')"
+            allow: false
+            message:
+              en: |
+                The guest bedroom door is closed. You need to open it first.
+          - if: "items.isLocked('guest_bedroom_door')"
+            allow: false
+            message:
+              en: |
+                The guest bedroom door is locked. It can only be unlocked from the inside.
+      # north:
+      #   location: penthouse_master_bedroom
+      #   conditions:
+      #     - if: "items.isOpen('master_bedroom_door')"
+      #       allow: true
+      #     - if: "!items.isOpen('master_bedroom_door') and !items.isLocked('master_bedroom_door')"
+      #       allow: false
+      #       message:
+      #         en: |
+      #           The master bedroom door is closed. You need to open it first.
+      #     - if: "items.isLocked('master_bedroom_door')"
+      #       allow: false
+      #       message:
+      #         en: |
+      #           The master bedroom door is locked. It can only be unlocked from the inside.
+    images: ["images/locations/tti-2026-06-01T18-58-40-301114127.png"]
+
+  penthouse_guest_bedroom:
+    name:
+      en: |
+        Penthouse - Guest Bedroom
+    map_name:
+      en: |
+        Guest Bedroom
+    description:
+      en: |
+        A cozy guest bedroom located off the hallway. The room features a comfortable bed, a small nightstand with a lamp, and a dresser for storage. The decor is simple yet elegant, with soft lighting and neutral tones that create a welcoming atmosphere for guests.
+    contents: [guest_bedroom_closet, guest_bedroom_bed, guest_bedroom_door]
+    exits:
+      southwest: penthouse_living_room_hallway
+    images: ["images/locations/tti-2026-06-01T19-45-01-595181002.png"]
+
+  penthouse_hallway_half_bathroom:
+    name:
+      en: |
+        Penthouse - Half Bathroom
+    map_name:
+      en: |
+        Half Bathroom
+    description:
+      en: |
+        A small, stylish half bathroom located off the hallway. It features a modern sink with a sleek faucet, a wall-mounted mirror, and a toilet. The decor is minimalist, with clean lines and a neutral color palette that complements the overall aesthetic of the penthouse.
+    contents: [half_bathroom_door, half_bathroom_sink, half_bathroom_toilet, half_bathroom_toilet_paper_roll_holder]
+    exits:
+      west:
+        location: penthouse_living_room_hallway
+        conditions:
+          - if: "items.isOpen('half_bathroom_door')"
+            allow: true
+          - if: "!items.isOpen('half_bathroom_door') and !items.isLocked('half_bathroom_door')"
+            allow: false
+            message:
+              en: |
+                The half bathroom door is closed. You need to open it first.
+          - if: "items.isLocked('half_bathroom_door')"
+            allow: false
+            message:
+              en: |
+                The half bathroom door is locked. You need to unlock it first.
+    images: ["images/locations/tti-2026-06-01T19-38-36-39720164.png"]
+
+groups:
+  penthouse:
+    name:
+      en: |
+        The Penthouse
+    color: "#FFD700"
+    locations: [penthouse_living_room, penthouse_living_room_hallway, penthouse_guest_bedroom, penthouse_hallway_half_bathroom]
