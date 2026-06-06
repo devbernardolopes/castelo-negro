@@ -1,0 +1,111 @@
+# # Usage examples
+# # Conditions:
+# # - health < 50 — current player's health (spread into eval context)
+# # - mood == "sad" — current player's mood
+# # - getActorProp('sabine', 'health') > 0 — any actor's property
+# # - getRelationship('sabine', 'affinity') >= 50 — affinity toward Sabine
+# # - getRelationshipBetween('protagonist', 'sabine', 'affinity') >= 50
+# # Effects (actor-neutral — explicit actorId required):
+# # - setActorProp(current_player_actor, 'health', 90) — clamp to global constraints
+# # - setActorProp('protagonist', 'health', 90) — literal actor ID
+# # - setActorProp('sabine', 'mood', 'happy') — any actor's property
+# # - setRelationship(current_player_actor, 'sabine', 'affinity', 20)
+# # - setRelationship('protagonist', 'sabine', 'affinity', 20)
+# # - setPlayerActor('sabine') — switch who you control mid-game
+# # Messages:
+# # - Your health is {health}.
+# # - Sabine looks {actor_sabine_mood}.
+# # - Relationship affinity: {relationship_sabine_affinity}%
+
+# properties:
+#   age:
+#     type: int
+#     min_value: 0
+#     default: 25
+#     is_stat: true
+#     show_in_relationships: true
+#     label:
+#       en: |
+#         Age
+#   gender:
+#     type: string
+#     possible_values: ["male", "female", "non-binary", "other"]
+#     default: "other"
+#     is_stat: true
+#     show_in_relationships: true
+#     label:
+#       en: |
+#         Gender
+#   mood:
+#     type: string
+#     possible_values: ["neutral", "happy", "sad", "anxious", "nervous", "angry", "excited", "bored", "curious"]
+#     default: "neutral"
+#     label:
+#       en: |
+#         Mood
+#   hair:
+#     type: string
+#     possible_values: ["bald", "black", "brown", "blonde", "platinum", "red", "gray", "white"]
+#     default: "black"
+#     label:
+#       en: |
+#         Hair
+#   is_alive:
+#     type: bool
+#     default: true
+#   is_conscious:
+#     type: bool
+#     default: true
+#   is_awake:
+#     type: bool
+#     default: true
+#   is_sleeping:
+#     type: bool
+#     default: false
+#   stamina:
+#     type: int
+#     min_value: 0
+#     max_value: 100
+#     default: 100
+#     is_stat: true
+#     label:
+#       en: |
+#         Stamina
+#   health:
+#     type: int
+#     min_value: 0
+#     max_value: 100
+#     default: 100
+#     is_stat: true
+#     label:
+#       en: |
+#         Health
+#     is_stat: true
+#   amount_of_vacations:
+#     type: int
+#     min_value: 0
+#     default: 0
+#     is_stat: true
+#     show_in_relationships: true
+#     label:
+#       en: |
+#         Vacations
+#   relationship_level:
+#     type: string
+#     possible_values: ["strangers", "acquaintances", "friends", "romantic", "partners", "lovers", "rivals", "enemies"]
+#     default: "strangers"
+#     show_in_relationships: true
+#   affinity: # -100 to 100 scale representing how much an actor likes another actor. Roughly, -100 represents a relationship level of "enemies", 0 is "strangers", and 100 is "lovers". Used in conditions and effects to gate content based on relationships.
+#     type: int
+#     min_value: -100
+#     max_value: 100
+#     default: 0
+#     show_in_relationships: true
+#     label:
+#       en: |
+#         Affinity
+#   ethnicity: # Ethnicity is being used loosely here to represent cultural background, which can influence a character's worldview, values, and behaviors. It is not meant to be a comprehensive or definitive categorization of identity, but rather a tool for adding depth and nuance to characters in the context of the story.
+#     type: string
+#     possible_values: ["North American", "Moroccan", "Brazilian", "Japanese", "Nigerian", "Indian", "Chinese", "Russian", "Lebanese", "Egyptian", "Turkish", "French", "German", "Italian", "Spanish", "Korean", "Vietnamese", "Filipino", "Indonesian", "Pakistani", "Bangladeshi", "Other"]
+#     default: "North American"
+#     show_in_relationships: true

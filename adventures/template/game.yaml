@@ -1,0 +1,54 @@
+metadata:
+  title: Game
+  author: Author
+  version: 1.0
+  languages: [en]
+  default_language: en
+  assets_path: "assets/"
+  data_path: "data/"
+  data_files: ["items.yaml", "locations.yaml", "actions.yaml", "actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml", "properties.yaml", "end_conditions"]
+  allow_direct_input: true
+  debug: false
+  auto_container_description: true
+  show_continue_message: true
+  continue_message:
+    en: "[glow][i]\[Press any key to continue...\][/i][/glow]"
+  directional_navigation: false
+  tabs:
+    system:
+      en: "System"
+      visible: true
+    debug:
+      en: "Debug"
+      visible: false
+    room:
+      en: "Room"
+      visible: true
+    memory:
+      en: "Memory"
+      visible: false
+    inventory:
+      en: "Inventory"
+      visible: true
+    stats:
+      en: "Stats"
+      visible: false
+    relationships:
+      en: "Relationships"
+      visible: false
+    map:
+      en: "Map"
+      visible: true
+    actors:
+      en: "Actors"
+      visible: false
+
+# Syntax	                                                        Produces
+# [b]text[/b]	                                                    <strong>text</strong>
+# [i]text[/i]	                                                    <em>text</em>
+# [color=accent-text]text[/color]	                                <span style="color:var(--accent-text)">
+# [color=#FF0000]text[/color]	                                    <span style="color:#FF0000">
+# [shake], [blink], [glow], [pulse], [wiggle], [grow], [shrink]   <span class="effect-...">
+# \[ / \]	                                                        literal [ / ]
+# unknown tags	                                                  silently skipped
+# improper nesting	                                              gracefully handled (unmatched closes ignored, unclosed opens auto-closed)
