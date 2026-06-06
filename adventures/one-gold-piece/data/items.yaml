@@ -59,6 +59,7 @@ items:
     is_openable: true
     is_open: false
     is_lockable: false
+    # visible: false
 
   cottage_window:
     name:
