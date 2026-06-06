@@ -218,7 +218,7 @@ items:
       en: ["sign", "wooden sign", "no soliciting", "notice", "sign post"]
     description:
       en: |
-        A small wooden sign on a short stake beside the cave entrance. It reads, in neat block letters: LAIR — NO SOLICITING. Beneath that, in smaller and more cramped handwriting, a secondary annotation: This means you, Gerald. You examine the back of the sign. It also reads: This means you, Gerald. Whoever Gerald is, the matter was apparently worth being thorough about.
+        A small wooden sign on a short stake beside the cave entrance. It reads, in neat block letters: "LAIR — NO SOLICITING". Beneath that, in smaller and more cramped handwriting, a secondary annotation: This means you, Gerald. You examine the back of the sign. It also reads: This means you, Gerald. Whoever Gerald is, the matter was apparently worth being thorough about.
     is_readable: true
 
   sulfur_smell:
