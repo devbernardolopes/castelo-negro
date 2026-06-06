@@ -15,175 +15,175 @@ actors:
       en: |
         It's you, Aldric.
 
-  vermithrax:
-    name:
-      en: |
-        Vermithrax
-    synonyms:
-      en: ["dragon", "red dragon", "monster", "creature", "beast", "he", "him"]
-    playable: false
-    images:
-      portrait: "images/actors/vermithrax/vermithrax.png"
-    starting_location: dragons_chamber
-    # known_locations: [dragons_chamber]
-    inventory: []
-    # starting_contained_by: living_room_couch
-    # starting_posture: seated
-    # wearing: [sabine_jeans_pants, sabine_tank_top, sabine_silver_strappy_sandals]
-    max_capacity: 2
-    description:
-      en: |
-        Big red creature.
-    dialogue:
-      entry_nodes:
-        - id: busy_greeting
-          conditions:
-            - "getActorProp(current_actor_id, 'mood') == 'busy' or getActorProp(current_actor_id, 'mood') == 'annoyed'"
-        - id: introductory_greeting
-          conditions:
-            - "getRelationshipBetween(current_player_actor, current_actor_id, 'relationship_level') == 'strangers'"
-        - id: repeat_greeting
-          conditions:
-            - "game_turn - getActorProp(current_actor_id, 'last_spoke_turn') <= 1"
-        - id: friendly_greeting
-          conditions:
-            - "getRelationshipBetween(current_player_actor, current_actor_id, 'affinity') >= 50"
-        - id: neutral_greeting
-          conditions: []
-      nodes:
-        busy_greeting:
-          message:
-            en: "Sorry, I'm a bit busy right now."
-          options:
-            - text:
-                en: "No problem."
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: null
-        introductory_greeting:
-          message:
-            en: "Oh, hey. I'm {actor_name}."
-          options:
-            - text:
-                en: "Hey, {actor_name}. I'm {current_player_actor_name}. Nice to meet you."
-              effects:
-                - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 5)"
-                - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 5)"
-                - "setRelationship(current_player_actor, current_actor_id, 'relationship_level', 'acquaintances')"
-                - "setRelationship(current_actor_id, current_player_actor, 'relationship_level', 'acquaintances')"
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: neutral_greeting
-            - text:
-                en: "See you around."
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: null
-        repeat_greeting:
-          message:
-            en: "Oh, hey again."
-          options:
-            - text:
-                en: "Good to see you."
-              effects:
-                - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 1)"
-                - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 1)"
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: neutral_greeting
-            - text:
-                en: "We just talked."
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: null
-        friendly_greeting:
-          message:
-            en: "Hey, {current_player_actor_name}. I'm glad you're here."
-          options:
-            - text:
-                en: "How are you feeling?"
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: feeling
-            - text:
-                en: "Want to talk for a bit?"
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: talk_about_work
-            - text:
-                en: "See you around."
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: null
-        neutral_greeting:
-          message:
-            en: "Oh, hey."
-          options:
-            - text:
-                en: "How are you feeling?"
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: feeling
-            - text:
-                en: "What are you up to?"
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: brooklyn
-            - text:
-                en: "See you later."
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: null
-        feeling:
-          message:
-            en: "A bit anxious, honestly. Work has been piling up."
-          options:
-            - text:
-                en: "Want to talk about it?"
-              effects:
-                - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 3)"
-                - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 3)"
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: talk_about_work
-            - text:
-                en: "I'm sure you'll handle it."
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: neutral_greeting
-            - text:
-                en: "See you later."
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: null
-        talk_about_work:
-          message:
-            en: "Thanks, {current_player_actor_name}. Just knowing you're around helps."
-          options:
-            - text:
-                en: "Anytime."
-              effects:
-                - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 5)"
-                - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 5)"
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: null
-            - text:
-                en: "That's what friends are for."
-              effects:
-                - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 5)"
-                - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 5)"
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: null
-        brooklyn:
-          message:
-            en: "Oh, I'd love that! It's been too long."
-          options:
-            - text:
-                en: "I'll text him."
-              effects:
-                - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 5)"
-                - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 5)"
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: null
-            - text:
-                en: "Let's plan it for next weekend."
-              effects:
-                - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
-              next: neutral_greeting
+  # vermithrax:
+  #   name:
+  #     en: |
+  #       Vermithrax
+  #   synonyms:
+  #     en: ["dragon", "red dragon", "monster", "creature", "beast", "he", "him"]
+  #   playable: false
+  #   images:
+  #     portrait: "images/actors/vermithrax/vermithrax.png"
+  #   starting_location: dragons_chamber
+  #   # known_locations: [dragons_chamber]
+  #   inventory: []
+  #   # starting_contained_by: living_room_couch
+  #   # starting_posture: seated
+  #   # wearing: [sabine_jeans_pants, sabine_tank_top, sabine_silver_strappy_sandals]
+  #   max_capacity: 2
+  #   description:
+  #     en: |
+  #       Big red creature.
+  #   dialogue:
+  #     entry_nodes:
+  #       - id: busy_greeting
+  #         conditions:
+  #           - "getActorProp(current_actor_id, 'mood') == 'busy' or getActorProp(current_actor_id, 'mood') == 'annoyed'"
+  #       - id: introductory_greeting
+  #         conditions:
+  #           - "getRelationshipBetween(current_player_actor, current_actor_id, 'relationship_level') == 'strangers'"
+  #       - id: repeat_greeting
+  #         conditions:
+  #           - "game_turn - getActorProp(current_actor_id, 'last_spoke_turn') <= 1"
+  #       - id: friendly_greeting
+  #         conditions:
+  #           - "getRelationshipBetween(current_player_actor, current_actor_id, 'affinity') >= 50"
+  #       - id: neutral_greeting
+  #         conditions: []
+  #     nodes:
+  #       busy_greeting:
+  #         message:
+  #           en: "Sorry, I'm a bit busy right now."
+  #         options:
+  #           - text:
+  #               en: "No problem."
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: null
+  #       introductory_greeting:
+  #         message:
+  #           en: "Oh, hey. I'm {actor_name}."
+  #         options:
+  #           - text:
+  #               en: "Hey, {actor_name}. I'm {current_player_actor_name}. Nice to meet you."
+  #             effects:
+  #               - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 5)"
+  #               - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 5)"
+  #               - "setRelationship(current_player_actor, current_actor_id, 'relationship_level', 'acquaintances')"
+  #               - "setRelationship(current_actor_id, current_player_actor, 'relationship_level', 'acquaintances')"
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: neutral_greeting
+  #           - text:
+  #               en: "See you around."
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: null
+  #       repeat_greeting:
+  #         message:
+  #           en: "Oh, hey again."
+  #         options:
+  #           - text:
+  #               en: "Good to see you."
+  #             effects:
+  #               - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 1)"
+  #               - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 1)"
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: neutral_greeting
+  #           - text:
+  #               en: "We just talked."
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: null
+  #       friendly_greeting:
+  #         message:
+  #           en: "Hey, {current_player_actor_name}. I'm glad you're here."
+  #         options:
+  #           - text:
+  #               en: "How are you feeling?"
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: feeling
+  #           - text:
+  #               en: "Want to talk for a bit?"
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: talk_about_work
+  #           - text:
+  #               en: "See you around."
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: null
+  #       neutral_greeting:
+  #         message:
+  #           en: "Oh, hey."
+  #         options:
+  #           - text:
+  #               en: "How are you feeling?"
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: feeling
+  #           - text:
+  #               en: "What are you up to?"
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: brooklyn
+  #           - text:
+  #               en: "See you later."
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: null
+  #       feeling:
+  #         message:
+  #           en: "A bit anxious, honestly. Work has been piling up."
+  #         options:
+  #           - text:
+  #               en: "Want to talk about it?"
+  #             effects:
+  #               - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 3)"
+  #               - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 3)"
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: talk_about_work
+  #           - text:
+  #               en: "I'm sure you'll handle it."
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: neutral_greeting
+  #           - text:
+  #               en: "See you later."
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: null
+  #       talk_about_work:
+  #         message:
+  #           en: "Thanks, {current_player_actor_name}. Just knowing you're around helps."
+  #         options:
+  #           - text:
+  #               en: "Anytime."
+  #             effects:
+  #               - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 5)"
+  #               - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 5)"
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: null
+  #           - text:
+  #               en: "That's what friends are for."
+  #             effects:
+  #               - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 5)"
+  #               - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 5)"
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: null
+  #       brooklyn:
+  #         message:
+  #           en: "Oh, I'd love that! It's been too long."
+  #         options:
+  #           - text:
+  #               en: "I'll text him."
+  #             effects:
+  #               - "setRelationship(current_player_actor, current_actor_id, 'affinity', getRelationship(current_actor_id, 'affinity') + 5)"
+  #               - "setRelationship(current_actor_id, current_player_actor, 'affinity', getRelationshipBetween(current_actor_id, current_player_actor, 'affinity') + 5)"
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: null
+  #           - text:
+  #               en: "Let's plan it for next weekend."
+  #             effects:
+  #               - "setActorProp(current_actor_id, 'last_spoke_turn', game_turn)"
+  #             next: neutral_greeting
