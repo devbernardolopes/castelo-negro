@@ -8,8 +8,8 @@ actors:
       portrait: "images/actors/aldric/aldric.png"
     starting_location: cottage_doorstep
     known_locations: [cottage_doorstep, old_crossroads]
-    inventory: []
-    wearing: [leather_satchel, aldrics_sword]
+    inventory: [aldrics_sword]
+    wearing: [leather_satchel]
     max_capacity: 2
     description:
       en: |

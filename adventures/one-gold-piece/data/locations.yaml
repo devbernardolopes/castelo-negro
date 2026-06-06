@@ -15,13 +15,9 @@ locations:
       en: ["doorstep", "cottage", "home", "house", "porch"]
     description:
       en: |
-        This is where your adventure begins, which is perhaps the most damning thing that can be said about it.
+        Youur cottage — a modest structure that has never been accused of architectural ambition. The door behind you hangs slightly crooked, a problem you have been meaning to fix for three years.
 
-        You are standing on the doorstep of your cottage — a modest structure that has never been accused of architectural ambition. The door behind you hangs slightly crooked, a problem you have been meaning to fix for three years. The morning sun has the cheerful indifference of a thing that has never gambled and lost seventeen gold pieces to a man named Brom.
-
-        Your neighbor Gerald is tending his vegetable patch across the lane. He waves. He always waves. It is unclear if Gerald is aware that anything in the world is ever wrong.
-
-        The road north leads out of the village toward the hills. You are wearing your leather satchel and carrying a sword. You bought the sword secondhand. The previous owner sold it because it was, and this is a direct quote, "not very good."
+        The road north leads out of the village toward the hills.
     contents: [cottage_door, cottage_window, neighbor_gerald, aldrics_vegetable_patch, aldrics_well]
     exits:
       north: old_crossroads

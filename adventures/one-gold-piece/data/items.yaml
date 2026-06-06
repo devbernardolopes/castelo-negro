@@ -9,6 +9,9 @@ items:
     name:
       en: |
         Leather Satchel
+    short_name:
+      en: |
+        leather satchel
     synonyms:
       en: ["satchel", "backpack", "bag", "pack", "leather bag", "leather satchel"]
     description:
@@ -27,12 +30,16 @@ items:
     name:
       en: |
         Sword
+    short_name:
+      en: |
+        {owner}'s sword
     synonyms:
       en: ["sword", "blade", "weapon", "old sword", "secondhand sword"]
     description:
       en: |
-        A short sword of unremarkable provenance. The blade is serviceable if not inspiring, the grip wrapped in leather that has seen better decades, and there is a small nick near the crossguard that the previous owner described, unhelpfully, as "character." You paid three silver for it. You may have overpaid.
+        A short sword of unremarkable provenance. The blade is serviceable if not inspiring, the grip wrapped in leather that has seen better decades, and there is a small nick near the crossguard that the previous owner described, unhelpfully, as [i]"character."[/i] You paid three silver for it. You may have overpaid.
     takeable: true
+    owner: aldric
     size: 25
     images: ["images/items/aldrics_sword.png"]
 
@@ -218,7 +225,7 @@ items:
       en: ["sign", "wooden sign", "no soliciting", "notice", "sign post"]
     description:
       en: |
-        A small wooden sign on a short stake beside the cave entrance. It reads, in neat block letters: "LAIR — NO SOLICITING". Beneath that, in smaller and more cramped handwriting, a secondary annotation: This means you, Gerald. You examine the back of the sign. It also reads: This means you, Gerald. Whoever Gerald is, the matter was apparently worth being thorough about.
+        A small wooden sign on a short stake beside the cave entrance. It reads, in neat block letters: [wiggle][i]"LAIR — NO SOLICITING"[/i][/wiggle]. Beneath that, in smaller and more cramped handwriting, a secondary annotation: [i]"This means you, Gerald"[/i]. You examine the back of the sign. It also reads: [i]"This means you, Gerald"[/i]. Whoever Gerald is, the matter was apparently worth being thorough about.
     is_readable: true
 
   sulfur_smell:
@@ -539,14 +546,23 @@ items:
     name:
       en: |
         Stone Box
+    short_name:
+      en: |
+        stone box
     synonyms:
       en: ["stone box", "box", "container", "small box", "stone container"]
     description:
       en: |
         A small box carved from a single piece of pale stone, about the size of a bread loaf. The lid fits precisely — no hinge, just friction and craftsmanship. There is no lock. There is no label. There is, from the floor around it, the distinct impression of a very large claw print pointing toward it. The box is not hidden. It has simply been waiting.
-    is_container: true
-    is_openable: true
-    is_open: false
+    # is_container: true
+    # is_openable: true
+    # is_open: false
+    contents: [promissory_note]
+    openable:
+      initial: closed
+      lockable: false
+      locked: false
+      show_current_state: true
 
   promissory_note:
     name:
@@ -559,7 +575,7 @@ items:
         A folded piece of parchment, formal in character. At the top, in decorative script: PROMISSORY NOTE. The body reads: The bearer of this document is entitled to the sum of twenty (20) gold pieces, redeemable at any recognized merchant house operating within the kingdom, upon presentation of this document. No questions will be asked. The note is dated several years ago. At the bottom, a signature: Vermithrax R., Esq. The signature is perfectly legible and, you notice, slightly larger than the allotted signature line, as though the signer needed a moment to scale down.
     takeable: true
     visible: false
-    starting_contained_by: stone_box
+    # starting_contained_by: stone_box
     size: 1
     images: ["images/items/promissory_note.png"]
 
