@@ -1,640 +1,636 @@
-# All three item description patterns now work:
-# Item format                     Example	                            desc.base desc.conditions Base text source
-# {en, pt-br} (no conditions)     cottage_key	                        undefined falsy           _pickLang(desc) via line 624
-# {en, pt-br, conditions}	        cottage_kitchen_table, husband_belt undefined truthy          _pickLang(desc) via line 614 fallback
-# {base: {en, pt-br}, conditions} (locations)	                        truthy    truthy          _pickLang(desc.base) via line 614 primary
-
 items:
-  # -------------------------------
-  # Sabine's Items
-  # -------------------------------
-  sabine_cell_phone:
+
+  # ─────────────────────────────────────────────
+  # PLAYER EQUIPMENT
+  # (worn/carried by Aldric at game start)
+  # ─────────────────────────────────────────────
+
+  leather_satchel:
     name:
       en: |
-        {owner}'s Cell Phone
+        Leather Satchel
     synonyms:
-      en: ["cell phone", "phone"]
-    takeable: true
-    owner: sabine
-    size: 1
+      en: ["satchel", "backpack", "bag", "pack", "leather bag", "leather satchel"]
     description:
       en: |
-        A sleek smartphone.
-    images: ["images/items/tti-2026-05-31T17-49-06-403406110.png"]
-
-  sabine_jeans_pants_pocket:
-    name:
-      en: |
-        {owner}'s Jeans Pants Pocket
-    short_name:
-      en: |
-        front pocket
-    synonyms:
-      en: ["pocket", "jeans pocket", "pants pocket"]
-    contents: [sabine_cell_phone]
-    show_in_inventory: false
-    container_capacity: 1
-    owner: sabine
-    description:
-      en: |
-        The front pocket of {owner}'s jeans pants.
-      conditions:
-        - if: "containerHas('sabine_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor != 'sabine'"
-          message:
-            en: |
-              You can see the outline of Sabine's cell phone.
-        - if: "containerHas('sabine_jeans_pants_pocket', 'sabine_cell_phone') and current_player_actor == 'sabine'"
-          message:
-            en: |
-              You can see the outline of your cell phone.
-
-  sabine_jeans_pants:
-    name:
-      en: |
-        {owner}'s Jeans Pants
-    short_name:
-      en: |
-        jeans
-    synonyms:
-      en: ["jeans", "pants", "jeans pants", "👖"]
+        A well-worn leather satchel with a brass buckle that no longer quite closes properly. It has the look of something that has been everywhere and remembered none of it.
     takeable: true
     wearable: true
-    owner: sabine
-    size: 2
-    contents: [sabine_jeans_pants_pocket]
-    description:
-      en: |
-        A pair of women's stylish skinny jeans in indigo blue color. They have a high waist and a slim fit, accentuating the wearer's figure. The jeans feature classic five-pocket styling, with two front pockets, two back pockets, and a small coin pocket on the right side. The front pockets are adorned with silver rivets for added durability and style. The jeans are made of a stretchy denim fabric that provides comfort and flexibility for all-day wear. The waistband has belt loops, allowing for accessorizing with a belt if desired. Overall, these jeans are a fashionable and versatile addition to any wardrobe.
-    images: ["images/items/tti-2026-05-31T17-42-03-25590608.png"]
-  
-  sabine_tank_top:
-    name:
-      en: |
-        {owner}'s Tank Top
-    short_name:
-      en: |
-        tank top
-    synonyms:
-      en: ["tank top", "top", "sabine's tank top"]
-    takeable: true
-    wearable: true
-    owner: sabine
-    size: 1
-    description:
-      en: |
-        A simple women's white tank top made of soft cotton fabric. It has a classic design with a scoop neckline and thin shoulder straps, providing a comfortable and breathable fit for warm weather. The tank top is versatile and can be easily paired with various bottoms, making it a staple piece in any woman's wardrobe.
-    images: ["images/items/tti-2026-06-01T21-28-28-176196360.png"]
-
-  sabine_silver_strappy_sandals:
-    name:
-      en: |
-        {owner}'s Silver Strappy Sandals
-    short_name:
-      en: |
-        silver strappy sandals
-    synonyms:
-      en: ["silver strappy sandals", "sandals", "shoes", "strappy sandals", "silver sandals", "silver shoes", "strappy shoes"]
-    takeable: true
-    wearable: true
-    owner: sabine
-    size: 1
-    description:
-      en: |
-        A pair of elegant silver strappy sandals with a low heel. The sandals feature thin straps that crisscross over the foot and secure with a small buckle at the ankle, providing a stylish and comfortable fit. The silver color adds a touch of glamour, making these sandals perfect for dressing up any outfit for a night out or special occasion.
-    images: ["images/items/tti-2026-06-01T21-32-12-288403318.png"]
-
-  # -------------------------------
-  # Location Items
-  # -------------------------------
-  # Living Room
-  living_room_couch:
-    name:
-      en: |
-        Living Room Couch
-    short_name:
-      en: |
-        couch
-    synonyms:
-      en: ["couch", "sofa", "living room sofa"]
-    sittable: true
-    sleepable: true
-    actor_capacity: 3
-    container_type: on
+    is_container: true
+    container_type: in
     container_capacity: 10
-    description:
-      en: |
-        A large sectional sofa that provides a comfortable seating area for guests. It is made of soft, plush fabric in a neutral color, complementing the modern decor of the living room. The couch has deep cushions and wide armrests, making it an inviting spot to relax and enjoy the stunning view of the city through the floor-to-ceiling windows.
-
-  tv_remote_control:
-    name:
-      en: |
-        TV Remote Control
-    short_name:
-      en: |
-        remote control
-    synonyms:
-      en: ["remote control", "remote", "tv remote"]
-    takeable: true
-    size: 1
-    description:
-      en: |
-        A sleek and modern TV remote control that allows you to operate the state-of-the-art sound system and large flat-screen TV in the living room. The remote has a minimalist design with a few buttons for power, volume, channel selection, and input switching, providing a convenient way to enjoy entertainment in the penthouse living room.
-    images: ["images/items/tti-2026-06-04T15-21-09-705658701.png"]
-
-  the_voices_of_mary_book:
-    name:
-      en: |
-        Book "The Voices of Mary"
-    short_name:
-      en: |
-        "The Voices of Mary" book
-    synonyms:
-      en: ["the voices of mary book", "book", "novel"]
-    takeable: true
-    size: 1
-    readable: book_the_voices_of_mary
-    description:
-      en: |
-        A short poetry collection titled "The Voices of Mary". The book has a simple yet elegant cover design.
-    images: ["images/items/tti-2026-06-04T16-39-29-1025048165.png"]
-
-  living_room_coffee_table:
-    name:
-      en: |
-        Living Room Coffee Table
-    short_name:
-      en: |
-        coffee table
-    synonyms:
-      en: ["coffee table", "table", "living room table"]
-    sittable: true
-    container_type: on
-    container_capacity: 6
-    actor_capacity: 1
-    contents: [tv_remote_control, the_voices_of_mary_book]
-    description:
-      en: |
-        A contemporary coffee table at the center of the living room, holding a few books and a decorative vase. The table has a sleek design with a glass top and metal legs, adding a touch of sophistication to the space.
-
-  # Hallway - Half Bathroom
-  half_bathroom_door:
-    name:
-      en: |
-        Half Bathroom Door
-    short_name:
-      en: |
-        half bathroom door
-    synonyms:
-      en: ["door", "half bathroom door", "bathroom door"]
-    openable:
-      initial: closed
-      lockable: true
-      locked: true
-      side: one_way
-      accessible_from:
-        - penthouse_hallway_half_bathroom
-      show_current_state: true
-    description:
-      en: |
-        A sleek wooden door that leads to the half bathroom. It has a modern design that fits the overall aesthetic of the penthouse, providing privacy and access to the bathroom facilities.
-
-  half_bathroom_toilet:
-    name:
-      en: |
-        Half Bathroom Toilet
-    short_name:
-      en: |
-        toilet
-    synonyms:
-      en: ["toilet", "bathroom toilet"]
-    sittable: true
-    actor_capacity: 1
-    container_type: in
-    container_capacity: 1
-    description:
-      en: |
-        A modern toilet in the half bathroom, designed for convenience and comfort. Next to it is a toilet paper roll holder for easy access to toilet paper.
-  
-  half_bathroom_toilet_water:
-    name:
-      en: |
-        Half Bathroom Toilet Water
-    short_name:
-      en: |
-        toilet water
-    synonyms:
-      en: ["toilet water", "water"]
-    container_type: in
-    description:
-      en: |
-        Clean water in the half bathroom toilet, ready for use.
-
-  half_bathroom_toilet_paper_roll_holder:
-    name:
-      en: |
-        Half Bathroom Toilet Paper Roll Holder
-    short_name:
-      en: |
-        toilet roll holder
-    synonyms:
-      en: ["toilet paper roll holder", "toilet paper holder", "paper roll holder", "holder"]
-    container_type: hanging
-    container_capacity: 1
-    contents: [half_bathroom_toilet_paper_roll]
-    description:
-      en: |
-        A simple and functional toilet paper roll holder mounted on the wall next to the toilet in the half bathroom.
-      conditions:
-        - if: "containerHas(half_bathroom_toilet_paper_roll_holder, half_bathroom_toilet_paper_roll)"
-          message:
-            en: |
-              Currently holding a roll of toilet paper.
-
-  half_bathroom_sink:
-    name:
-      en: |
-        Half Bathroom Sink
-    short_name:
-      en: |
-        sink
-    synonyms:
-      en: ["sink", "bathroom sink"]
-    container_type: attached
-    contents: [half_bathroom_faucet]
-    container_capacity: 1
-    description:
-      en: |
-        A sleek and stylish sink in the half bathroom, perfect for washing hands and freshening up.
-
-  half_bathroom_sink_water:
-    name:
-      en: |
-        Half Bathroom Sink Water
-    short_name:
-      en: |
-        sink water
-    synonyms:
-      en: ["sink water", "water"]
-    container_type: in
-    description:
-      en: |
-        Clean water in the half bathroom sink, ready for use.
-
-  half_bathroom_faucet:
-    name:
-      en: |
-        Half Bathroom Faucet
-    short_name:
-      en: |
-        faucet
-    synonyms:
-      en: ["faucet", "sink faucet", "bathroom faucet"]
-    openable: true
-    description:
-      en: |
-        A modern faucet mounted on the half bathroom sink, providing a convenient water source for washing hands and face.
-
-  half_bathroom_toilet_paper_roll:
-    name:
-      en: |
-        Toilet Paper Roll
-    short_name:
-      en: |
-        toilet paper roll
-    synonyms:
-      en: ["toilet paper roll", "toilet paper", "paper roll", "paper", "roll"]
-    takeable: true
-    size: 1
-    description:
-      en: |
-        A simple roll of toilet paper.
-    images: ["images/items/tti-2026-06-01T21-04-48-419940349.png"]
-
-  # Guest Bedroom
-  guest_bedroom_door:
-    name:
-      en: |
-        Guest Bedroom Door
-    short_name:
-      en: |
-        guest bedroom door
-    synonyms:
-      en: ["door", "guest bedroom door", "bedroom door"]
-    openable:
-      initial: closed
-      lockable: true
-      locked: false
-      side: one_way
-      accessible_from:
-        - penthouse_guest_bedroom
-      show_current_state: true
-    description:
-      en: |
-        A sturdy wooden door that leads to the guest bedroom. It has a sleek design that complements the modern aesthetic of the penthouse, providing privacy and security for guests staying in the guest bedroom.
-
-  guest_bedroom_closet:
-    name:
-      en: |
-        Guest Bedroom Closet
-    short_name:
-      en: |
-        closet
-    synonyms:
-      en: ["closet", "wardrobe", "guest bedroom closet"]
-    openable:
-      initial: closed
-      lockable: false
-      locked: false
-      side: two_way
-      accessible_from:
-        - penthouse_guest_bedroom
-    container_type: in
-    actor_capacity: 2
-    container_capacity: 10
-    description:
-      en: |
-        A spacious closet in the guest bedroom, providing ample storage space for guests to hang their clothes and store their belongings during their stay at the penthouse.
-
-  guest_bedroom_bed:
-    name:
-      en: |
-        Guest Bedroom Bed
-    short_name:
-      en: |
-        bed
-    synonyms:
-      en: ["bed", "guest bed", "bedroom bed"]
-    sittable: true
-    sleepable: true
-    actor_capacity: 3
-    container_capacity: 10
-    description:
-      en: |
-        A comfortable queen-sized bed in the guest bedroom, perfect for accommodating visitors. The bed is adorned with soft linens and decorative pillows, creating a cozy and inviting sleeping area for guests staying in the penthouse.
-
-  # Miscellaneous
-  concha_y_toro_carmin_de_peumo_wine_bottle:
-    name:
-      en: |
-        Concha y Toro Carmin de Peumo Wine Bottle
-    short_name:
-      en: |
-        wine bottle
-    synonyms:
-      en: ["concha y toro carmin de peumo wine bottle", "wine bottle", "bottle"]
-    takeable: true
-    size: 2
-    openable:
-      initial: closed
-      lockable: false
-      locked: false
-    description:
-      en: |
-        A bottle of Concha y Toro Carmin de Peumo wine, a red wine from Chile known for its rich flavor and smooth finish. The bottle has an elegant label featuring the Concha y Toro logo and the name of the wine, making it a stylish addition to any collection or a perfect choice for enjoying a glass of wine.
-    images: ["images/items/tti-2026-06-04T18-51-55-714687357.png"]
-
-  rolex_wristwatch:
-    name:
-      en: |
-        Rolex Wristwatch
-    short_name:
-      en: |
-        rolex wristwatch
-    synonyms:
-      en: ["rolex wristwatch", "rolex", "wristwatch", "watch"]
-    takeable: true
-    wearable: true
-    size: 1
-    description:
-      en: |
-        A luxurious Rolex wristwatch, known for its precision and timeless design. The watch features a stainless steel case and bracelet, with a classic dial that displays the time and date. It is a symbol of elegance and sophistication, making it a perfect accessory for any occasion.
-    images: ["images/items/tti-2026-06-04T19-29-06-994053862.png"]
-
-  pencil:
-    name:
-      en: |
-        Pencil
-    short_name:
-      en: |
-        pencil
-    synonyms:
-      en: ["pencil", "writing utensil"]
-    takeable: true
-    size: 1
-    description:
-      en: |
-        A simple wooden pencil with a graphite core, perfect for writing or drawing.
-    images: ["images/items/tti-2026-06-04T19-34-13-638646627.png"]
-
-  pen:
-    name:
-      en: |
-        Pen
-    short_name:
-      en: |
-        pen
-    synonyms:
-      en: ["pen", "writing utensil"]
-    takeable: true
-    size: 1
-    description:
-      en: |
-        A sleek ballpoint pen with a smooth writing experience, perfect for jotting down notes or signing documents.
-    images: ["images/items/tti-2026-06-04T19-39-10-842123186.png"]
-
-  tablet:
-    name:
-      en: |
-        Tablet
-    short_name:
-      en: |
-        tablet
-    synonyms:
-      en: ["tablet", "electronic device"]
-    takeable: true
-    size: 1
-    description:
-      en: |
-        A modern tablet with a sleek design and a high-resolution display, perfect for browsing the internet, watching videos, or working on the go.
-    images: ["images/items/tti-2026-06-04T19-43-32-903418567.png"]
-
-  diamond_necklace:
-    name:
-      en: |
-        Diamond Necklace
-    short_name:
-      en: |
-        diamond necklace
-    synonyms:
-      en: ["diamond necklace", "necklace", "jewelry"]
-    takeable: true
-    wearable: true
-    size: 1
-    description:
-      en: |
-        A stunning diamond necklace that exudes elegance and sophistication. The necklace features a delicate chain adorned with sparkling diamonds, making it a perfect accessory for special occasions or adding a touch of glamour to any outfit.
-    images: ["images/items/tti-2026-06-04T19-45-03-758221311.png"]
-
-  laptop_computer:
-    name:
-      en: |
-        Laptop Computer
-    short_name:
-      en: |
-        laptop computer
-    synonyms:
-      en: ["laptop computer", "laptop", "computer"]
-    takeable: true
-    size: 3
-    description:
-      en: |
-        A sleek and powerful laptop computer, perfect for work or entertainment. It features a high-resolution display, a comfortable keyboard, and a long-lasting battery, making it an ideal device for productivity and leisure.
-    images: ["images/items/tti-2026-06-04T19-45-49-492984211.png"]
-
-  dom_perignon_champagne_bottle:
-    name:
-      en: |
-        Dom Perignon Champagne Bottle
-    short_name:
-      en: |
-        champagne bottle
-    synonyms:
-      en: ["dom perignon champagne bottle", "champagne bottle", "bottle"]
-    takeable: true
-    size: 2
-    openable:
-      initial: closed
-      lockable: false
-      locked: false
-    description:
-      en: |
-        A bottle of Dom Perignon champagne, a prestigious and highly sought-after sparkling wine known for its exceptional quality and taste. The bottle features an elegant design with the iconic Dom Perignon label, making it a symbol of luxury and celebration.
-    images: ["images/items/tti-2026-06-04T19-47-33-512641027.png"]
-
-  regular_cocktail_glass:
-    name:
-      en: |
-        Regular Cocktail Glass
-    short_name:
-      en: |
-        cocktail glass
-    synonyms:
-      en: ["regular cocktail glass", "cocktail glass", "glass"]
-    takeable: true
-    size: 1
-    container_type: on
-    container_capacity: 1
-    description:
-      en: |
-        A classic cocktail glass with a long stem and a wide bowl, perfect for serving a variety of cocktails. The glass is made of clear crystal, providing a timeless look for any drinking experience.
-    images: ["images/items/tti-2026-06-05T00-09-12-381185713.png"]
-
-  common_glass:
-    name:
-      en: |
-        Common Glass
-    short_name:
-      en: |
-        glass
-    synonyms:
-      en: ["common glass", "glass"]
-    takeable: true
-    size: 1
-    container_type: on
-    container_capacity: 1
-    description:
-      en: |
-        A simple and versatile common glass, perfect for serving water, juice, or any other beverage. The glass is made of clear material, making it a practical choice for everyday use.
-    images: ["images/items/tti-2026-06-05T00-07-14-614929041.png"]
-
-  flathead_screwdriver:
-    name:
-      en: |
-        Flathead Screwdriver
-    short_name:
-      en: |
-        flathead screwdriver
-    synonyms:
-      en: ["flathead screwdriver", "screwdriver", "tool"]
-    takeable: true
-    size: 1
-    description:
-      en: |
-        A basic flathead screwdriver with a simple design, perfect for tightening or loosening screws with a flat head. It is a handy tool to have for various household tasks and repairs.
-    images: ["images/items/tti-2026-06-05T16-54-21-958627277.png"]
-
-  black_backpack:
-    name:
-      en: |
-        Black Backpack
-    short_name:
-      en: |
-        backpack
-    synonyms:
-      en: ["black backpack", "backpack", "bag"]
-    takeable: true
-    wearable: true
     size: 10
-    openable:
-      initial: closed
-      lockable: false
-      locked: false
-      show_current_state: true
-    container_type: in
-    container_capacity: 10
-    contents: [tablet, laptop_computer]
-    description:
-      en: |
-        A sleek black backpack with multiple compartments and sturdy straps, perfect for carrying your belongings in style. The backpack is made of durable material, making it a practical choice for everyday use or travel.
-    images: ["images/items/tti-2026-06-05T16-56-53-882642940.png"]
+    images: ["images/items/leather_satchel.png"]
+    # Currently worn across your shoulder. It is, at this moment, empty.
 
-  dark_red_nail_polish:
+  aldrics_sword:
     name:
       en: |
-        Dark Red Nail Polish
-    short_name:
-      en: |
-        nail polish
+        Sword
     synonyms:
-      en: ["dark red nail polish", "nail polish", "polish"]
-    takeable: true
-    size: 1
+      en: ["sword", "blade", "weapon", "old sword", "secondhand sword"]
     description:
       en: |
-        A bottle of dark red nail polish, perfect for adding a touch of elegance and sophistication to your manicure. The nail polish has a rich, deep color that complements any outfit and is ideal for both casual and formal occasions.
-    images: ["images/items/tti-2026-06-05T19-26-41-631630889.png"]
+        A short sword of unremarkable provenance. The blade is serviceable if not inspiring, the grip wrapped in leather that has seen better decades, and there is a small nick near the crossguard that the previous owner described, unhelpfully, as "character." You paid three silver for it. You may have overpaid.
+    takeable: true
+    size: 25
+    images: ["images/items/aldrics_sword.png"]
 
-  black_leather_wallet:
+  # ─────────────────────────────────────────────
+  # COTTAGE DOORSTEP
+  # ─────────────────────────────────────────────
+
+  cottage_door:
     name:
       en: |
-        Black Leather Wallet
-    short_name:
-      en: |
-        wallet
+        Cottage Door
     synonyms:
-      en: ["black leather wallet", "wallet", "leather wallet"]
-    takeable: true
-    size: 1
+      en: ["door", "front door", "cottage door", "wooden door"]
     description:
       en: |
-        A sleek black leather wallet with multiple compartments for cards, cash, and coins. The wallet is made of high-quality leather, providing durability and a sophisticated look for everyday use.
-    images: ["images/items/tti-2026-06-05T19-41-22-111803065.png"]
+        A wooden door that hangs at a slight but definitive angle, as though it disagrees with the frame on a matter of principle. You have been meaning to fix this for three years. The door is closed but not locked — there is nothing inside worth locking.
+    is_openable: true
+    is_open: false
+    is_lockable: false
 
-  black_leather_purse:
+  cottage_window:
     name:
       en: |
-        Black Leather Purse
-    short_name:
-      en: |
-        black leather purse
+        Cottage Window
     synonyms:
-      en: ["black leather purse", "black purse", "leather purse", "purse"]
-    takeable: true
-    wearable: true
-    container_type: in
-    container_capacity: 6
-    size: 1
+      en: ["window", "cottage window", "shutters"]
     description:
       en: |
-        A sleek, minimalist purse made of black leather.
-    images: ["images/items/tti-2026-06-05T22-02-34-207571073.png"]
+        A small window with wooden shutters, currently open to the morning air. The glass, such as it is, is wavy in the way of old glass that was trying its best. Through it you can see the inside of your cottage: a table, a chair, a bowl with yesterday's bread in it. None of these things will help you.
+
+  neighbor_gerald:
+    name:
+      en: |
+        Gerald
+    synonyms:
+      en: ["gerald", "neighbor", "neighbour", "man", "fellow"]
+    description:
+      en: |
+        Gerald is your neighbor. He is tending his vegetable patch with the focused contentment of a man who has never, not once, made a bet he regretted. He waves when he sees you looking. He has waved at you every morning for eleven years. You have never had a conversation that lasted more than four sentences. This has suited both of you fine.
+    is_actor: true
+
+  aldrics_vegetable_patch:
+    name:
+      en: |
+        Vegetable Patch
+    synonyms:
+      en: ["vegetable patch", "garden", "patch", "vegetables", "garden patch"]
+    description:
+      en: |
+        A small vegetable patch along the side of the cottage. There are onions, some scraggly leeks, and what might be a turnip having a difficult year. None of it is ready to harvest. None of it is relevant to your current problem, except insofar as the current problem means you may not be around to harvest it.
+
+  aldrics_well:
+    name:
+      en: |
+        Well
+    synonyms:
+      en: ["well", "stone well", "water well"]
+    description:
+      en: |
+        A modest stone well near the corner of the cottage. The rope and bucket are intact. The water is cold and reliable. It has never let you down, which puts it ahead of several other things in your life.
+
+  # ─────────────────────────────────────────────
+  # OLD CROSSROADS
+  # ─────────────────────────────────────────────
+
+  signpost:
+    name:
+      en: |
+        Signpost
+    synonyms:
+      en: ["signpost", "sign", "post", "wooden sign", "directions"]
+    description:
+      en: |
+        A weathered wooden signpost with three arms. The southern arm reads VILLAG (the "E" has been lost to time and indifference). The northern arm reads THE HILLS (PROBABLY FINE) in handwriting that suggests whoever wrote it had recently made a decision they were not entirely sure about. The third arm points directly at you. It reads CERTAIN DOOM. You check to see if it has a hinge. It does not. It has simply decided.
+
+  stray_dog:
+    name:
+      en: |
+        Stray Dog
+    synonyms:
+      en: ["dog", "stray", "stray dog", "hound", "mutt"]
+    description:
+      en: |
+        A medium-sized dog of indeterminate breed and absolute self-possession. It is sitting very still and looking at you with the evaluative calm of an entity that has made its peace with the world and is now simply seeing what you intend to do with yours. It does not appear hungry. It does not appear lost. It appears, if anything, curious.
+
+  hilltop_view:
+    name:
+      en: |
+        Hills
+    synonyms:
+      en: ["hills", "distant hills", "view", "landscape", "horizon"]
+    description:
+      en: |
+        The hills rise to the north — purple and substantial in the morning light. Somewhere inside them is a cave. Somewhere inside the cave is a dragon. Somewhere behind you is a debt. The hills are indifferent to all of this. This is perhaps the most honest thing about them.
+
+  # ─────────────────────────────────────────────
+  # HILLSIDE PATH
+  # ─────────────────────────────────────────────
+
+  adventurers_journal:
+    name:
+      en: |
+        Battered Journal
+    synonyms:
+      en: ["journal", "battered journal", "leather journal", "diary", "notebook", "book"]
+    description:
+      en: |
+        A small leather journal, scorched along one edge as though something with a high internal temperature once breathed near it. The cover reads, in faded ink: FIELD NOTES — PERSONAL. Inside are roughly forty pages of entries covering a span of what appears to be several months: mundane observations, a recipe for traveling bread, notes on local geography, a running argument with a person referred to only as "T." about the correct way to pack a bedroll. The final entry is brief. It reads: "Found cave. Going in. Probably fine." The ink of that last entry is slightly scorched, as though written in proximity to something warm. There are no subsequent entries.
+    takeable: true
+    is_readable: true
+    size: 2
+    images: ["images/items/adventurers_journal.png"]
+
+  hillside_sheep:
+    name:
+      en: |
+        Sheep
+    synonyms:
+      en: ["sheep", "ewe", "lamb", "flock", "animals"]
+    description:
+      en: |
+        A small cluster of sheep on the slope above the path. They are grazing with total commitment, their jaws moving in the slow, satisfied rhythm of creatures who have never once considered their finances. One of them has turned to look at you. Its expression is difficult to characterize but might be described as non-judgmental. This is more than you are getting from most things today.
+
+  loose_gravel:
+    name:
+      en: |
+        Loose Gravel
+    synonyms:
+      en: ["gravel", "loose gravel", "stones", "loose stones", "pebbles"]
+    description:
+      en: |
+        The path surface here is loose gravel that shifts underfoot in ways that seem deliberate. It is not dangerous, exactly. It is more in the category of mildly adversarial. Every few steps one stone rolls under your boot at the precise angle required to make you look undignified.
+
+  gorse_bush:
+    name:
+      en: |
+        Gorse Bush
+    synonyms:
+      en: ["gorse", "bush", "shrub", "gorse bush", "thorny bush"]
+    description:
+      en: |
+        A large gorse bush beside the path, dense and thorny and slightly hostile in the way of plants that have made a decision about their boundaries. It was partially obscuring the journal. It does not appear to have done this on purpose, but it is hard to be certain.
+
+  distant_village_view:
+    name:
+      en: |
+        Village Below
+    synonyms:
+      en: ["village", "village below", "view of village", "distant village", "home"]
+    description:
+      en: |
+        From here the village looks peaceful, which it is. Small smoke threads rise from chimneys. The inn where you lost the seventeen gold pieces is visible — or rather the building is visible; the specific table is not, which is probably for the best. Gerald's vegetable patch is a small rectangle of green. Everything looks fine. The operative word, as in several places today, is "looks."
+
+  # ─────────────────────────────────────────────
+  # CAVE MOUTH
+  # ─────────────────────────────────────────────
+
+  scorched_rock:
+    name:
+      en: |
+        Scorched Rock
+    synonyms:
+      en: ["scorched rock", "burned rock", "blackened rock", "scorch marks", "burn marks"]
+    description:
+      en: |
+        The rock around the cave entrance is blackened in broad, radiating patterns consistent with something very large exhaling with intent. The scorch marks extend further than seems strictly necessary, which suggests that whatever produced them was either making a point or simply has a lot of breath. Possibly both.
+
+  claw_marks:
+    name:
+      en: |
+        Claw Marks
+    synonyms:
+      en: ["claw marks", "scratches", "gouges", "claw gouges", "marks"]
+    description:
+      en: |
+        Deep parallel grooves cut into the stone on either side of the cave entrance. Each individual groove is wider than your forearm. The marks are old and numerous — scored over time, not in a single event. Whatever made them has been using this entrance for a very long time. The grooves are also, you notice, quite evenly spaced. Almost tidy.
+
+  no_soliciting_sign:
+    name:
+      en: |
+        No Soliciting Sign
+    synonyms:
+      en: ["sign", "wooden sign", "no soliciting", "notice", "sign post"]
+    description:
+      en: |
+        A small wooden sign on a short stake beside the cave entrance. It reads, in neat block letters: LAIR — NO SOLICITING. Beneath that, in smaller and more cramped handwriting, a secondary annotation: This means you, Gerald. You examine the back of the sign. It also reads: This means you, Gerald. Whoever Gerald is, the matter was apparently worth being thorough about.
+    is_readable: true
+
+  sulfur_smell:
+    name:
+      en: |
+        Smell of Sulfur
+    synonyms:
+      en: ["sulfur", "smell", "stench", "odor", "brimstone", "sulfur smell"]
+    description:
+      en: |
+        The smell is not overpowering, but it is present and consistent — the particular sharp, mineral quality of sulfur that one associates with volcanic activity, certain types of unpleasant magic, and dragons. It hangs in the air around the cave entrance like a final advisory. There is nothing to take. There is nothing to interact with. It is simply a smell, doing its job.
+    visible: false
+
+  cave_mouth_rubble:
+    name:
+      en: |
+        Cave Rubble
+    synonyms:
+      en: ["rubble", "rocks", "debris", "cave rubble", "stone rubble", "rock pile"]
+    description:
+      en: |
+        Chunks of stone and loose debris around the base of the cave entrance, some scorched, some simply old. Mixed in are fragments of things that were once other things: a boot sole, a rusted buckle, what appears to be a door hinge from somewhere. The cave has been in operation for a long time.
+
+  # ─────────────────────────────────────────────
+  # NARROW PASSAGE
+  # ─────────────────────────────────────────────
+
+  torch_sconce:
+    name:
+      en: |
+        Torch Sconce
+    synonyms:
+      en: ["sconce", "torch sconce", "torch holder", "iron sconce", "wall sconce"]
+    description:
+      en: |
+        An iron torch sconce bolted to the cave wall at about head height, currently empty. The sconce itself is finely made — decorative scrollwork along the bracket, a small flame motif engraved at the base. Someone put craftsmanship into this sconce. Someone cared. That someone is, based on the available evidence in this passage, no longer in a position to appreciate it.
+
+  appointments_skeleton:
+    name:
+      en: |
+        Skeleton
+    synonyms:
+      en: ["skeleton", "bones", "remains", "dead adventurer", "secretary", "body"]
+    description:
+      en: |
+        A complete skeleton in the remains of what was once a practical outfit — leather armor (cracked), a belt (intact but empty), boots (still on, still fastened, which says something about their quality). The skeleton is seated upright against the wall with a posture that suggests, even in death, a person who took their work seriously. The clipboard is in its lap. The expression is, of course, neutral. Skeletons are good at that.
+
+  appointments_clipboard:
+    name:
+      en: |
+        Appointments Clipboard
+    synonyms:
+      en: ["clipboard", "schedule", "appointments", "papers", "document", "sheet"]
+    description:
+      en: |
+        A wooden clipboard with a spring clamp, holding several sheets of parchment. The top sheet is headed APPOINTMENTS — WEEK OF THE HARVEST MOON and contains a neatly organized schedule in small, careful handwriting: time slots, names, brief notes ("bring identification," "no weapons in treasury," "wipe feet"). Every entry has been crossed out. In a different hand — much larger, and applied with what appears to have been a single stroke — someone has written across the whole page: CANCELLED (ALL OF THEM). There is a certain finality to it.
+    takeable: true
+    is_readable: true
+    size: 2
+    images: ["images/items/appointments_clipboard.png"]
+
+  warm_cave_walls:
+    name:
+      en: |
+        Cave Walls
+    synonyms:
+      en: ["walls", "cave walls", "rock walls", "warm walls", "stone walls"]
+    description:
+      en: |
+        The walls of the passage are warm to the touch — not uncomfortably so, but distinctly warmer than stone has any reason to be. The heat is consistent, coming from somewhere deeper inside. It is the kind of warmth that, in any other context, might be described as pleasant.
+
+  # ─────────────────────────────────────────────
+  # ANTECHAMBER
+  # ─────────────────────────────────────────────
+
+  notice_board:
+    name:
+      en: |
+        Notice Board
+    synonyms:
+      en: ["notice board", "cork board", "board", "bulletin board", "notices", "pinboard"]
+    description:
+      en: |
+        A cork board mounted on the wall with a masonry spike, bearing several pinned items. A detailed weekly schedule, color-coded by category (red for "adventurer visits," blue for "administrative," green for "personal"). A hand-lettered list of rules headed DO NOT, covering: taking gold without written authorization, touching the scrolls, entering the study without knocking, feeding the stalagmites (this one has an asterisk; the footnote reads "they are not pets"). A hand-drawn map of the cave system with extensive annotations. And a small card at the bottom that reads: Hours: By appointment only. Walk-ins will be assessed on a case by case basis. Most cases are unfavorable.
+    is_readable: true
+
+  adventurers_trophy_shelf:
+    name:
+      en: |
+        Trophy Shelf
+    synonyms:
+      en: ["trophy shelf", "shelf", "trophies", "ledge", "collection", "adventurer stuff"]
+    description:
+      en: |
+        A low stone ledge running along one wall, bearing a collection of objects organized by apparent type. Six helms, varying in style and era, arranged by size. Eight swords of various lengths, propped against the wall behind them. A shield with a coat of arms that is mostly rust. One lute, slightly singed, propped at the far end at an angle that suggests it was placed last and perhaps with less care. Each item has a small tag attached. The tags are handwritten, and most read, in one variation or another: left behind (unclaimed).
+
+  arranged_stalagmites:
+    name:
+      en: |
+        Stalagmites
+    synonyms:
+      en: ["stalagmites", "rock formations", "formations", "stones", "cave formations"]
+    description:
+      en: |
+        A cluster of stalagmites arranged in a rough semicircle, clearly not in their original positions. The floor around their bases shows drag marks where they were moved — no small undertaking, given their size. The arrangement has a considered quality to it, as though someone stood back and evaluated and then nudged one slightly to the left. There is, objectively, no reason to do this. And yet here they are.
+
+  cave_rules_list:
+    name:
+      en: |
+        Rules List
+    synonyms:
+      en: ["rules", "rules list", "do not list", "list", "cave rules"]
+    description:
+      en: |
+        The rules list is pinned to the notice board. It is headed DO NOT in large letters and covers: taking gold without written authorization, touching the scrolls without gloves, entering the study, feeding the stalagmites, bringing livestock into the lair, asking about "the incident of 1243," using the word "hoard" in a derogatory sense, and leaving without signing the visitor log. You look around for a visitor log. There is no visitor log visible. This may be the point.
+    is_readable: true
+
+  cave_map_pinned:
+    name:
+      en: |
+        Cave Map
+    synonyms:
+      en: ["map", "cave map", "hand-drawn map", "lair map", "annotated map"]
+    description:
+      en: |
+        A hand-drawn map of the cave system, rendered in ink on a piece of parchment pinned to the notice board. It is accurate and detailed — every passage, every chamber, every alcove. The main chamber is labeled HERE BE ME (OBVIOUSLY). The treasury is labeled PRIVATE — THIS MEANS EVERYONE. The study is labeled ABSOLUTELY NOT. The back passage behind the main chamber is labeled on the map, but the label has been carefully scratched out and replaced with a small drawing of a cloud.
+    is_readable: true
+
+  # ─────────────────────────────────────────────
+  # TREASURY
+  # ─────────────────────────────────────────────
+
+  gold_hoard:
+    name:
+      en: |
+        Gold Hoard
+    synonyms:
+      en: ["gold", "hoard", "coins", "gold coins", "treasure", "gold pieces", "pile of gold"]
+    description:
+      en: |
+        The gold fills the chamber wall to wall, taller than you in places — an almost geological accumulation of coins, ingots, medallions, goblets, rings, chains, and objects whose original purpose has been entirely subsumed by the act of being valuable. The ambient glow of the cave catches it and scatters across the ceiling in warm, complicated patterns. It is extraordinarily beautiful. It is also, per the ledger, completely itemized. You could not take seventeen gold pieces from this room. You could not take one. You could not take a single button off a single forgotten coat without it being noted.
+
+  treasury_ledger:
+    name:
+      en: |
+        Treasury Ledger
+    synonyms:
+      en: ["ledger", "book", "inventory ledger", "account book", "records", "treasury ledger"]
+    description:
+      en: |
+        An enormous leather-bound ledger, the size of a small table, resting open on the stone lectern. Its pages are dense with columns of figures in a cramped, precise hand: item descriptions, acquisition dates, estimated values, current locations within the hoard, condition notes, and a column headed LAST VERIFIED, which contains today's date for every entry. The most recent entry at the top of the open page reads: "1x Short Sword (secondhand, fair condition, previous owner: unknown) — acquired this morning, visitor intake, entrance gallery." You look at the shelf in the antechamber. You look back at the ledger. The dragon has accounted for everything.
+    is_readable: true
+
+  treasury_quill:
+    name:
+      en: |
+        Quill Pen
+    synonyms:
+      en: ["quill", "pen", "quill pen", "feather pen", "writing quill"]
+    description:
+      en: |
+        A large quill pen resting in an inkwell beside the ledger. The feather is from something with a substantial wingspan. The ink in the pot is fresh — still glossy where it was last used. The implication is that the ledger is updated regularly, and recently. You consider whether picking up the quill would count as an interaction with the ledger. You decide that, in this room, everything counts as an interaction with the ledger.
+    takeable: true
+    size: 2
+    images: ["images/items/treasury_quill.png"]
+
+  gemstone_pile:
+    name:
+      en: |
+        Gemstones
+    synonyms:
+      en: ["gems", "gemstones", "jewels", "precious stones", "rubies", "diamonds", "sapphires"]
+    description:
+      en: |
+        A portion of the hoard given over to unset gemstones — rubies, sapphires, emeralds, and several stones you cannot name, in colors that seem to be making an argument for the inadequacy of language. They are beautiful in a way that feels slightly threatening. They have their own ledger entries. You can see them from here.
+
+  silver_goblets:
+    name:
+      en: |
+        Silver Goblets
+    synonyms:
+      en: ["goblets", "silver goblets", "cups", "chalices", "silverware"]
+    description:
+      en: |
+        A stack of silver goblets near the west wall, clean and polished. They appear to be from several different sets — some matching, some clearly individual pieces, all valuable. One of them has an inscription on the base. You can just make it out: To Roderick, on the occasion of his retirement. Many happy returns. The goblet is in the hoard. Roderick, presumably, is not.
+
+  coin_sacks:
+    name:
+      en: |
+        Coin Sacks
+    synonyms:
+      en: ["sacks", "coin sacks", "bags", "coin bags", "money bags"]
+    description:
+      en: |
+        Several large canvas sacks, closed and stamped with what appear to be merchant house seals from various towns and cities — some of which you recognize, some of which you don't, and at least one of which appears to no longer exist. The sacks are heavy and do not move when you consider nudging one with your boot. They have ledger entries. Everything here has ledger entries.
+
+  # ─────────────────────────────────────────────
+  # DRAGON'S CHAMBER
+  # ─────────────────────────────────────────────
+
+  vermithrax:
+    name:
+      en: |
+        Vermithrax
+    synonyms:
+      en: ["dragon", "vermithrax", "red dragon", "creature", "beast", "monster", "him", "he"]
+    description:
+      en: |
+        Vermithrax is old, enormous, and red in the specific shade of red that has decided it does not need to justify itself. He is curled in the center of the chamber with the settled authority of a geographical feature. His scales catch the light in ways that suggest they have been doing this for centuries and have no intention of stopping. One eye — copper-colored, cartwheel-sized — is currently directed at you with an expression that manages, across a significant species barrier, to communicate something in the vicinity of mild administrative inconvenience.
+
+        He has not eaten you. This continues to be notable.
+    is_actor: true
+
+  appointment_book:
+    name:
+      en: |
+        Appointment Book
+    synonyms:
+      en: ["appointment book", "book", "diary", "calendar", "schedule book", "leather book"]
+    description:
+      en: |
+        A leather-bound appointment book, open to today's date. The pages are organized by hour, in small, precise handwriting. Most of today's slots are either empty or marked ADMINISTRATIVE. The noon slot reads, in slightly larger text: A VILLAGER (DEBT-RELATED, PROBABLY). It is underlined. Twice. A notation beside it in the margin reads: allocate 15 mins max; refer to standard resolution options if cooperative. You are not sure whether to be offended that he only allocated fifteen minutes or reassured that there is a standard resolution.
+    is_readable: true
+
+  dragon_firepit:
+    name:
+      en: |
+        Firepit
+    synonyms:
+      en: ["firepit", "fire pit", "fire", "embers", "hearth", "pit"]
+    description:
+      en: |
+        A broad, shallow depression in the cave floor near the center of the chamber, filled with embers that glow a deep, consistent orange. There is no wood — the heat appears to be self-sustaining in a way that does not bear thinking about too hard. The warmth radiates out across the entire chamber and is, taken entirely out of context, quite pleasant.
+
+  loose_rock_north_wall:
+    name:
+      en: |
+        Loose Rock
+    synonyms:
+      en: ["loose rock", "rock", "stone", "loose stone", "north wall rock", "boulder"]
+    description:
+      en: |
+        A section of the northern cave wall where one large rock sits slightly proud of the surrounding surface — not dramatically, but noticeably, in the way of something that was meant to fit flush and no longer quite does. The gap around it is narrow but consistent. It looks like it could be moved. It also looks like it is directly behind a dragon, which significantly affects the risk calculation.
+
+  claw_marks_floor:
+    name:
+      en: |
+        Claw Marks on Floor
+    synonyms:
+      en: ["floor marks", "claw marks", "scratches", "floor scratches", "floor"]
+    description:
+      en: |
+        Deep parallel grooves worn into the cave floor, concentrated around the center of the chamber where Vermithrax rests. They form a rough circular pattern, as though something large has been settling and resettling in the same spot over a very long period of time. The grooves are deep. The time implied is considerable.
+
+  # ─────────────────────────────────────────────
+  # DRAGON'S STUDY
+  # ─────────────────────────────────────────────
+
+  dragons_reading_chair:
+    name:
+      en: |
+        Reading Chair
+    synonyms:
+      en: ["chair", "reading chair", "armchair", "velvet chair", "oversized chair", "big chair"]
+    description:
+      en: |
+        An armchair the size of a modest outbuilding, upholstered in red velvet that has developed, over the years, the specific texture of velvet that has been sat in by something enormous and warm for a very long time. The arms are worn smooth. The back has a faint imprint of scale-pattern pressed into the fabric. It looks, in the way of very large furniture, almost cozy. You could sleep in this chair. You could raise a family in this chair.
+
+  scroll_shelf:
+    name:
+      en: |
+        Scroll Shelf
+    synonyms:
+      en: ["shelf", "scroll shelf", "shelves", "scrolls", "book shelf", "stone shelf"]
+    description:
+      en: |
+        A shelf carved directly into the cave wall, lined with scrolls. They are organized by a system that is not immediately apparent — not alphabetically, not by size, not by apparent age. Several are labeled in a script you don't recognize. A few bear small colored wax seals. One scroll, on the end, has a tag that reads: DO NOT READ (THIS MEANS YOU). The prohibition is helpfully bilingual; the second language is one you have never seen before.
+
+  letter_to_mum:
+    name:
+      en: |
+        Unfinished Letter
+    synonyms:
+      en: ["letter", "unfinished letter", "note", "correspondence", "parchment", "letter to mum"]
+    description:
+      en: |
+        A piece of parchment on the stone desk, partially written and extensively revised. The salutation reads: Dear Mum. The following lines have been crossed out in sequence, with increasing force: first attempt illegible under the crossing-out; second attempt: Things are much the same; third attempt: I have been thinking about what you said about the lair; fourth attempt, partially preserved: I am well. The cave is fine. The mortals keep coming. You were right about the filing system. This line stands uncrossed. Beneath it, after a gap, a postscript has been started and abandoned: Give my regards to — Nothing follows. The quill has been set down mid-sentence.
+    is_readable: true
+
+  small_crown_paperweight:
+    name:
+      en: |
+        Crown Paperweight
+    synonyms:
+      en: ["crown", "paperweight", "small crown", "little crown", "golden crown"]
+    description:
+      en: |
+        A small crown being used as a paperweight to hold down the letter. It is gold, set with three modest stones, and sized for a human head. It is not decorative — or rather, it was not made to be decorative; it was made to be worn by someone important. It is now holding down a half-finished letter. The stones catch the candlelight. You consider picking it up, then remember where you are, and then notice it does not appear to be in the ledger, and then decide that the absence from the ledger is somehow more concerning than its presence would have been.
+    takeable: true
+    size: 10
+    images: ["images/items/small_crown_paperweight.png"]
+
+  stone_desk:
+    name:
+      en: |
+        Stone Desk
+    synonyms:
+      en: ["desk", "stone desk", "table", "flat stone", "work surface"]
+    description:
+      en: |
+        A flat slab of stone supported at either end by smaller rocks, forming a functional desk surface. The top is smooth from use. There are ink stains in one corner — old, overlapping, in the accumulated pattern of someone who has been writing at this surface for a very long time.
+
+  # ─────────────────────────────────────────────
+  # BACK PASSAGE
+  # ─────────────────────────────────────────────
+
+  stone_box:
+    name:
+      en: |
+        Stone Box
+    synonyms:
+      en: ["stone box", "box", "container", "small box", "stone container"]
+    description:
+      en: |
+        A small box carved from a single piece of pale stone, about the size of a bread loaf. The lid fits precisely — no hinge, just friction and craftsmanship. There is no lock. There is no label. There is, from the floor around it, the distinct impression of a very large claw print pointing toward it. The box is not hidden. It has simply been waiting.
+    is_container: true
+    is_openable: true
+    is_open: false
+
+  promissory_note:
+    name:
+      en: |
+        Promissory Note
+    synonyms:
+      en: ["promissory note", "note", "document", "parchment", "letter of credit", "gold note", "certificate"]
+    description:
+      en: |
+        A folded piece of parchment, formal in character. At the top, in decorative script: PROMISSORY NOTE. The body reads: The bearer of this document is entitled to the sum of twenty (20) gold pieces, redeemable at any recognized merchant house operating within the kingdom, upon presentation of this document. No questions will be asked. The note is dated several years ago. At the bottom, a signature: Vermithrax R., Esq. The signature is perfectly legible and, you notice, slightly larger than the allotted signature line, as though the signer needed a moment to scale down.
+    takeable: true
+    visible: false
+    starting_contained_by: stone_box
+    size: 1
+    images: ["images/items/promissory_note.png"]
+
+  hidden_alcove_dust:
+    name:
+      en: |
+        Dusty Floor
+    synonyms:
+      en: ["dust", "floor", "alcove floor", "dusty floor", "cave floor"]
+    description:
+      en: |
+        The floor of the alcove is covered in a thin, undisturbed layer of dust — except for the claw print in the center, which is crisp and deliberate. The dust suggests no one has been here in years. The claw print suggests someone checked recently to make sure.
+
+  vermithrax_small_note:
+    name:
+      en: |
+        Small Note
+    synonyms:
+      en: ["small note", "note", "message", "little note", "card"]
+    description:
+      en: |
+        A small piece of parchment tucked beneath the stone box, slightly creased. It reads, in the same handwriting as the promissory note: For whoever actually makes it this far without being annoying about it. — V. The note has no date. The handwriting is neat. The sentiment is, by any measure, the warmest thing that has been communicated to you today.
+    takeable: true
+    visible: false
+    starting_contained_by: stone_box
+    size: 1
+    images: ["images/items/vermithrax_small_note.png"]
+
+  # ─────────────────────────────────────────────
+  # CAVE EXIT & CROSSROADS RETURN
+  # (items here are references to earlier items
+  #  appearing in resolution locations)
+  # ─────────────────────────────────────────────
+
+  scorched_rock_exit:
+    name:
+      en: |
+        Scorched Rock
+    synonyms:
+      en: ["scorched rock", "burned rock", "blackened stone", "scorch marks"]
+    description:
+      en: |
+        The same scorched rock as the entrance, seen from outside again. From this angle, in the afternoon light, the burn patterns look less like a warning and more like a signature. Vermithrax has been leaving this mark for a very long time. It means: this is mine. It means: I am still here. It means, depending on your afternoon: you made it out.
+
+  afternoon_light:
+    name:
+      en: |
+        Afternoon Light
+    synonyms:
+      en: ["light", "sunlight", "afternoon sun", "sun", "daylight"]
+    description:
+      en: |
+        The sun has moved since you went in. It is lower now, warmer in color, casting long shadows from the hills across the path below. It is unambiguously afternoon. You are unambiguously alive. Both of these things remain, for the moment, true simultaneously.
+
+  signpost_return:
+    name:
+      en: |
+        Signpost
+    synonyms:
+      en: ["signpost", "sign", "post", "wooden sign", "crossroads sign"]
+    description:
+      en: |
+        The crossroads signpost, as before, but changed in one respect: the arm that previously pointed at you and read CERTAIN DOOM now points west, toward an unremarkable stretch of scrubland. You check the hinge. It is, actually, slightly loose. This is probably the explanation. You find yourself preferring the other one.
+
+  village_view_afternoon:
+    name:
+      en: |
+        Village in Afternoon Light
+    synonyms:
+      en: ["village", "village view", "home", "village below", "distant village"]
+    description:
+      en: |
+        The village sits in the afternoon light, warm and small and entirely unaware of what you have just done. Smoke from chimneys. The inn where this started is visible. Brom the tavern keeper is in there somewhere, keeping time. You have what you need. The sun has not yet set. You feel, against all reasonable expectation, fine.
+    visible: true

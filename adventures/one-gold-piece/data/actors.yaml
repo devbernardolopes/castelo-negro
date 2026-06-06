@@ -9,7 +9,7 @@ actors:
     starting_location: cottage_doorstep
     known_locations: [cottage_doorstep, old_crossroads]
     inventory: []
-    wearing: [black_backpack]
+    wearing: [leather_satchel, aldrics_sword]
     max_capacity: 2
     description:
       en: |
