@@ -1441,7 +1441,7 @@ body {
   width: auto;
   height: auto;
   transform-origin: 0 0;
-  cursor: zoom-in;
+  /* cursor: zoom-in; */
   user-select: none;
   -webkit-user-drag: none;
 }
