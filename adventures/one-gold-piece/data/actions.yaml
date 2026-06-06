@@ -237,7 +237,7 @@ actions:
       - object: ["*"]
         optional: true
     conditions:
-      - "'{object}' == '' or here.has('{object}') or inventory.has('{object}')"
+      - "'{object}' == '' or (here.has('{object}') or inventory.has('{object}')) and items.visible('{object}')"
     effect: []
     message:
       en: |

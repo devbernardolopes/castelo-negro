@@ -669,6 +669,11 @@ class GameEngine {
       items: {
         ...this.definition.items,
         takeable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.takeable),
+        visible: (itemId) => {
+          const def = engine.definition.items?.[String(itemId)];
+          if (def === undefined) return true;
+          return def.visible !== false;
+        },
         openable: (itemId) => Boolean(this.definition.items?.[String(itemId)]?.openable),
         droppable: (itemId) => {
           const def = engine.definition.items?.[String(itemId)];
