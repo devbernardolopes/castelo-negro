@@ -5,22 +5,25 @@ actors:
         Aldric
     playable: true
     images:
-      portrait: "images/actors/aldric/tti-2026-06-03T19-03-48-859248176.png"
+      portrait: "images/actors/aldric/aldric.png"
     starting_location: cottage_doorstep
     known_locations: [cottage_doorstep, old_crossroads]
     inventory: []
     wearing: [black_backpack]
     max_capacity: 2
+    description:
+      en: |
+        It's you, Aldric.
 
   vermithrax:
     name:
       en: |
         Vermithrax
     synonyms:
-      en: ["her", "girl", "woman", "female", "lady", "she"]
+      en: ["dragon", "red dragon", "monster", "creature", "beast", "he", "him"]
     playable: false
     images:
-      portrait: "images/actors/vermithrax/tti-2026-06-01T21-20-00-718795545.png"
+      portrait: "images/actors/vermithrax/vermithrax.png"
     starting_location: dragons_chamber
     # known_locations: [dragons_chamber]
     inventory: []
@@ -28,21 +31,9 @@ actors:
     # starting_posture: seated
     # wearing: [sabine_jeans_pants, sabine_tank_top, sabine_silver_strappy_sandals]
     max_capacity: 2
-    # properties:
-    #   age: 23
-    #   gender: "female"
-    #   mood: "neutral"
-    #   last_spoke_turn: -999999
-    #   is_alive: true
-    #   stamina: 75
-    #   health: 80
-    #   amount_of_vacations: 0
-    #   hair: "brown"
-    #   ethnicity: "Lebanese"
-    # relationships:
-    #   bernie:
-    #     affinity: 25
-    #     relationship_level: "acquaintances"
+    description:
+      en: |
+        Big red creature.
     dialogue:
       entry_nodes:
         - id: busy_greeting
