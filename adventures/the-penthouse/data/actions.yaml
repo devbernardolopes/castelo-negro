@@ -133,6 +133,10 @@ actions:
     pattern:
       - verb: ["open"]
       - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Open what?"
     conditions:
       - "here.has('{object}')"
       - "items.openable('{object}')"
@@ -159,7 +163,7 @@ actions:
         message:
           en: |
             The {object_name} is locked.
-
+  
   close:
     pattern:
       - verb: ["close"]

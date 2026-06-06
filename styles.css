@@ -1451,6 +1451,7 @@ body {
 @media (orientation: portrait) and (max-width: 767px) {
   #game-area {
     flex-direction: column;
+    padding: 0px 0px 22px;
   }
 
   #text-display-wrapper {

@@ -8,7 +8,7 @@ actions:
   # -------------------------------
 
   # -------------------------------
-  # General actions
+  # General actions - All general, not game-specific actions, that can be used universally, must go here
   # -------------------------------  
   give:
     patterns:
@@ -76,6 +76,10 @@ actions:
     pattern:
       - verb: ["open"]
       - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Open what?"
     conditions:
       - "here.has('{object}')"
       - "items.openable('{object}')"
@@ -107,6 +111,10 @@ actions:
     pattern:
       - verb: ["close"]
       - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Close what?"
     conditions:
       - "here.has('{object}')"
       - "items.openable('{object}')"
@@ -445,6 +453,10 @@ actions:
     pattern:
       - verb: ["sit", "sit down"]
       - target: ["*"]
+        optional: true
+    follow_up:
+      target:
+        en: "Where?"      
     conditions:
       - "!isSeated(current_player_actor)"
       - "items.sittable('{target}')"
