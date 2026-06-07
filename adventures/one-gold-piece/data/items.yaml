@@ -704,5 +704,21 @@ items:
       en: ["sun", "morning sun", "sol"]
 
   town_misnomer:
+    name:
+      en: |
+        Town
+    short_name:
+      en: |
+        town
     synonyms:
       en: ["town"]
+
+  city_misnomer:
+    # name:
+    #   en: |
+    #     City
+    # short_name:
+    #   en: |
+    #     city
+    synonyms:
+      en: ["city"]

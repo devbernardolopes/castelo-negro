@@ -38,6 +38,41 @@ actions:
   # -------------------------------
   # Specific actions - All actions that are specific to this game must go here.
   # -------------------------------
+  examine_while_blind:
+    pattern:
+      - verb: ["examine"]
+      - object: ["*"]
+        optional: true
+    conditions:
+      - "!aldric_can_see"
+    message:
+      en: |
+        You [b]can't[/b] see a thing! You're [wiggle]blind[/wiggle] from looking at the sun. Did you forget?
+
+  look_at_the_town:
+    pattern:
+      - verb: ["look"]
+      - object: [town_misnomer]
+    conditions:
+      - "current_location in ['cottage_doorstep', 'old_crossroads', 'hillside_path']"
+    effect:
+      - "look_at_the_town_count += 1"
+    message:
+      en: |
+        Town? You mean village, right?
+
+  look_at_the_city:
+    pattern:
+      - verb: ["look"]
+      - object: [city_misnomer]
+    conditions:
+      - "current_location in ['cottage_doorstep', 'old_crossroads', 'hillside_path']"
+    effect:
+      - "look_at_the_city_count += 1"
+    message:
+      en: |
+        City? You mean village, right?
+
   look_at_the_sun:
     pattern:
       - verb: ["look"]

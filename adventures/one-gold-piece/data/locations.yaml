@@ -19,7 +19,7 @@ locations:
         Youur cottage — a modest structure that has never been accused of architectural ambition. The door behind you hangs slightly crooked, a problem you have been meaning to fix for three years.
 
         The road north leads out of the village toward the hills.
-    contents: [cottage_door, cottage_window, neighbor_gerald, aldrics_vegetable_patch, aldrics_well]
+    contents: [cottage_door, cottage_window, neighbor_gerald, aldrics_vegetable_patch, aldrics_well, cottage_village_view]
     exits:
       north: old_crossroads
     images: ["images/locations/cottage_doorstep.png"]

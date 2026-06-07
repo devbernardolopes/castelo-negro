@@ -25,6 +25,14 @@ variables:
     type: int
     value: 10
 
+  look_at_the_town_count:
+    type: int
+    value: 0
+
+  look_at_the_city_count:
+    type: int
+    value: 0
+  
   aldric_can_see:
     type: bool
     value: true
