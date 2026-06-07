@@ -110,6 +110,54 @@
         </div>
       </div>
     </div>
+    <div id="save-modal-backdrop" class="modal-backdrop" style="display:none;">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="save-modal-title">
+        <div class="modal-header">
+          <div id="save-modal-title" class="modal-title">Save Game</div>
+          <button id="save-modal-close" class="modal-close" title="Close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <label class="form-label" for="save-name-input">Save Name</label>
+            <input id="save-name-input" class="form-control" type="text" placeholder="Enter a name for this save…" autocomplete="off" />
+          </div>
+          <div class="actions-row">
+            <button id="save-modal-cancel" class="menu-btn" type="button">Cancel</button>
+            <button id="save-modal-save" class="menu-btn" type="button" style="background:var(--accent);color:var(--accent-text);">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="restore-modal-backdrop" class="modal-backdrop" style="display:none;">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="restore-modal-title">
+        <div class="modal-header">
+          <div id="restore-modal-title" class="modal-title">Restore Game</div>
+          <button id="restore-modal-close" class="modal-close" title="Close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="restore-save-list"></div>
+          <div class="actions-row" style="margin-top:12px;">
+            <button id="restore-modal-load-file" class="menu-btn" type="button">Load from File</button>
+            <button id="restore-modal-cancel" class="menu-btn" type="button">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="restore-warn-backdrop" class="modal-backdrop" style="display:none;">
+      <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="restore-warn-title">
+        <div class="modal-header">
+          <div id="restore-warn-title" class="modal-title">Version Mismatch</div>
+          <button id="restore-warn-close" class="modal-close" title="Cancel" aria-label="Cancel">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="hint" id="restore-warn-message"></div>
+          <div class="actions-row">
+            <button id="restore-warn-cancel" class="menu-btn" type="button">Cancel</button>
+            <button id="restore-warn-ok" class="menu-btn" type="button" style="background:var(--accent);color:var(--accent-text);">Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="game-area">
       <div id="text-display-wrapper">
         <div id="text-display">

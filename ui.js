@@ -13,6 +13,7 @@ let directInputMode = false;
 let _historyIndex = null;
 let _outputQueue = [];
 let _isPausedForSend = false;
+let _textLog = [];
 
 let promptHistory = [];
 try {
@@ -31,6 +32,30 @@ function savePromptToHistory(prompt) {
 function clearPromptHistory() {
   promptHistory = [];
   try { localStorage.removeItem(PROMPT_HISTORY_KEY); } catch {}
+}
+
+function getTextLog() {
+  return _textLog;
+}
+
+function clearTextLog() {
+  _textLog = [];
+}
+
+function restoreTextLog(entries) {
+  const el = document.getElementById('text-display-content');
+  if (!el) return;
+  el.innerHTML = '';
+  _textLog = [];
+  for (const entry of entries) {
+    if (entry.type === 'output') {
+      _doAppendOutput(entry.content);
+    } else if (entry.type === 'location') {
+      _doAppendLocationName(entry.content);
+    } else if (entry.type === 'prompt') {
+      appendPlayerPrompt(entry.content);
+    }
+  }
 }
 
 function renderPromptHistoryPanel() {
@@ -168,6 +193,7 @@ function resetUiForNewGame() {
   setInputRowVisible(false);
   _outputQueue = [];
   _isPausedForSend = false;
+  clearTextLog();
   for (const k of Object.keys(_tabContentKeys)) delete _tabContentKeys[k];
   clearEl('inventory-list');
   setText('mind-panel', '');
@@ -317,6 +343,7 @@ function _doAppendOutput(text) {
   el.appendChild(entry);
   const scrollEl = document.getElementById('text-display');
   if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+  _textLog.push({ type: 'output', content: text });
 }
 
 function _doAppendLocationName(text) {
@@ -330,6 +357,7 @@ function _doAppendLocationName(text) {
   el.appendChild(entry);
   const scrollEl = document.getElementById('text-display');
   if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+  _textLog.push({ type: 'location', content: text });
 }
 
 function appendOutput(text) {
@@ -465,6 +493,7 @@ function appendPlayerPrompt(promptText) {
   el.appendChild(entry);
   const scrollEl = document.getElementById('text-display');
   if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+  _textLog.push({ type: 'prompt', content: promptText });
 }
 
 function stripWordPunctuation(rawWord) {

@@ -325,6 +325,179 @@ async function pickAdventureFile() {
   await loadAdventureFromFile(file, handle, dirHandle);
 }
 
+// -------------------------------------------------------
+// Save / Restore
+// -------------------------------------------------------
+
+const SAVE_INDEX_KEY = 'save_index';
+const SAVE_DATA_PREFIX = 'save_';
+let _pendingRestoreData = null;
+
+function _sanitizeSaveName(name) {
+  return String(name || '').replace(/[^a-zA-Z0-9 _\-.()]+/g, '_').trim().slice(0, 120) || 'unnamed';
+}
+
+function _getSaveKey(name) {
+  return SAVE_DATA_PREFIX + _sanitizeSaveName(name);
+}
+
+function listSaves(gameTitle) {
+  try {
+    const raw = localStorage.getItem(SAVE_INDEX_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(list)) return [];
+    if (gameTitle) return list.filter(s => s.gameTitle === gameTitle);
+    return list;
+  } catch {
+    return [];
+  }
+}
+
+function _saveToIndex(entry) {
+  let list = listSaves();
+  const idx = list.findIndex(s => s.name === entry.name && s.gameTitle === entry.gameTitle);
+  if (idx !== -1) {
+    list[idx] = entry;
+  } else {
+    list.push(entry);
+  }
+  try { localStorage.setItem(SAVE_INDEX_KEY, JSON.stringify(list)); } catch {}
+}
+
+function _removeFromIndex(name, gameTitle) {
+  let list = listSaves();
+  list = list.filter(s => !(s.name === name && s.gameTitle === gameTitle));
+  try { localStorage.setItem(SAVE_INDEX_KEY, JSON.stringify(list)); } catch {}
+}
+
+function saveGame(name) {
+  if (!engine) throw new Error('No game loaded');
+  const gameState = JSON.parse(JSON.stringify(engine.gameState));
+  const title = engine.definition.metadata?.title || 'Unknown';
+  const saveData = {
+    formatVersion: 1,
+    savedAt: new Date().toISOString(),
+    name,
+    gameTitle: title,
+    gameVersion: String(engine.definition.metadata?.version ?? ''),
+    language: engine.language,
+    gameState,
+    textLog: getTextLog(),
+    promptHistory: [...promptHistory]
+  };
+  const key = _getSaveKey(name);
+  try {
+    localStorage.setItem(key, JSON.stringify(saveData));
+  } catch {
+    throw new Error('Failed to save. Storage may be full.');
+  }
+  _saveToIndex({ name, savedAt: saveData.savedAt, gameTitle: title, gameVersion: saveData.gameVersion, key });
+}
+
+function loadSaveData(name) {
+  const key = _getSaveKey(name);
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function deleteSave(name) {
+  const key = _getSaveKey(name);
+  try { localStorage.removeItem(key); } catch {}
+  _removeFromIndex(name, engine?.definition?.metadata?.title || 'Unknown');
+}
+
+function exportSaveToFile(name) {
+  const data = loadSaveData(name);
+  if (!data) return;
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = _sanitizeSaveName(name) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importSaveFromFile() {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    input.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      document.body.removeChild(input);
+      if (!file) { reject(new Error('No file selected')); return; }
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!data || data.formatVersion !== 1 || !data.gameState) {
+          reject(new Error('Invalid save file'));
+          return;
+        }
+        resolve(data);
+      } catch {
+        reject(new Error('Invalid save file'));
+      }
+    });
+    input.click();
+  });
+}
+
+function suggestSaveName() {
+  if (!engine) return '';
+  const title = engine.definition.metadata?.title || 'Game';
+  const locId = engine.gameState.current_location;
+  const locData = engine.getFullLocationData?.(locId);
+  const locName = locData ? (engine._pickLang?.(locData.name) || locId) : locId;
+  const turn = engine.gameState.game_turn;
+  let base = title + ' - ' + locName + ' - Turn ' + turn;
+  const existing = listSaves(title);
+  const usedNames = new Set(existing.map(s => s.name));
+  if (!usedNames.has(base)) return base;
+  let n = 1;
+  while (usedNames.has(base + ' (' + n + ')')) n++;
+  return base + ' (' + n + ')';
+}
+
+function _restoreFromSaveData(saveData) {
+  if (!engine || !saveData) return;
+
+  const textDisplay = document.getElementById('text-display-content');
+  if (textDisplay) textDisplay.innerHTML = '';
+  clearPromptHistory();
+  resetUiForNewGame();
+
+  engine.gameState = JSON.parse(JSON.stringify(saveData.gameState));
+  engine.language = saveData.language || engine.language;
+
+  restoreTextLog(saveData.textLog || []);
+
+  if (Array.isArray(saveData.promptHistory)) {
+    promptHistory = saveData.promptHistory.slice();
+    try { localStorage.setItem(PROMPT_HISTORY_KEY, JSON.stringify(promptHistory)); } catch {}
+  }
+
+  setMenuButtonsEnabled(true);
+  setGameControlsEnabled(true);
+  setSidebarTabsEnabled(true);
+  setInputRowVisible(true);
+  setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
+  setDirectionalNavVisibility(!!engine?.definition?.metadata?.directional_navigation);
+  setMapTabVisibility(true);
+  document.getElementById('tab-inventory').style.display = '';
+  document.getElementById('tab-memory').style.display = '';
+  setDirectInputMode(!!engine?.definition?.metadata?.allow_direct_input);
+  _focusOnGameTab();
+  engine.renderCurrentLocation();
+}
+
 function _focusOnGameTab() {
   const roomTab = document.getElementById('tab-room');
   if (roomTab && window.setSidebarTab) {

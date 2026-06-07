@@ -969,6 +969,150 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ---- Save modal ----
+  document.getElementById('menu-btn-save-game')?.addEventListener('click', () => {
+    if (!engine) return;
+    const input = document.getElementById('save-name-input');
+    if (input) input.value = suggestSaveName();
+    const backdrop = document.getElementById('save-modal-backdrop');
+    if (backdrop) backdrop.style.display = 'flex';
+  });
+  document.getElementById('save-modal-close')?.addEventListener('click', () => {
+    document.getElementById('save-modal-backdrop').style.display = 'none';
+  });
+  document.getElementById('save-modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target?.id === 'save-modal-backdrop') {
+      document.getElementById('save-modal-backdrop').style.display = 'none';
+    }
+  });
+  document.getElementById('save-modal-cancel')?.addEventListener('click', () => {
+    document.getElementById('save-modal-backdrop').style.display = 'none';
+  });
+  document.getElementById('save-modal-save')?.addEventListener('click', () => {
+    const input = document.getElementById('save-name-input');
+    const name = input ? input.value.trim() : '';
+    if (!name) return;
+    try {
+      saveGame(name);
+      document.getElementById('save-modal-backdrop').style.display = 'none';
+    } catch (e) {
+      alert(e.message);
+    }
+  });
+
+  // ---- Restore modal ----
+  function _populateRestoreList() {
+    const list = document.getElementById('restore-save-list');
+    if (!list) return;
+    const saves = listSaves(engine?.definition?.metadata?.title);
+    list.innerHTML = '';
+    if (!saves.length) {
+      list.innerHTML = '<div class="hint" style="padding:12px 0;">No saved games for this adventure.</div>';
+      return;
+    }
+    for (const save of saves) {
+      const row = document.createElement('div');
+      row.className = 'save-row';
+      const info = document.createElement('div');
+      info.className = 'save-row-info';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'save-row-name';
+      nameEl.textContent = save.name;
+      const meta = document.createElement('div');
+      meta.className = 'save-row-meta';
+      const date = save.savedAt ? new Date(save.savedAt).toLocaleString() : '';
+      meta.textContent = (save.gameVersion ? 'v' + save.gameVersion + '  \u00b7  ' : '') + date;
+      info.appendChild(nameEl);
+      info.appendChild(meta);
+      row.appendChild(info);
+      const actions = document.createElement('div');
+      actions.className = 'save-row-actions';
+      const loadBtn = document.createElement('button');
+      loadBtn.className = 'menu-btn';
+      loadBtn.textContent = 'Load';
+      loadBtn.addEventListener('click', () => _handleRestore(save.name));
+      actions.appendChild(loadBtn);
+      const exportBtn = document.createElement('button');
+      exportBtn.className = 'menu-btn';
+      exportBtn.textContent = 'Export';
+      exportBtn.addEventListener('click', () => exportSaveToFile(save.name));
+      actions.appendChild(exportBtn);
+      row.appendChild(actions);
+      list.appendChild(row);
+    }
+  }
+
+  function _handleRestore(name) {
+    const saveData = loadSaveData(name);
+    if (!saveData) return;
+    _doRestore(saveData);
+  }
+
+  function _doRestore(saveData) {
+    const currentVersion = String(engine?.definition?.metadata?.version ?? '');
+    const saveVersion = String(saveData.gameVersion ?? '');
+    if (currentVersion !== saveVersion) {
+      _pendingRestoreData = saveData;
+      const msg = document.getElementById('restore-warn-message');
+      if (msg) {
+        msg.textContent = 'This save is from version ' + saveVersion + ' but the current game is version ' + currentVersion + '. Loading may cause issues.';
+      }
+      document.getElementById('restore-warn-backdrop').style.display = 'flex';
+      return;
+    }
+    _restoreFromSaveData(saveData);
+    document.getElementById('restore-modal-backdrop').style.display = 'none';
+  }
+
+  document.getElementById('menu-btn-restore-game')?.addEventListener('click', () => {
+    if (!engine) return;
+    _populateRestoreList();
+    document.getElementById('restore-modal-backdrop').style.display = 'flex';
+  });
+  document.getElementById('restore-modal-close')?.addEventListener('click', () => {
+    document.getElementById('restore-modal-backdrop').style.display = 'none';
+  });
+  document.getElementById('restore-modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target?.id === 'restore-modal-backdrop') {
+      document.getElementById('restore-modal-backdrop').style.display = 'none';
+    }
+  });
+  document.getElementById('restore-modal-cancel')?.addEventListener('click', () => {
+    document.getElementById('restore-modal-backdrop').style.display = 'none';
+  });
+  document.getElementById('restore-modal-load-file')?.addEventListener('click', () => {
+    importSaveFromFile().then(saveData => {
+      _doRestore(saveData);
+    }).catch(err => {
+      alert(err.message);
+    });
+  });
+
+  // ---- Version warning modal ----
+  document.getElementById('restore-warn-close')?.addEventListener('click', () => {
+    document.getElementById('restore-warn-backdrop').style.display = 'none';
+    _pendingRestoreData = null;
+  });
+  document.getElementById('restore-warn-backdrop')?.addEventListener('click', (e) => {
+    if (e.target?.id === 'restore-warn-backdrop') {
+      document.getElementById('restore-warn-backdrop').style.display = 'none';
+      _pendingRestoreData = null;
+    }
+  });
+  document.getElementById('restore-warn-cancel')?.addEventListener('click', () => {
+    document.getElementById('restore-warn-backdrop').style.display = 'none';
+    _pendingRestoreData = null;
+  });
+  document.getElementById('restore-warn-ok')?.addEventListener('click', () => {
+    const data = _pendingRestoreData;
+    _pendingRestoreData = null;
+    document.getElementById('restore-warn-backdrop').style.display = 'none';
+    if (data) {
+      _restoreFromSaveData(data);
+      document.getElementById('restore-modal-backdrop').style.display = 'none';
+    }
+  });
+
   document.getElementById('lang-confirm-cancel')?.addEventListener('click', () => {
     const cb = document.getElementById('lang-confirm-backdrop');
     if (cb) cb.style.display = 'none';
