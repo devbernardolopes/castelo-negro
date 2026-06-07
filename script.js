@@ -826,7 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('room-img')?.addEventListener('click', function () {
     if (this.style.display === 'none' || !this.src) return;
     const locName = engine ? engine._pickLang(engine.getFullLocationData(engine.gameState.current_location)?.name) || 'Room Image' : 'Room Image';
-    const imgFilter = engine?.gameState?.image_filter || 'none';
+    const imgFilter = engine?._composeImageFilter ? engine._composeImageFilter() : 'none';
     showImageModal(this.src, locName, imgFilter);
   });
 
