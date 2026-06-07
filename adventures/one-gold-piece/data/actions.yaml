@@ -11,10 +11,18 @@ actions:
       - verb: ["look"]
       - object: [morning_sun]
     conditions:
-      - "current_location == 'cottage_doorstep'"
+      - "look_at_the_sun_count < look_at_the_sun_threshold"
+      - "current_location == 'cottage_doorstep' or current_location == 'old_crossroads' or current_location == 'hillside_path'"
+    effect:
+      - "look_at_the_sun_count += 1"
     message:
       en: |
         You look at the morning sun.
+    # conditional_messages:
+    #   - condition: "'{object}' != '' and !here.has('{object}')"
+    #     message:
+    #       en: |
+    #         There's no {object_name} here.
 
   talk_to_gerald:
     pattern:
