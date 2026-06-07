@@ -24,7 +24,7 @@ verbs:
   roll:
     synonyms: { en: ["roll", "flip", "turn"], pt-br: ["rolar", "virar", "girar"] }
   go:
-    synonyms: { en: ["go", "walk", "move"], pt-br: ["ir", "andar", "mover"] }
+    synonyms: { en: ["go", "walk"], pt-br: ["ir", "andar"] }
   attack:
     synonyms: { en: ["attack", "hit", "strike"], pt-br: ["atacar", "bater", "golpear"] }
   eat:
@@ -43,6 +43,8 @@ verbs:
     synonyms: { en: ["pull"], pt-br: ["puxar"] }
   push:
     synonyms: { en: ["push"], pt-br: ["empurrar"] }
+  move:
+    synonyms: { en: ["move"], pt-br: ["mover"] }
   smell:
     synonyms: { en: ["smell", "sniff"], pt-br: ["cheirar"] }
   listen:

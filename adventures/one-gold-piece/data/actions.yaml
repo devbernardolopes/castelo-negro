@@ -15,14 +15,18 @@ actions:
       - "current_location in ['cottage_doorstep', 'old_crossroads', 'hillside_path']"
     effect:
       - "look_at_the_sun_count += 1"
-    message:
-      en: |
-        You look at the morning sun.
-    # conditional_messages:
-    #   - condition: "'{object}' != '' and !here.has('{object}')"
-    #     message:
-    #       en: |
-    #         There's no {object_name} here.
+    # message:
+    #   en: |
+    #     You look at the morning sun.
+    progressive_messages:
+      - condition: "look_at_the_sun_count < look_at_the_sun_threshold"
+        message:
+          en: |
+            You look at the morning sun.
+      - condition: "look_at_the_sun_count == look_at_the_sun_threshold"
+        message:
+          en: |
+            Oh, great! Now you're [wiggle]blind![/wiggle].
 
   talk_to_gerald:
     pattern:
@@ -53,6 +57,38 @@ actions:
     message:
       en: |
         You pet the dog. It looks at you with an indiscernible expression.
+
+  pet_dragon:
+    pattern:
+      - verb: ["pet"]
+      - object: [vermithrax]
+    conditions:
+      - "here.has('{object}')"
+    message:
+      en: |
+        You pet the dragon. The dragon's reaction is impossible to describe.
+
+  move_loose_rock:
+    pattern:
+      - verb: ["push", "move"]
+      - object: [loose_rock_north_wall]
+    conditions:
+      - "here.has('{object}')"
+      - "!loose_rock_moved"
+    effect:
+      - "loose_rock_moved = true"
+    message:
+      en: |
+        You move the loose rock. It opens up a small passage.
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "loose_rock_moved"
+        message:
+          en: |
+            You already moved the {object_name}.
 
   lock_cottage_door:
     pattern:
