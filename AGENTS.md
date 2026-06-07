@@ -4,7 +4,7 @@
 
 - Text adventure game engine built with vanilla JavaScript + HTML + CSS. Ongoing project.
 - Entry point: `index.html`. All CSS must be in `styles.css`.
-- Text adventure games are defined in YAML files. They are in the folder `adventures/` in their own subfolders. Partial and incomplete YAML game file schema guide here: `YAML_STYLE_GUIDE.md`.
+- Text adventure games are defined in YAML files. They are in the folder `adventures/` in their own subfolders. Partial and incomplete YAML game file schema guide here: `penthouse-yaml-schema.md`.
 - Since this is still an on-going project, the reference YAML file from now on is `adventures\one-gold-piece\one-gold-piece.yaml`.
 - No build steps or tests required.
 - Script loading order: `yaml-parser.js` → `ui.js` → `engine.js` → `storage.js` → `script.js` → `prompt-parser.js`.
