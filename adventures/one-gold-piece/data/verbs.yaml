@@ -56,7 +56,7 @@ verbs:
   wear:
     synonyms: { en: ["wear", "put on", "don", "slip on", "throw on"], pt-br: ["vestir", "colocar"] }
   press:
-    synonyms: { en: ["press", "push"], pt-br: ["pressionar", "empurrar"] }
+    synonyms: { en: ["press"], pt-br: ["pressionar"] }
   cut:
     synonyms: { en: ["cut", "slice"], pt-br: ["cortar", "fatiar"] }
   drink:
