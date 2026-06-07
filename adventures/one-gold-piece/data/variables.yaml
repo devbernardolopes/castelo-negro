@@ -33,13 +33,13 @@ variables:
     type: int
     value: 0
   
-  # aldric_can_see:
-  #   type: bool
-  #   value: true
+  pet_dog_count:
+    type: int
+    value: 0
 
-  # aldric_can_smell:
-  #   type: bool
-  #   value: true
+  talk_dog_count:
+    type: int
+    value: 0
 
   brightness_step:
     type: float

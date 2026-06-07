@@ -142,6 +142,8 @@ actions:
       - object: [stray_dog]
     conditions:
       - "here.has('{object}')"
+    effect:
+      - "talk_dog_count += 1"
     message:
       en: |
         "Woof woof?"
@@ -152,9 +154,23 @@ actions:
       - object: [stray_dog]
     conditions:
       - "here.has('{object}')"
+    effect:
+      - "pet_dog_count += 1"
     message:
       en: |
         You pet the dog. It looks at you with an indiscernible expression.
+
+  eat_dog:
+    pattern:
+      - verb: ["eat"]
+      - object: [stray_dog]
+    conditions:
+      - "here.has('{object}')"
+    # effect:
+    #   - "pet_dog_count += 1"
+    message:
+      en: |
+        You can't be serious.
 
   pet_dragon:
     pattern:
