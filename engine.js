@@ -56,7 +56,7 @@ class GameEngine {
    *   onLocationNameRender?: (name:string)=>void,
    *   onLocationRender?: (locationId:string)=>void,
    *   onInventoryRender?: ()=>void,
-   *   onRoomImageRender?: (url:string|null)=>void,
+   *   onRoomImageRender?: (url:string|null, filter?:string)=>void,
    *   onMindRender?: ()=>void,
  *   onMemoryRender?: ()=>void,
  *   onDebugRender?: ()=>void,
@@ -387,7 +387,8 @@ class GameEngine {
         actorId: null,
         nodeId: null
       },
-      reading: null
+      reading: null,
+      image_filter: 'none'
     };
   }
 
@@ -959,6 +960,13 @@ class GameEngine {
       const setPlayerMatch = line.match(/^setPlayerActor\(\s*(.+)\s*\)$/);
       if (setPlayerMatch) {
         this._applySetPlayerActor(setPlayerMatch[1]);
+        continue;
+      }
+
+      // setImageFilter('cssFilterString')
+      const imgFilterMatch = line.match(/^setImageFilter\(\s*(.+)\s*\)\s*$/);
+      if (imgFilterMatch) {
+        this.gameState.image_filter = String(this._evalExpression(imgFilterMatch[1]) ?? imgFilterMatch[1]).replace(/^['"]|['"]$/g, '');
         continue;
       }
 
@@ -2070,9 +2078,9 @@ class GameEngine {
     const images = Array.isArray(loc.images) ? loc.images : [];
     if (images.length) {
       const url = await this.resolveAssetUrl(images[0]);
-      this.hooks.onRoomImageRender?.(url || null);
+      this.hooks.onRoomImageRender?.(url || null, this.gameState.image_filter || 'none');
     } else {
-      this.hooks.onRoomImageRender?.(null);
+      this.hooks.onRoomImageRender?.(null, this.gameState.image_filter || 'none');
     }
 
     this.hooks.onInventoryRender?.();

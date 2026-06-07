@@ -627,12 +627,14 @@ function _isTabContentChanged(tabName, contentKey) {
 /**
  * Render the current room image into #room-img.
  * @param {string|null} url - resolved image URL, or null to hide
+ * @param {string} [filter='none'] - CSS filter string to apply to the image
  */
-function renderRoomImage(url) {
+function renderRoomImage(url, filter = 'none') {
   const imgEl = document.getElementById('room-img');
   if (!imgEl) return;
   if (url) {
     imgEl.src = url;
+    imgEl.style.filter = filter;
     imgEl.style.display = 'block';
     imgEl.onload = () => { imgEl.style.display = 'block'; };
     imgEl.onerror = () => { imgEl.style.display = 'none'; };
