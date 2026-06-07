@@ -4,11 +4,82 @@
 
 actions:
   # -------------------------------
-  # This game specific actions
+  # Specific actions - All actions that are specific to this game must go here.
   # -------------------------------
+  lock_cottage_door:
+    pattern:
+      - verb: ["lock"]
+      - object: [cottage_door]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "!items.isOpen('{object}')"
+      - "!items.isLocked('{object}')"
+      - "items.canOpen('{object}')"
+      - "items.getProp('{object}', 'openable.side') != 'one_way' or items.getProp('{object}', 'openable.accessible_from') == null or items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
+    # effect: "setLocked('{object}', true)"
+    message:
+      en: |
+        Why bother?
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't lock the {object_name}.
+      - condition: "items.isOpen('{object}')"
+        message:
+          en: |
+            The {object_name} is open. You need to close it first.
+      - condition: "items.isLocked('{object}')"
+        message:
+          en: |
+            The {object_name} is already locked.
+      - condition: "items.getProp('{object}', 'openable.side') == 'one_way' and items.getProp('{object}', 'openable.accessible_from') != null and !items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
+        message:
+          en: |
+            The {object_name} can only be locked from the other side.
+      - condition: "!items.canOpen('{object}')"
+        message:
+          en: |
+            You don't have the right item to lock the {object_name}.
+
+  open_cottage_door:
+    pattern:
+      - verb: ["open"]
+      - object: [cottage_door]
+    conditions:
+      - "here.has('{object}')"
+      - "items.openable('{object}')"
+      - "!items.isOpen('{object}')"
+      - "!items.isLocked('{object}')"
+    # effect: "setOpen('{object}', true)"
+    message:
+      en: |
+        You have no reason to open the {object_name}. [wiggle]Don't insist[/wiggle].
+    conditional_messages:
+      - condition: "'{object}' != '' and !here.has('{object}')"
+        message:
+          en: |
+            There's no {object_name} here.
+      - condition: "!items.openable('{object}')"
+        message:
+          en: |
+            You can't open the {object_name}.
+      - condition: "items.isOpen('{object}')"
+        message:
+          en: |
+            The {object_name} is already open.
+      - condition: "items.isLocked('{object}')"
+        message:
+          en: |
+            The {object_name} is locked.
 
   # -------------------------------
-  # General actions - All general, not game-specific actions, that can be used universally, must go here
+  # General actions - All general, not game-specific actions, that can be used universally, must go here.
   # -------------------------------  
   give:
     patterns:
@@ -177,6 +248,10 @@ actions:
     pattern:
       - verb: ["lock"]
       - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Lock what?"
     conditions:
       - "here.has('{object}')"
       - "items.openable('{object}')"
