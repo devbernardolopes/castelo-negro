@@ -2,6 +2,11 @@
 # conditional_messages only runs on action failure
 # progressive_messages are evaluated after effects
 
+# effect: "setImageFilter('brightness(0)')"               # complete darkness
+# effect: "setImageFilter('brightness(0.3) blur(2px)')"   # severe impairment
+# effect: "setImageFilter('opacity(0.5)')"                # partial transparency
+# effect: "setImageFilter('none')"                        # restore normal vision
+
 actions:
   # -------------------------------
   # Specific actions - All actions that are specific to this game must go here.
@@ -15,6 +20,7 @@ actions:
       - "current_location in ['cottage_doorstep', 'old_crossroads', 'hillside_path']"
     effect:
       - "look_at_the_sun_count += 1"
+      - "setImageFilter('brightness(0.3) blur(2px)')"
     conditional_messages:
       - condition: "look_at_the_sun_count > look_at_the_sun_threshold"
         message:
