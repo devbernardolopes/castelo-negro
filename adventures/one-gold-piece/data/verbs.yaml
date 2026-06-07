@@ -137,6 +137,10 @@ verbs:
     synonyms: { en: ["pet", "stroke", "caress"], pt-br: ["acariciar", "afagar", "fazer carinho"] }
   feel: # A "look" alternative that uses tactile perception.
     synonyms: { en: ["feel", "grabble"], pt-br: ["sentir", "tatear"] }
+  kick:
+    synonyms: { en: ["kick"], pt-br: ["chutar"] }
+  punch:
+    synonyms: { en: ["punch"], pt-br: ["socar", "dar um soco", "dar soco"] }
 
 directions:
   north:
