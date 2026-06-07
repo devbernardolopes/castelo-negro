@@ -4,6 +4,7 @@ locations:
   # GROUP: Village Outskirts
   # ─────────────────────────────────────────────
 
+  # TODO: Improve description finding a way to allude to `aldrics_well`, `cottage_window`, `neighbor_gerald`, and `aldrics_vegetable_patch`.
   cottage_doorstep:
     name:
       en: |

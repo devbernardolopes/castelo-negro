@@ -57,7 +57,6 @@ items:
     synonyms:
       en: ["door", "front door", "cottage door", "wooden door", "crooked door"]
     description:
-      # base:
       en: |
         A wooden door that hangs at a slight but definitive angle, as though it disagrees with the frame on a matter of principle. You have been meaning to fix this for three years.
       conditions:
@@ -65,21 +64,10 @@ items:
           message:
             en: |
               The door is closed but not locked — there is nothing inside worth locking.
-
-      # conditions:
-      #   - if: "!item.isOpen('cottage_door')" #" and !item.isLocked('cottage_door')"
-      #     message:
-      #       en: |
-      #         The door is closed but not locked — there is nothing inside worth locking.
-      #   - if: "item.isOpen('cottage_door')"
-      #     message:
-      #       en: |
-      #         The door is currently open.
     openable:
       initial: closed
       lockable: true
       locked: false
-      # show_current_state: true
 
   cottage_window:
     name:
@@ -121,6 +109,17 @@ items:
     description:
       en: |
         A modest stone well near the corner of the cottage. The rope and bucket are intact. The water is cold and reliable. It has never let you down, which puts it ahead of several other things in your life.
+
+  # TODO: Improve description
+  cottage_village_view:
+    name:
+      en: |
+        Village
+    synonyms:
+      en: ["village", "view of village"]
+    description:
+      en: |
+        This is the village you live in.
 
   # ─────────────────────────────────────────────
   # OLD CROSSROADS
@@ -703,6 +702,7 @@ items:
         sun
     synonyms:
       en: ["sun", "morning sun", "sol"]
-    # description:
-    #   en: |
-    #     A short sword of unremarkable provenance. The blade is serviceable if not inspiring, the grip wrapped in leather that has seen better decades, and there is a small nick near the crossguard that the previous owner described, unhelpfully, as [i]"character."[/i] You paid three silver for it. You may have overpaid.
+
+  town_misnomer:
+    synonyms:
+      en: ["town"]

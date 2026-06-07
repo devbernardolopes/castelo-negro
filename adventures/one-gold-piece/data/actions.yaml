@@ -86,6 +86,7 @@ actions:
           - "look_at_the_sun_count += 1"
           - "setImageFilter('brightness', 0)"
           - "setImageFilter('blur', 2)"
+          - "aldric_can_see = false"
         message:
           en: |
             Oh, great! Now you're [wiggle]blind![/wiggle]
