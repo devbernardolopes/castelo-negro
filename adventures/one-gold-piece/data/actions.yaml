@@ -6,6 +6,36 @@ actions:
   # -------------------------------
   # Specific actions - All actions that are specific to this game must go here.
   # -------------------------------
+  talk_to_gerald:
+    pattern:
+      - verb: ["talk", "greet"]
+      - object: [neighbor_gerald]
+    conditions:
+      - "here.has('{object}')"
+    message:
+      en: |
+        You really don't want to do that.
+
+  talk_to_dog:
+    pattern:
+      - verb: ["talk"]
+      - object: [stray_dog]
+    conditions:
+      - "here.has('{object}')"
+    message:
+      en: |
+        "Woof woof?"
+
+  pet_dog:
+    pattern:
+      - verb: ["pet"]
+      - object: [stray_dog]
+    conditions:
+      - "here.has('{object}')"
+    message:
+      en: |
+        You pet the dog. It looks at you with an indiscernible expression.
+
   lock_cottage_door:
     pattern:
       - verb: ["lock"]
@@ -17,7 +47,8 @@ actions:
       - "!items.isLocked('{object}')"
       - "items.canOpen('{object}')"
       - "items.getProp('{object}', 'openable.side') != 'one_way' or items.getProp('{object}', 'openable.accessible_from') == null or items.getProp('{object}', 'openable.accessible_from').includes(current_location)"
-    # effect: "setLocked('{object}', true)"
+    # effect:
+    #   - "setLocked('{object}', true)"
     message:
       en: |
         Why bother?
@@ -56,10 +87,8 @@ actions:
       - "items.openable('{object}')"
       - "!items.isOpen('{object}')"
       - "!items.isLocked('{object}')"
-    # effect: "setOpen('{object}', true)"
-    message:
-      en: |
-        You have no reason to open the {object_name}. [wiggle]Don't insist[/wiggle].
+    effect:
+      - "open_cottage_door_count += 1"
     conditional_messages:
       - condition: "'{object}' != '' and !here.has('{object}')"
         message:
@@ -77,6 +106,45 @@ actions:
         message:
           en: |
             The {object_name} is locked.
+    progressive_messages:
+      - condition: "open_cottage_door_count == 1"
+        message:
+          en: |
+            You have no reason to open the {object_name}.
+      - condition: "open_cottage_door_count >= 2 and open_cottage_door_count < 4"
+        message:
+          en: |
+            I already told you: there's no reason to open the {object_name}.
+      - condition: "open_cottage_door_count == 4"
+        message:
+          en: |
+            [wiggle]Again?[wiggle]
+      - condition: "open_cottage_door_count == 5"
+        message:
+          en: |
+            There is [b]NOTHING[/b] inside that you'll need. [wiggle]Don't insist![/wiggle]
+      - condition: "open_cottage_door_count > 5 and open_cottage_door_count < 10"
+        message:
+          en: |
+            Ugh! Again?! Look, this game doesn't even have the cottage's interior implemented, so stop trying.
+      - condition: "open_cottage_door_count == 10"
+        effect:
+          - "setOpen('{object}', true)"
+        message:
+          en: |
+            Fine! FINE! You want this damn door open?! I will open it for you!
+
+            After [shake]many[/shake] unjustified, unneeded attempts, you open the {object_name}.
+
+            There. Happy now? Now, don't even try to enter the cottage because this location isn't even implemented in this game.
+      - condition:
+        - "open_cottage_door_count > 10"
+        - "!items.isOpen('{object}')"
+        effect:
+          - "setOpen('{object}', true)"
+        message:
+          en: |
+            You open the {object_name}.
 
   # -------------------------------
   # General actions - All general, not game-specific actions, that can be used universally, must go here.

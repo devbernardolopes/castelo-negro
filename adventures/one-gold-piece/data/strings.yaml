@@ -1,6 +1,9 @@
 # [shake]The[/shake] [blink]time[/blink] [wiggle]has[/wiggle] [shrink]arrived...[/shrink]
 
+
+
 strings:
+  # `intro` is the text that is presented to the player whenever the game starts.
   intro:
     en: |
       This is where your adventure begins, which is perhaps the most damning thing that can be said about it.

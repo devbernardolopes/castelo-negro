@@ -1,3 +1,17 @@
+# ─────────────────────────────────────────────
+# Supported Text Markup
+# ─────────────────────────────────────────────
+# Syntax	                                                        Produces
+# [b]text[/b]	                                                    <strong>text</strong>
+# [i]text[/i]	                                                    <em>text</em>
+# [color=accent-text]text[/color]	                                <span style="color:var(--accent-text)">
+# [color=#FF0000]text[/color]	                                    <span style="color:#FF0000">
+# [shake], [blink], [glow], [pulse], [wiggle], [grow], [shrink]   <span class="effect-...">
+# \[ / \]	                                                        literal [ / ]
+# unknown tags	                                                  silently skipped
+# improper nesting	                                              gracefully handled (unmatched closes ignored, unclosed opens auto-closed)
+# >>>>                                                            pauses the game until the user presses any key, while showing `continue_message` if `show_continue_message` is true
+
 metadata:
   title: One Gold Piece
   author: Author
@@ -12,7 +26,10 @@ metadata:
   auto_container_description: true
   show_continue_message: true
   continue_message:
-    en: "[glow][i]\[Press any key to continue...\][/i][/glow]"
+    en: |
+      [glow][i]\[Press any key to continue...\][/i][/glow]
+    pt-br: |
+      [glow][i]\[Pressione qualquer tecla para continuar...\][/i][/glow]
   directional_navigation: false
   tabs:
     system:
@@ -42,13 +59,3 @@ metadata:
     actors:
       en: "Actors"
       visible: false
-
-# Syntax	                                                        Produces
-# [b]text[/b]	                                                    <strong>text</strong>
-# [i]text[/i]	                                                    <em>text</em>
-# [color=accent-text]text[/color]	                                <span style="color:var(--accent-text)">
-# [color=#FF0000]text[/color]	                                    <span style="color:#FF0000">
-# [shake], [blink], [glow], [pulse], [wiggle], [grow], [shrink]   <span class="effect-...">
-# \[ / \]	                                                        literal [ / ]
-# unknown tags	                                                  silently skipped
-# improper nesting	                                              gracefully handled (unmatched closes ignored, unclosed opens auto-closed)

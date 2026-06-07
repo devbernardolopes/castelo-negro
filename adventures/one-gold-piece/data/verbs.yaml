@@ -129,6 +129,10 @@ verbs:
     synonyms: { en: ["pay"], pt-br: ["pagar"] }
   invite:
     synonyms: { en: ["invite"], pt-br: ["convidar"] }
+  break:
+    synonyms: { en: ["break"], pt-br: ["quebrar"] }
+  pet:
+    synonyms: { en: ["pet", "stroke", "caress"], pt-br: ["acariciar", "afagar", "fazer carinho"] }
 
 directions:
   north:
