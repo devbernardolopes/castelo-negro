@@ -137,9 +137,7 @@ actions:
             After [shake]many[/shake] unjustified, unneeded attempts, you open the {object_name}.
 
             There. Happy now? Now, don't even try to enter the cottage because this location isn't even implemented in this game.
-      - condition:
-        - "open_cottage_door_count > 10"
-        - "!items.isOpen('{object}')"
+      - condition: "open_cottage_door_count > 10 and !items.isOpen('{object}')"
         effect:
           - "setOpen('{object}', true)"
         message:

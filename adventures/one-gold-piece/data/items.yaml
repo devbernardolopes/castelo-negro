@@ -58,11 +58,16 @@ items:
       en: ["door", "front door", "cottage door", "wooden door", "crooked door"]
     description:
       en: |
-        A wooden door that hangs at a slight but definitive angle, as though it disagrees with the frame on a matter of principle. You have been meaning to fix this for three years. The door is closed but not locked — there is nothing inside worth locking.
-    # is_openable: true
-    # is_open: false
-    # is_lockable: false
-    # visible: false
+        A wooden door that hangs at a slight but definitive angle, as though it disagrees with the frame on a matter of principle. You have been meaning to fix this for three years.
+    conditions:
+      - if: "!item.isOpen(cottage_door) and !item.isLocked(cottage_door)"
+        message:
+          en: |
+            The door is closed but not locked — there is nothing inside worth locking.
+      - if: "item.isOpen(cottage_door)"
+        message:
+          en: |
+            The door is currently open.
     openable:
       initial: closed
       lockable: true
