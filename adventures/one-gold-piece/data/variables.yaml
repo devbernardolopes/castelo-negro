@@ -34,10 +34,8 @@ variables:
     value: true
 
   brightness_step:
-    type: int
-    value: 0
-    # type: float
-    # value: 0.1
+    type: float
+    value: 0.1
 
   # -------------------------------
   # General variables - All general, not game-specific variables, that can be used universally, must go here.

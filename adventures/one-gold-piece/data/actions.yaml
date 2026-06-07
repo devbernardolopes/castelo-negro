@@ -2,10 +2,37 @@
 # conditional_messages only runs on action failure
 # progressive_messages are evaluated after effects
 
-# effect: "setImageFilter('brightness(0)')"               # complete darkness
-# effect: "setImageFilter('brightness(0.3) blur(2px)')"   # severe impairment
-# effect: "setImageFilter('opacity(0.5)')"                # partial transparency
-# effect: "setImageFilter('none')"                        # restore normal vision
+# effect: "setImageFilter('brightness', 0)"               # complete darkness
+# effect: "setImageFilter('brightness', 0.3)" followed by "setImageFilter('blur', 2)"  # severe impairment
+# effect: "setImageFilter('opacity', 0.5)"              # partial transparency
+# effect: "setImageFilter('none')"                       # restore normal vision
+
+# Usage examples
+# # Setting filter components in effects
+# effect: "setImageFilter('brightness', 0.3)"
+# effect: "setImageFilter('blur', 4)"
+# effect: "setImageFilter('opacity', 0.5)"
+# # Using variables as values
+# effect: "setImageFilter('brightness', brightness_step)"
+# effect: "setImageFilter('brightness', getImageFilter('brightness') - brightness_step)"
+# # Resetting all filters
+# effect: "setImageFilter('none')"
+# # Checking filters in conditions
+# conditions:
+#   - "getImageFilter('brightness') < 0.5"
+#   - "getImageFilter('blur') >= 2"
+# # Using the raw object in conditions (alternative form)
+# conditions:
+#   - "image_filter.brightness < 0.5"
+# # Float variable
+# variables:
+#   blindness_level:
+#     type: float
+#     value: 0.0
+# # Using float in conditions
+# conditions:
+#   - "blindness_level > 0.5"
+
 
 actions:
   # -------------------------------
@@ -28,22 +55,28 @@ actions:
     progressive_messages:
       - condition: "look_at_the_sun_count == 1"
         effect:
-          - "setImageFilter('brightness(1.1) blur(2px)')"
+          - "setImageFilter('brightness', 1.1)"
+          - "setImageFilter('blur', 2)"
       - condition: "look_at_the_sun_count == 2"
         effect:
-          - "setImageFilter('brightness(1.2) blur(2px)')"
+          - "setImageFilter('brightness', 1.2)"
+          - "setImageFilter('blur', 2)"
       - condition: "look_at_the_sun_count == 3"
         effect:
-          - "setImageFilter('brightness(1.3) blur(2px)')"
+          - "setImageFilter('brightness', 1.3)"
+          - "setImageFilter('blur', 2)"
       - condition: "look_at_the_sun_count == 4"
         effect:
-          - "setImageFilter('brightness(1.4) blur(2px)')"
+          - "setImageFilter('brightness', 1.4)"
+          - "setImageFilter('blur', 2)"
       - condition: "look_at_the_sun_count == 5"
         effect:
-          - "setImageFilter('brightness(1.5) blur(2px)')"
+          - "setImageFilter('brightness', 1.5)"
+          - "setImageFilter('blur', 2)"
       - condition: "look_at_the_sun_count == 6"
         effect:
-          - "setImageFilter('brightness(1.6) blur(2px)')"
+          - "setImageFilter('brightness', 1.6)"
+          - "setImageFilter('blur', 2)"
       - condition: "look_at_the_sun_count < look_at_the_sun_threshold"
         message:
           en: |
@@ -51,7 +84,8 @@ actions:
       - condition: "look_at_the_sun_count == look_at_the_sun_threshold"
         effect:
           - "look_at_the_sun_count += 1"
-          - "setImageFilter('brightness(0) blur(2px)')"
+          - "setImageFilter('brightness', 0)"
+          - "setImageFilter('blur', 2)"
         message:
           en: |
             Oh, great! Now you're [wiggle]blind![/wiggle]

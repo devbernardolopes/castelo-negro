@@ -388,7 +388,7 @@ class GameEngine {
         nodeId: null
       },
       reading: null,
-      image_filter: 'none'
+      image_filter: {}
     };
   }
 
@@ -663,6 +663,8 @@ class GameEngine {
       game_turn: this.gameState.game_turn,
       inventory: inventoryObj,
       here: { has: locationHas },
+      image_filter: this.gameState.image_filter,
+      getImageFilter: (name) => this.gameState.image_filter[String(name)] ?? null,
       containerHas: (containerId, itemId) => {
         const contents = engine.gameState.container_contents?.[String(containerId)];
         return Array.isArray(contents) && contents.includes(String(itemId));
@@ -963,10 +965,21 @@ class GameEngine {
         continue;
       }
 
-      // setImageFilter('cssFilterString')
-      const imgFilterMatch = line.match(/^setImageFilter\(\s*(.+)\s*\)\s*$/);
-      if (imgFilterMatch) {
-        this.gameState.image_filter = String(this._evalExpression(imgFilterMatch[1]) ?? imgFilterMatch[1]).replace(/^['"]|['"]$/g, '');
+      // setImageFilter('none') — reset all filters
+      // setImageFilter('component', value) — set one named component (brightness, opacity, blur, etc.)
+      const resetFilter = line.match(/^setImageFilter\(\s*['"](none)['"]\s*\)\s*$/);
+      if (resetFilter) {
+        this.gameState.image_filter = {};
+        continue;
+      }
+      const setFilter = line.match(/^setImageFilter\(\s*['"]([a-z-]+)['"]\s*,\s*(.+)\s*\)\s*$/);
+      if (setFilter) {
+        const comp = String(setFilter[1]).trim();
+        const rawVal = String(setFilter[2]).trim();
+        let val = this._evalExpression(rawVal);
+        if (val === undefined) val = Number(parseScalar(rawVal));
+        if (val === undefined || isNaN(val)) val = parseFloat(rawVal);
+        if (!isNaN(val)) this.gameState.image_filter[comp] = val;
         continue;
       }
 
@@ -1818,15 +1831,30 @@ class GameEngine {
   }
 
 
+  _composeImageFilter() {
+    const filter = this.gameState.image_filter || {};
+    const parts = [];
+    if (filter.brightness !== undefined) parts.push(`brightness(${filter.brightness})`);
+    if (filter.contrast !== undefined) parts.push(`contrast(${filter.contrast})`);
+    if (filter.opacity !== undefined) parts.push(`opacity(${filter.opacity})`);
+    if (filter.saturate !== undefined) parts.push(`saturate(${filter.saturate})`);
+    if (filter.sepia !== undefined) parts.push(`sepia(${filter.sepia})`);
+    if (filter.invert !== undefined) parts.push(`invert(${filter.invert})`);
+    if (filter.grayscale !== undefined) parts.push(`grayscale(${filter.grayscale})`);
+    if (filter.hue_rotate !== undefined) parts.push(`hue-rotate(${filter.hue_rotate}deg)`);
+    if (filter.blur !== undefined) parts.push(`blur(${filter.blur}px)`);
+    return parts.length ? parts.join(' ') : 'none';
+  }
+
   _coerceAndClamp(variable, value) {
     const type = String(variable.type || 'any');
     let v = value;
-    if (type === 'int') v = Number(v);
+    if (type === 'int' || type === 'float') v = Number(v);
     if (type === 'bool') v = Boolean(v);
     if (type === 'string') v = String(v);
     if (type === 'list' && !Array.isArray(v)) v = Array.isArray(variable.value) ? variable.value : [];
 
-    if (type === 'int') {
+    if (type === 'int' || type === 'float') {
       if (Number.isNaN(v)) v = 0;
       if (typeof variable.min_value === 'number') v = Math.max(variable.min_value, v);
       if (typeof variable.max_value === 'number') v = Math.min(variable.max_value, v);
@@ -2076,11 +2104,12 @@ class GameEngine {
     }
 
     const images = Array.isArray(loc.images) ? loc.images : [];
+    const filterStr = this._composeImageFilter();
     if (images.length) {
       const url = await this.resolveAssetUrl(images[0]);
-      this.hooks.onRoomImageRender?.(url || null, this.gameState.image_filter || 'none');
+      this.hooks.onRoomImageRender?.(url || null, filterStr);
     } else {
-      this.hooks.onRoomImageRender?.(null, this.gameState.image_filter || 'none');
+      this.hooks.onRoomImageRender?.(null, filterStr);
     }
 
     this.hooks.onInventoryRender?.();
