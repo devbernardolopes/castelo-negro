@@ -18,6 +18,14 @@
 # # - Relationship affinity: {relationship_sabine_affinity}%
 
 # properties:
+#   can_look:
+#     type: bool
+#     default: true
+
+#   can_smell:
+#     type: bool
+#     default: true
+
 #   age:
 #     type: int
 #     min_value: 0

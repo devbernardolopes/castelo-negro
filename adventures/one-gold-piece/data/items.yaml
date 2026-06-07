@@ -164,6 +164,9 @@ items:
     name:
       en: |
         Battered Journal
+    short_name:
+      en: |
+        battered journal
     synonyms:
       en: ["journal", "battered journal", "leather journal", "diary", "notebook", "book"]
     description:
@@ -298,6 +301,9 @@ items:
     name:
       en: |
         Appointments Clipboard
+    short_name:
+      en: |
+        clipboard
     synonyms:
       en: ["clipboard", "schedule", "appointments", "papers", "document", "sheet"]
     description:
@@ -404,6 +410,9 @@ items:
     name:
       en: |
         Quill Pen
+    short_name:
+      en: |
+        quill pen
     synonyms:
       en: ["quill", "pen", "quill pen", "feather pen", "writing quill"]
     description:
@@ -540,6 +549,9 @@ items:
     name:
       en: |
         Crown Paperweight
+    short_name:
+      en: |
+        crown
     synonyms:
       en: ["crown", "paperweight", "small crown", "little crown", "golden crown"]
     description:
@@ -589,6 +601,9 @@ items:
     name:
       en: |
         Promissory Note
+    short_name:
+      en: |
+        promissory note
     synonyms:
       en: ["promissory note", "note", "document", "parchment", "letter of credit", "gold note", "certificate"]
     description:
@@ -614,6 +629,9 @@ items:
     name:
       en: |
         Small Note
+    short_name:
+      en: |
+        small note
     synonyms:
       en: ["small note", "note", "message", "little note", "card"]
     description:

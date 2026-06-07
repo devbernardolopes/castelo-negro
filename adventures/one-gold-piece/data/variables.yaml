@@ -25,6 +25,14 @@ variables:
     type: int
     value: 10
 
+  aldric_can_see:
+    type: bool
+    value: true
+
+  aldric_can_smell:
+    type: bool
+    value: true
+
   # -------------------------------
   # General variables - All general, not game-specific variables, that can be used universally, must go here.
   # -------------------------------  
