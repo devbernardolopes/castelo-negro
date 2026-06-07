@@ -59,7 +59,7 @@ actions:
       - "look_at_the_town_count += 1"
     message:
       en: |
-        Town? You mean village, right?
+        Town? You mean village, right? Because towns are intermediate settlements, usually housing 5,000 to 100,000 people, serving as regional hubs
 
   look_at_the_city:
     pattern:
@@ -71,7 +71,7 @@ actions:
       - "look_at_the_city_count += 1"
     message:
       en: |
-        City? You mean village, right?
+        City? You mean village, right? Because cities are densely populated centers with over 100,000 residents, often numbering in the millions.
 
   look_at_the_sun:
     pattern:
