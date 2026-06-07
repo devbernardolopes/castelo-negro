@@ -92,7 +92,7 @@ function clearEl(elId) {
 }
 
 function setMenuButtonsEnabled(isGameLoaded) {
-  const ids = ['menu-btn-reset-game', 'menu-btn-load-game', 'menu-btn-save-game', 'menu-btn-change-language'];
+  const ids = ['menu-btn-reset-game', 'menu-btn-restore-game', 'menu-btn-save-game', 'menu-btn-change-language'];
   for (const id of ids) {
     const btn = document.getElementById(id);
     if (btn) btn.disabled = !isGameLoaded;
