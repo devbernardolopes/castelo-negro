@@ -123,11 +123,11 @@ actions:
         message:
           en: |
             There is [b]NOTHING[/b] inside that you'll need. [wiggle]Don't insist![/wiggle]
-      - condition: "open_cottage_door_count > 5 and open_cottage_door_count < 10"
+      - condition: "open_cottage_door_count > 5 and open_cottage_door_count < open_cottage_door_threshold"
         message:
           en: |
             Ugh! Again?! Look, this game doesn't even have the cottage's interior implemented, so stop trying.
-      - condition: "open_cottage_door_count == 10"
+      - condition: "open_cottage_door_count == open_cottage_door_threshold"
         effect:
           - "setOpen('{object}', true)"
         message:
@@ -137,7 +137,7 @@ actions:
             After [shake]many[/shake] unjustified, unneeded attempts, you open the {object_name}.
 
             There. Happy now? Now, don't even try to enter the cottage because this location isn't even implemented in this game.
-      - condition: "open_cottage_door_count > 10 and !items.isOpen('{object}')"
+      - condition: "open_cottage_door_count > open_cottage_door_threshold and !items.isOpen('{object}')"
         effect:
           - "setOpen('{object}', true)"
         message:

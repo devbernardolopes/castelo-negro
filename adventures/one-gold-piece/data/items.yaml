@@ -57,22 +57,29 @@ items:
     synonyms:
       en: ["door", "front door", "cottage door", "wooden door", "crooked door"]
     description:
+      # base:
       en: |
         A wooden door that hangs at a slight but definitive angle, as though it disagrees with the frame on a matter of principle. You have been meaning to fix this for three years.
-    conditions:
-      - if: "!item.isOpen(cottage_door) and !item.isLocked(cottage_door)"
-        message:
-          en: |
-            The door is closed but not locked — there is nothing inside worth locking.
-      - if: "item.isOpen(cottage_door)"
-        message:
-          en: |
-            The door is currently open.
+      conditions:
+        - if: "open_cottage_door_count < open_cottage_door_threshold"
+          message:
+            en: |
+              The door is closed but not locked — there is nothing inside worth locking.
+
+      # conditions:
+      #   - if: "!item.isOpen('cottage_door')" #" and !item.isLocked('cottage_door')"
+      #     message:
+      #       en: |
+      #         The door is closed but not locked — there is nothing inside worth locking.
+      #   - if: "item.isOpen('cottage_door')"
+      #     message:
+      #       en: |
+      #         The door is currently open.
     openable:
       initial: closed
       lockable: true
       locked: false
-      # show_current_state: false
+      # show_current_state: true
 
   cottage_window:
     name:

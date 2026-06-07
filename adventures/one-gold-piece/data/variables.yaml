@@ -5,6 +5,11 @@ variables:
   open_cottage_door_count:
     type: int
     value: 0
+    debug_variable: true
+
+  open_cottage_door_threshold:
+    type: int
+    value: 10
 
   # -------------------------------
   # General variables - All general, not game-specific variables, that can be used universally, must go here.

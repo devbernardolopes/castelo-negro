@@ -37,7 +37,7 @@ metadata:
       visible: true
     debug:
       en: "Debug"
-      visible: false
+      visible: true
     room:
       en: "Room"
       visible: true
