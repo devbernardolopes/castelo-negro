@@ -801,7 +801,7 @@ document.addEventListener('DOMContentLoaded', () => {
     _applyImgTransform();
   }
 
-  function showImageModal(src, title) {
+  function showImageModal(src, title, filter) {
     if (!src) return;
     const backdrop = document.getElementById('img-modal-backdrop');
     const img = document.getElementById('img-modal-view');
@@ -812,6 +812,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     _resetImgTransform();
     img.src = src;
+    img.style.filter = filter || 'none';
 
     setImageModalVisible(true);
   }
@@ -825,7 +826,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('room-img')?.addEventListener('click', function () {
     if (this.style.display === 'none' || !this.src) return;
     const locName = engine ? engine._pickLang(engine.getFullLocationData(engine.gameState.current_location)?.name) || 'Room Image' : 'Room Image';
-    showImageModal(this.src, locName);
+    const imgFilter = engine?.gameState?.image_filter || 'none';
+    showImageModal(this.src, locName, imgFilter);
   });
 
   document.getElementById('inventory-list')?.addEventListener('click', (e) => {
