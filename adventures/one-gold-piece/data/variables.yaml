@@ -5,9 +5,23 @@ variables:
   open_cottage_door_count:
     type: int
     value: 0
-    debug_variable: true
+    # debug_variable: true
 
   open_cottage_door_threshold:
+    type: int
+    value: 10
+
+  loose_rock_moved:
+    type: bool
+    value: false
+    debug_variable: true
+  
+  look_at_the_sun_count:
+    type: int
+    value: 0
+    debug_variable: true
+
+  look_at_the_sun_threshold:
     type: int
     value: 10
 

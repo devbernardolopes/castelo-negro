@@ -671,3 +671,20 @@ items:
       en: |
         The village sits in the afternoon light, warm and small and entirely unaware of what you have just done. Smoke from chimneys. The inn where this started is visible. Brom the tavern keeper is in there somewhere, keeping time. You have what you need. The sun has not yet set. You feel, against all reasonable expectation, fine.
     visible: true
+
+  # ─────────────────────────────────────────────
+  # MISC.
+  # ─────────────────────────────────────────────
+  
+  morning_sun:
+    name:
+      en: |
+        Morning Sun
+    short_name:
+      en: |
+        sun
+    synonyms:
+      en: ["sun", "morning sun", "sol"]
+    # description:
+    #   en: |
+    #     A short sword of unremarkable provenance. The blade is serviceable if not inspiring, the grip wrapped in leather that has seen better decades, and there is a small nick near the crossguard that the previous owner described, unhelpfully, as [i]"character."[/i] You paid three silver for it. You may have overpaid.

@@ -6,6 +6,16 @@ actions:
   # -------------------------------
   # Specific actions - All actions that are specific to this game must go here.
   # -------------------------------
+  look_at_the_sun:
+    pattern:
+      - verb: ["look"]
+      - object: [morning_sun]
+    conditions:
+      - "current_location == 'cottage_doorstep'"
+    message:
+      en: |
+        You look at the morning sun.
+
   talk_to_gerald:
     pattern:
       - verb: ["talk", "greet"]

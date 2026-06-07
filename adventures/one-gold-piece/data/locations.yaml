@@ -165,9 +165,12 @@ locations:
 
         However.
 
-        On a stone lectern near the entrance, angled toward the room with quiet authority, sits an open ledger. It is enormous — the size of a small table — and its pages are dense with handwritten columns of figures. Each coin in this hoard has a line. Each gem, each goblet, each candlestick. The inventory is current to what appears to be this morning. A quill pen rests in an ink pot beside it. The ink is fresh.
-
-        You have the distinct impression that taking anything would be noticed. The impression is very specific about this.
+        On a stone lectern near the entrance, angled toward the room with quiet authority, sits an open ledger. It is enormous — the size of a small table — and its pages are dense with handwritten columns of figures. Each coin in this hoard has a line. Each gem, each goblet, each candlestick. You have the distinct impression that taking anything would be noticed. The impression is very specific about this. The inventory is current to what appears to be this morning.
+      conditions:
+        - if: "here.has('treasury_quill')"
+          message:
+            en: |
+              A quill pen rests in an ink pot beside it. The ink is fresh.
     contents: [gold_hoard, treasury_ledger, treasury_quill, gemstone_pile, silver_goblets, coin_sacks]
     exits:
       west: antechamber
@@ -200,9 +203,9 @@ locations:
       north:
         location: back_passage
         conditions:
-          - if: "variables.loose_rock_moved == true"
+          - if: "loose_rock_moved == true"
             allow: true
-          - if: "variables.loose_rock_moved != true"
+          - if: "loose_rock_moved != true"
             allow: false
             message:
               en: |
