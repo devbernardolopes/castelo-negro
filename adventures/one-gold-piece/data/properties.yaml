@@ -17,14 +17,14 @@
 # # - Sabine looks {actor_sabine_mood}.
 # # - Relationship affinity: {relationship_sabine_affinity}%
 
-# properties:
-#   can_look:
-#     type: bool
-#     default: true
+properties:
+  can_see:
+    type: bool
+    default: true
 
-#   can_smell:
-#     type: bool
-#     default: true
+  can_smell:
+    type: bool
+    default: true
 
 #   age:
 #     type: int

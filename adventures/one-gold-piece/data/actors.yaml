@@ -11,9 +11,9 @@ actors:
     inventory: [aldrics_sword]
     wearing: [leather_satchel]
     max_capacity: 2
-    # properties:
-    #   can_look: true
-    #   can_smell: true
+    properties:
+      can_see: true
+      can_smell: true
     description:
       en: |
         It's you, Aldric.

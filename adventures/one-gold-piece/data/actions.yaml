@@ -44,7 +44,7 @@ actions:
       - object: ["*"]
         optional: true
     conditions:
-      - "!aldric_can_see"
+      - "getActorProp(current_player_actor, 'can_see') != true"
     message:
       en: |
         You [b]can't[/b] see a thing! You're [wiggle]blind[/wiggle] from looking at the sun. Did you forget?
@@ -121,7 +121,7 @@ actions:
           - "look_at_the_sun_count += 1"
           - "setImageFilter('brightness', 0)"
           - "setImageFilter('blur', 2)"
-          - "aldric_can_see = false"
+          - "setActorProp(current_player_actor, 'can_see', false)"
         message:
           en: |
             Oh, great! Now you're [wiggle]blind![/wiggle]
@@ -538,12 +538,16 @@ actions:
       - object: ["*"]
         optional: true
     conditions:
-      - "'{object}' == '' or (here.has('{object}') or inventory.has('{object}')) and items.visible('{object}')"
+      - "'{object}' == '' or (here.has('{object}') or inventory.has('{object}')) and items.visible('{object}') and getActorProp(current_player_actor, 'can_see')"
     effect: []
     message:
       en: |
         {location_or_object_description}
     conditional_messages:
+      - condition: "!getActorProp(current_player_actor, 'can_see')"
+        message:
+          en: |
+            Currently you can't see.
       - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
         message:
           en: |
