@@ -12,7 +12,7 @@ actions:
       - object: [morning_sun]
     conditions:
       - "look_at_the_sun_count < look_at_the_sun_threshold"
-      - "current_location == 'cottage_doorstep' or current_location == 'old_crossroads' or current_location == 'hillside_path'"
+      - "current_location in ['cottage_doorstep', 'old_crossroads', 'hillside_path']"
     effect:
       - "look_at_the_sun_count += 1"
     message:
