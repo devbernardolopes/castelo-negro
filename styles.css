@@ -1503,7 +1503,7 @@ body {
 
   #sidebar-tabs .tabs-body {
     flex: auto;
-    height: 256px;
+    /* height: 256px; */
     overflow-y: auto;
   }
 
