@@ -499,6 +499,10 @@ body {
   overflow: hidden;
 }
 
+#sidebar-tabs .tabs-body.collapsed .tab-panel {
+  display: none !important;
+}
+
 #sidebar-tabs .tab-panel {
   display: flex;
   flex-direction: column;

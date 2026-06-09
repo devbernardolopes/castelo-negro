@@ -74,6 +74,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   window.setSidebarTab = setSidebarTab;
 
+  function _handleTabBtnClick(btn, tabName) {
+    const container = document.getElementById('tabs-body-container');
+    const isCollapsed = container.classList.contains('collapsed');
+    const isActive = btn.getAttribute('aria-selected') === 'true';
+
+    if (isCollapsed) {
+      container.classList.remove('collapsed');
+      setSidebarTab(tabName);
+    } else if (isActive) {
+      container.classList.add('collapsed');
+    } else {
+      setSidebarTab(tabName);
+    }
+
+    if (tabName === 'map' && typeof _centerMapOnCurrentLocation === 'function') {
+      _centerMapOnCurrentLocation();
+    }
+  }
+
   function _focusGameTab() {
     const roomTab = document.getElementById('tab-room');
     if (roomTab) {
@@ -115,10 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.setAttribute('data-tab', tabName);
         btn.textContent = label;
         btn.addEventListener('click', () => {
-          setSidebarTab(tabName);
-          if (tabName === 'map' && typeof _centerMapOnCurrentLocation === 'function') {
-            _centerMapOnCurrentLocation();
-          }
+          _handleTabBtnClick(btn, tabName);
         });
         const sidebarEl = document.getElementById('sidebar-tabs');
         const isEnabled = sidebarEl?.getAttribute('data-enabled') !== 'false';
@@ -176,10 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#sidebar-tabs .tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       const tab = btn.getAttribute('data-tab');
-      setSidebarTab(tab);
-      if (tab === 'map' && typeof _centerMapOnCurrentLocation === 'function') {
-        _centerMapOnCurrentLocation();
-      }
+      _handleTabBtnClick(btn, tab);
     });
   });
   setSidebarTab('system');
@@ -1204,7 +1217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       roomTab.id = 'tab-room';
       roomTab.setAttribute('data-tab', 'room');
       roomTab.textContent = 'Room';
-      roomTab.addEventListener('click', () => setSidebarTab('room'));
+      roomTab.addEventListener('click', () => _handleTabBtnClick(roomTab, 'room'));
       if (!engine) roomTab.disabled = true;
 
       const systemTab = document.getElementById('tab-system');
