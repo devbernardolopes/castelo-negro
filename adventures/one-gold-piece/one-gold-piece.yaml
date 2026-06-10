@@ -31,6 +31,7 @@ metadata:
     pt-br: |
       [glow][i]\[Pressione qualquer tecla para continuar...\][/i][/glow]
   directional_navigation: false
+  show_location_image_inline: true
   tabs:
     system:
       en: "System"
