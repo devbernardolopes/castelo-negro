@@ -172,8 +172,6 @@ actions:
       en: |
         You kick the dog.
 
-
-
   pet_dragon:
     pattern:
       - verb: ["pet"]
@@ -183,6 +181,39 @@ actions:
     message:
       en: |
         You pet the dragon. The dragon's reaction is impossible to describe.
+
+  # attack_gerald_dog_sheep_dragon:
+  #   pattern:
+  #     - verb: ["attack"]
+  #     - object: ["*"]
+  #       optional: true
+  #   follow_up:
+  #     actor:
+  #       en: "Attack whom or what?"
+  #   confirmation:
+  #     en: "Are you sure you want to attack {actor_name}?"
+  #   conditions:
+  #     - "'{actor}' != '' and getActor('{actor}') != null"
+  #     - "getActor('{actor}').current_location == current_location"
+  #     - "'{actor}' != current_player_actor"
+  #   effect: ""
+  #   message:
+  #     en: |
+  #       You attack {actor_name}!
+  #   conditional_messages:
+  #     - condition: "'{actor}' == '' or getActor('{actor}') == null"
+  #       message:
+  #         en: |
+  #           There's no one here by that name.
+  #     - condition: "getActor('{actor}').current_location != current_location"
+  #       message:
+  #         en: |
+  #           {actor_name} isn't here.
+  #     - condition: "'{actor}' == current_player_actor"
+  #       message:
+  #         en: |
+  #           You can't attack yourself.
+
 
   move_loose_rock:
     pattern:
