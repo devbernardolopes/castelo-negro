@@ -1416,3 +1416,30 @@ function handleActorExamineImage(actorId, imagePath) {
     if (url) img.src = url;
   });
 }
+
+function renderLocationImageInline(url, filter = 'none') {
+  const el = document.getElementById('text-display-content');
+  if (!el || !url) return;
+  const container = document.createElement('div');
+  container.className = 'log-entry';
+  container.style.display = 'flex';
+  container.style.justifyContent = 'center';
+  const img = document.createElement('img');
+  img.className = 'actor-examine-thumbnail';
+  img.alt = '';
+  img.style.filter = filter;
+  img.style.display = 'none';
+  img.addEventListener('click', () => {
+    if (window.showImageModal) window.showImageModal(img.src);
+  });
+  img.onload = () => {
+    img.style.display = 'block';
+    const scrollEl = document.getElementById('text-display');
+    if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+  };
+  img.onerror = () => { img.style.display = 'none'; };
+  img.src = url;
+  container.appendChild(img);
+  el.appendChild(document.createElement('br'));
+  el.appendChild(container);
+}

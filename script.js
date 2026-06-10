@@ -1161,7 +1161,8 @@ document.addEventListener('DOMContentLoaded', () => {
       onRelationshipsRender: renderRelationshipsList,
       onActorsRender: renderActorsList,
       onStatsRender: renderStatsList,
-      onActorExamineRender: handleActorExamineImage
+      onActorExamineRender: handleActorExamineImage,
+      onLocationImageInlineRender: renderLocationImageInline
     });
     resetUiForNewGame();
     setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
@@ -1271,7 +1272,8 @@ document.addEventListener('DOMContentLoaded', () => {
       onRelationshipsRender: renderRelationshipsList,
       onActorsRender: renderActorsList,
       onStatsRender: renderStatsList,
-      onActorExamineRender: handleActorExamineImage
+      onActorExamineRender: handleActorExamineImage,
+      onLocationImageInlineRender: renderLocationImageInline
     });
     resetUiForNewGame();
     setDebugTabVisibility(!!engine?.definition?.metadata?.debug);

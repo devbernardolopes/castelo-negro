@@ -64,6 +64,7 @@ class GameEngine {
  *   onActorsRender?: ()=>void,
  *   onStatsRender?: ()=>void,
  *   onActorExamineRender?: (actorId:string, imageUrl:string)=>void
+ *   onLocationImageInlineRender?: (url:string, filter?:string)=>void
  * }} hooks
    */
   constructor(definition, hooks = {}) {
@@ -2093,7 +2094,8 @@ class GameEngine {
     if (!loc) return;
 
     const prevLoc = this.gameState.previous_location;
-    if (prevLoc !== locationId) {
+    const isNewLocation = prevLoc !== locationId;
+    if (isNewLocation) {
       const nameText = this._pickLang(loc.name);
       if (nameText) this.hooks.onLocationNameRender?.(nameText);
 
@@ -2108,6 +2110,9 @@ class GameEngine {
     if (images.length) {
       const url = await this.resolveAssetUrl(images[0]);
       this.hooks.onRoomImageRender?.(url || null, filterStr);
+      if (isNewLocation && this.definition.metadata?.show_location_image_inline && url) {
+        this.hooks.onLocationImageInlineRender?.(url, filterStr);
+      }
     } else {
       this.hooks.onRoomImageRender?.(null, filterStr);
     }
