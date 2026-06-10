@@ -186,3 +186,7 @@ open_state:
       closed
     pt-br: |
       fechado
+
+commands:
+  inv:
+    synonyms: { en: ["inventory", "inv"], pt-br: ["inventário", "inv"] }
