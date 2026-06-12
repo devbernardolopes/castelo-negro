@@ -166,6 +166,9 @@ GameEngine.prototype.processPlayerCommand = function(input) {
     if (resolved) return this.go(/** @type {any} */ (resolved));
   }
 
+  // Built-in commands (inventory, reset, restore, save, load)
+  if (this._tryCommand(cmd)) return true;
+
   // Action system (v1.3+): try declarative action matches first.
   if (this._tryActions(cmd)) return true;
 
@@ -434,6 +437,30 @@ GameEngine.prototype._tryActions = function(cmd) {
     return true;
   }
 
+  return false;
+};
+
+GameEngine.prototype._tryCommand = function(cmd) {
+  const canonical = this._canonicalCommand(cmd);
+  if (!canonical) return false;
+
+  switch (canonical) {
+    case 'inventory':
+      this.hooks.onInventoryToTextRender?.();
+      return true;
+    case 'reset':
+      document.getElementById('menu-btn-reset-game')?.click();
+      return true;
+    case 'restore':
+      document.getElementById('menu-btn-restore-game')?.click();
+      return true;
+    case 'save':
+      document.getElementById('menu-btn-save-game')?.click();
+      return true;
+    case 'load':
+      document.getElementById('menu-btn-load-adventure')?.click();
+      return true;
+  }
   return false;
 };
 

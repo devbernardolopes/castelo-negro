@@ -174,3 +174,15 @@ open_state:
       closed
     pt-br: |
       fechado
+
+commands:
+  inventory:
+    synonyms: { en: ["inventory", "inv"], pt-br: ["inventário", "inv"] }
+  reset:
+    synonyms: { en: ["reset", "restart", "new"], pt-br: ["resetar", "reiniciar", "novo"] }
+  restore:
+    synonyms: { en: ["restore"], pt-br: ["restaurar"] }
+  save:
+    synonyms: { en: ["save"], pt-br: ["salvar"] }
+  load:
+    synonyms: { en: ["load"], pt-br: ["carregar"] }

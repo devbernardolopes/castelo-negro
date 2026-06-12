@@ -65,6 +65,7 @@ class GameEngine {
  *   onStatsRender?: ()=>void,
  *   onActorExamineRender?: (actorId:string, imageUrl:string)=>void
  *   onLocationImageInlineRender?: (url:string, filter?:string)=>void
+ *   onInventoryToTextRender?: ()=>void
  * }} hooks
    */
   constructor(definition, hooks = {}) {
@@ -78,6 +79,7 @@ class GameEngine {
     this.gameState = this._createInitialState();
     this.inventory = new InventorySystem(this);
     this._verbsIndex = this._buildVerbsIndex();
+    this._commandsIndex = this._buildCommandsIndex();
     this._memoryConfig = this._getPlayerMemoryConfig();
 
     // A small helper object exposed to condition/effect evaluation.
@@ -315,10 +317,34 @@ class GameEngine {
     return index;
   }
 
+  _buildCommandsIndex() {
+    const index = new Map();
+    const commands = this.definition.commands && typeof this.definition.commands === 'object' ? this.definition.commands : {};
+    for (const [canonical, def] of Object.entries(commands)) {
+      index.set(String(canonical).toLowerCase(), String(canonical).toLowerCase());
+      const syn = def?.synonyms;
+      if (syn && typeof syn === 'object') {
+        for (const list of Object.values(syn)) {
+          if (!Array.isArray(list)) continue;
+          for (const w of list) {
+            index.set(String(w).toLowerCase(), String(canonical).toLowerCase());
+          }
+        }
+      }
+    }
+    return index;
+  }
+
   _canonicalVerb(word) {
     const w = String(word || '').trim().toLowerCase();
     if (!w) return '';
     return this._verbsIndex.get(w) || w;
+  }
+
+  _canonicalCommand(word) {
+    const w = String(word || '').trim().toLowerCase();
+    if (!w) return '';
+    return this._commandsIndex.get(w) || '';
   }
 
   _createInitialState() {

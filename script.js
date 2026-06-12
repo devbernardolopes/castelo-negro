@@ -1162,7 +1162,8 @@ document.addEventListener('DOMContentLoaded', () => {
       onActorsRender: renderActorsList,
       onStatsRender: renderStatsList,
       onActorExamineRender: handleActorExamineImage,
-      onLocationImageInlineRender: renderLocationImageInline
+      onLocationImageInlineRender: renderLocationImageInline,
+      onInventoryToTextRender: renderInventoryToTextDisplay
     });
     resetUiForNewGame();
     setDebugTabVisibility(!!engine?.definition?.metadata?.debug);
@@ -1261,6 +1262,7 @@ document.addEventListener('DOMContentLoaded', () => {
     engine = new GameEngine(def, {
       assetsBase: engine.assetsBase,
       assetsResolver: engine.assetsResolver,
+      onInventoryToTextRender: renderInventoryToTextDisplay,
       onOutput: appendOutput,
       onLocationNameRender: appendLocationName,
       onRoomImageRender: renderRoomImage,

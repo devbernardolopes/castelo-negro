@@ -718,6 +718,87 @@ function renderInventoryList() {
 }
 
 /**
+ * Render inventory items to text-display-content (for the "inventory" command).
+ */
+function renderInventoryToTextDisplay() {
+  const el = document.getElementById('text-display-content');
+  if (!el) return;
+  if (!engine) return;
+  const items = engine.getVisibleInventoryItems ? engine.getVisibleInventoryItems() : engine.inventory.items;
+  if (!items || items.length === 0) return;
+
+  const playerActorId = engine._getPlayerActorId ? engine._getPlayerActorId() : null;
+  const wearing = playerActorId ? (engine.gameState.actors_data?.[playerActorId]?.wearing || []) : [];
+
+  const parentMap = {};
+  for (const [containerId, children] of Object.entries(engine.gameState.container_contents || {})) {
+    for (const childId of children) {
+      parentMap[childId] = containerId;
+    }
+  }
+
+  const wornChain = new Set(wearing);
+  const queue = [...wearing];
+  while (queue.length) {
+    const id = queue.shift();
+    const children = engine.gameState.container_contents?.[id] || [];
+    for (const childId of children) {
+      if (!wornChain.has(childId)) {
+        wornChain.add(childId);
+        queue.push(childId);
+      }
+    }
+  }
+
+  const container = document.createElement('div');
+  container.className = 'log-entry';
+
+  for (const itemId of items) {
+    const item = engine.definition.items?.[itemId];
+    if (item && item.show_in_inventory === false) continue;
+
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '8px';
+
+    const images = Array.isArray(item?.images) ? item.images : [];
+    if (images.length > 0) {
+      const img = document.createElement('img');
+      img.className = 'inventory-item-img';
+      img.alt = '';
+      engine.resolveAssetUrl(images[0]).then((url) => {
+        if (url) img.src = url;
+      });
+      img.onerror = () => { img.style.display = 'none'; };
+      row.appendChild(img);
+    }
+
+    const span = document.createElement('span');
+    let name = item ? engine._getItemDisplayName(itemId) : itemId;
+    if (wearing.includes(itemId)) {
+      name += ' (wearing)';
+    } else {
+      const parentId = parentMap[itemId];
+      if (parentId && wornChain.has(parentId)) {
+        const parentDef = engine.definition.items?.[parentId];
+        const tag = parentDef ? (engine._pickLang(parentDef.short_name) || engine._pickLang(parentDef.name) || parentId) : parentId;
+        name += ` (${tag})`;
+      }
+    }
+    span.textContent = name;
+    row.appendChild(span);
+
+    container.appendChild(row);
+  }
+
+  if (el.childNodes.length) el.appendChild(document.createElement('br'));
+  el.appendChild(container);
+  const scrollEl = document.getElementById('text-display');
+  if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+}
+
+/**
  * Re-render the mind panel from engine state.
  */
 function renderMindPanel() {
