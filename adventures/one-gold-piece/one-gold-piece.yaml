@@ -32,15 +32,6 @@ metadata:
       [glow][i]\[Pressione qualquer tecla para continuar...\][/i][/glow]
   directional_navigation: false
   show_location_image_inline: true
-  commands:
-    inventory:
-      synonyms: { en: ["inventory", "inv"], pt-br: ["inventário", "inv"] }
-    reset:
-      synonyms: { en: ["reset", "restart", "new"], pt-br: ["resetar", "reiniciar", "novo"] }
-    restore:
-      synonyms: { en: ["restore", "load"], pt-br: ["carregar", "restaurar"] }
-    save:
-      synonyms: { en: ["save"], pt-br: ["salvar"] }
   tabs:
     system:
       en: "System"
