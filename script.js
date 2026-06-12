@@ -574,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target?.id === 'adventure-modal-backdrop') setModalVisible(false);
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { setModalVisible(false); setThemeModalVisible(false); setLanguageModalVisible(false); setImageModalVisible(false); const cb = document.getElementById('lang-confirm-backdrop'); if (cb) cb.style.display = 'none'; }
+    if (e.key === 'Escape') { setModalVisible(false); setThemeModalVisible(false); setLanguageModalVisible(false); setImageModalVisible(false); const cb = document.getElementById('lang-confirm-backdrop'); if (cb) cb.style.display = 'none'; const rb = document.getElementById('reset-confirm-backdrop'); if (rb) rb.style.display = 'none'; }
   });
 
   const webPane = document.getElementById('adventure-web-pane');
@@ -1256,6 +1256,20 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', _updateMobileLayout);
 
   document.getElementById('menu-btn-reset-game')?.addEventListener('click', () => {
+    if (!engine) return;
+    document.getElementById('reset-confirm-backdrop').style.display = 'flex';
+  });
+
+  document.getElementById('reset-confirm-cancel')?.addEventListener('click', () => {
+    document.getElementById('reset-confirm-backdrop').style.display = 'none';
+  });
+  document.getElementById('reset-confirm-backdrop')?.addEventListener('click', (e) => {
+    if (e.target?.id === 'reset-confirm-backdrop') {
+      document.getElementById('reset-confirm-backdrop').style.display = 'none';
+    }
+  });
+  document.getElementById('reset-confirm-ok')?.addEventListener('click', () => {
+    document.getElementById('reset-confirm-backdrop').style.display = 'none';
     if (!engine) return;
     clearPromptHistory();
     const def = engine.definition;
