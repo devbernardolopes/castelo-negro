@@ -761,16 +761,25 @@ function renderInventoryToTextDisplay() {
     row.style.display = 'flex';
     row.style.alignItems = 'center';
     row.style.gap = '8px';
+    row.style.marginBottom = '4px';
 
     const images = Array.isArray(item?.images) ? item.images : [];
     if (images.length > 0) {
       const img = document.createElement('img');
       img.className = 'inventory-item-img';
       img.alt = '';
+      img.style.cursor = 'pointer';
       engine.resolveAssetUrl(images[0]).then((url) => {
         if (url) img.src = url;
       });
       img.onerror = () => { img.style.display = 'none'; };
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (img.src && typeof window.showImageModal === 'function') {
+          const title = row.querySelector('span')?.textContent || '';
+          window.showImageModal(img.src, title);
+        }
+      });
       row.appendChild(img);
     }
 
