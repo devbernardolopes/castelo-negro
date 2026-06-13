@@ -503,6 +503,10 @@ body {
   display: none !important;
 }
 
+#sidebar-tabs .tabs-body.collapsed {
+  height: 0;
+}
+
 #sidebar-tabs .tab-panel {
   display: flex;
   flex-direction: column;
