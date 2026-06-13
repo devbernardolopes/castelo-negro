@@ -220,8 +220,10 @@ body {
   border: 1px solid var(--border-color);
   padding: 12px;
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
-  overflow-y: auto;
   border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .modal-header {
@@ -262,6 +264,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .mode-row {
