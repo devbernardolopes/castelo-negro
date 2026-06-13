@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.setAttribute('data-theme', savedTheme);
 
   // Apply saved font family & size
-  const FONT_SIZE_MAP = ['small', 'regular', 'large', 'larger'];
+  const FONT_SIZE_MAP = ['small', 'regular', 'large', 'larger', 'largest'];
   const savedFontFamily = localStorage.getItem(LS_KEY_FONT_FAMILY) || "'Courier New', Courier, monospace";
   const savedFontSize = localStorage.getItem(LS_KEY_FONT_SIZE) || '1';
   const textDisplayEl = document.getElementById('text-display');

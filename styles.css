@@ -694,6 +694,7 @@ body {
 #text-display[data-font-size="regular"] { font-size: 14px; }
 #text-display[data-font-size="large"] { font-size: 16px; }
 #text-display[data-font-size="larger"] { font-size: 18px; }
+#text-display[data-font-size="largest"] { font-size: 20px; }
 
 .scroll-down-btn {
   position: sticky;
