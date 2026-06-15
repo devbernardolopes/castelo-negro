@@ -784,7 +784,7 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
     }
     if (matched.length === 0) {
       const playerId = this._getPlayerActorId();
-      const selfWords = ['myself', 'me', 'yourself'];
+      const selfWords = this.definition.verbs?.self?.[this.language] || [];
       if (selfWords.includes(p)) {
         matched.push(playerId);
       } else if (p === playerId.toLowerCase() || p === playerId.replace(/_/g, ' ').toLowerCase()) {
