@@ -1833,14 +1833,20 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
 GameEngine.prototype._resolveBinaryAnswer = function(input) {
   const q = String(input || '').trim().toLowerCase();
   if (!q) return null;
-  const binary = this.definition.verbs?.binary?.[this.language];
+  const binary = this.definition?.binary?.[this.language];
   if (binary) {
     if (Array.isArray(binary.yes) && binary.yes.includes(q)) return 'yes';
     if (Array.isArray(binary.no) && binary.no.includes(q)) return 'no';
   }
-  // English fallback
-  if (['yes', 'y', 'yeah', 'yep', 'sure', 'ok', 'okay'].includes(q)) return 'yes';
-  if (['no', 'n', 'nope', 'nah', 'not really'].includes(q)) return 'no';
+  // Fallback: use default language's binary values
+  const defaultLang = this.definition.metadata?.default_language;
+  if (defaultLang && defaultLang !== this.language) {
+    const fallback = this.definition?.binary?.[defaultLang];
+    if (fallback) {
+      if (Array.isArray(fallback.yes) && fallback.yes.includes(q)) return 'yes';
+      if (Array.isArray(fallback.no) && fallback.no.includes(q)) return 'no';
+    }
+  }
   return null;
 };
 

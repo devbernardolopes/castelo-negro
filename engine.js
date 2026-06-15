@@ -304,13 +304,10 @@ class GameEngine {
     const verbs = this.definition.verbs && typeof this.definition.verbs === 'object' ? this.definition.verbs : {};
     for (const [canonical, def] of Object.entries(verbs)) {
       index.set(String(canonical).toLowerCase(), String(canonical).toLowerCase());
-      const syn = def?.synonyms;
-      if (syn && typeof syn === 'object') {
-        for (const list of Object.values(syn)) {
-          if (!Array.isArray(list)) continue;
-          for (const w of list) {
-            index.set(String(w).toLowerCase(), String(canonical).toLowerCase());
-          }
+      const syn = def?.synonyms?.[this.language];
+      if (Array.isArray(syn)) {
+        for (const w of syn) {
+          index.set(String(w).toLowerCase(), String(canonical).toLowerCase());
         }
       }
     }
@@ -322,13 +319,10 @@ class GameEngine {
     const commands = this.definition.commands && typeof this.definition.commands === 'object' ? this.definition.commands : {};
     for (const [canonical, def] of Object.entries(commands)) {
       index.set(String(canonical).toLowerCase(), String(canonical).toLowerCase());
-      const syn = def?.synonyms;
-      if (syn && typeof syn === 'object') {
-        for (const list of Object.values(syn)) {
-          if (!Array.isArray(list)) continue;
-          for (const w of list) {
-            index.set(String(w).toLowerCase(), String(canonical).toLowerCase());
-          }
+      const syn = def?.synonyms?.[this.language];
+      if (Array.isArray(syn)) {
+        for (const w of syn) {
+          index.set(String(w).toLowerCase(), String(canonical).toLowerCase());
         }
       }
     }
@@ -576,12 +570,9 @@ class GameEngine {
     if (dirs && typeof dirs === 'object') {
       for (const [dirId, dirDef] of Object.entries(dirs)) {
         if (dirId.toLowerCase() === lower) return dirId;
-        if (dirDef?.synonyms) {
-          for (const langSyns of Object.values(dirDef.synonyms)) {
-            if (Array.isArray(langSyns) && langSyns.some(s => String(s).toLowerCase() === lower)) {
-              return dirId;
-            }
-          }
+        const langSyns = dirDef?.synonyms?.[this.language];
+        if (Array.isArray(langSyns) && langSyns.some(s => String(s).toLowerCase() === lower)) {
+          return dirId;
         }
       }
     }
@@ -600,13 +591,9 @@ class GameEngine {
     if (!lower) return null;
 
     const verbs = new Set(['go']);
-    const syns = this.definition.verbs?.go?.synonyms;
-    if (syns && typeof syns === 'object') {
-      for (const langSyns of Object.values(syns)) {
-        if (Array.isArray(langSyns)) {
-          langSyns.forEach(s => verbs.add(String(s).toLowerCase()));
-        }
-      }
+    const syns = this.definition.verbs?.go?.synonyms?.[this.language];
+    if (Array.isArray(syns)) {
+      syns.forEach(s => verbs.add(String(s).toLowerCase()));
     }
 
     for (const verb of verbs) {
