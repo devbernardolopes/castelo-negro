@@ -168,12 +168,15 @@ directions:
 
 self:
   en: ["self", "me", "myself", "my", "mine"]
+  pt-br: ["eu", "mim", "mim mesmo", "si"]
 
 binary:
   yes:
     en: ["yes", "y", "yeah", "yep", "sure", "ok", "okay"]
+    pt-br: ["sim", "ok", "okay"]
   no:
     en: ["no", "n", "nope", "nah", "not really"]
+    pt-br: ["não", "nah"]
 
 open_state:
   true:

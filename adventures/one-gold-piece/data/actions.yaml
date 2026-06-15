@@ -48,6 +48,8 @@ actions:
     message:
       en: |
         You [b]can't[/b] see a thing! You're [wiggle]blind[/wiggle] from looking at the sun. Did you forget?
+      pt-br: |
+        Você [b]não[/b] pode ver nada! Você está [wiggle]cego[/wiggle] por conta de olhar para o sol. Você esqueceu?
 
   look_at_the_town:
     pattern:
@@ -597,10 +599,14 @@ actions:
         message:
           en: |
             Currently you can't see.
+          pt-br: |
+            No momento você não pode ver.
       - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
         message:
           en: |
             There's no {object_name} here.
+          pt-br: |
+            Não há {object_name} aqui.
 
   drop:
     pattern:
@@ -1019,5 +1025,11 @@ actions:
         - "You're not sure how to do that here."
         - "That idea doesn't seem to lead anywhere."
         - "You can't quite figure out how to make that work."
+      pt-br:
+        - "Eu não entendo o que você quer dizer."
+        - "Isso não faz sentido neste contexto."
+        - "Você não tem certeza de como fazer isso aqui."
+        - "Essa ideia não parece levar a lugar nenhum."
+        - "Você não consegue descobrir como fazer isso funcionar."
     effect:
       - "invalid_attempt_count += 1"
