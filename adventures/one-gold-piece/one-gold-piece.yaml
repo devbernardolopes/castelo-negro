@@ -35,28 +35,37 @@ metadata:
   tabs:
     system:
       en: "System"
+      pt-br: "Sistema"
       visible: true
     debug:
       en: "Debug"
+      pt-br: "Debug"
       visible: false
     room:
       en: "Room"
+      pt-br: "Local"
       visible: true
     memory:
       en: "Memory"
+      pt-br: "Memória"
       visible: false
     inventory:
       en: "Inventory"
+      pt-br: "Inventário"
       visible: true
     stats:
       en: "Stats"
+      pt-br: "Estatísticas"
       visible: false
     relationships:
       en: "Relationships"
+      pt-br: "Relacionamentos"
       visible: false
     map:
       en: "Map"
+      pt-br: "Mapa"
       visible: true
     actors:
       en: "Actors"
+      pt-br: "Atores"
       visible: false
