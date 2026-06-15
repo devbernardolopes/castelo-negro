@@ -704,9 +704,7 @@ items:
         sun
       pt-br: |
         sol
-    synonyms:
-      en: ["sun", "morning sun", "sol"]
-      pt-br: ["sol", "sol da manhã", "sol matinal"]
+    synonyms: { en: ["sun", "morning sun", "sol"], pt-br: ["sol", "sol da manhã", "sol matinal"] }
 
   town_misnomer:
     name:

@@ -8,7 +8,7 @@ verbs:
   give:
     synonyms: { en: ["give", "feed", "hand"], pt-br: ["dar", "alimentar"] }
   examine:
-    synonyms: { en: ["examine", "look at", "inspect", "look", "l"], pt-br: ["examinar", "olhar"] }
+    synonyms: { en: ["examine", "look at", "inspect", "look", "l"], pt-br: ["examinar", "olhar", "e"] }
   drop:
     synonyms: { en: ["drop", "put down"], pt-br: ["soltar", "colocar"] }
   use:
@@ -148,15 +148,15 @@ directions:
   northeast:
     synonyms: { en: ["northeast", "ne"], pt-br: ["nordeste", "ne"] }
   northwest:
-    synonyms: { en: ["northwest", "nw"], pt-br: ["noroeste", "nw"] }
+    synonyms: { en: ["northwest", "nw"], pt-br: ["noroeste", "no"] }
   south:
     synonyms: { en: ["south", "s", "backward"], pt-br: ["sul", "s", "trás"] }
   southeast:
     synonyms: { en: ["southeast", "se"], pt-br: ["sudeste", "se"] }
   southwest:
-    synonyms: { en: ["southwest", "sw"], pt-br: ["sudoeste", "sw"] }
+    synonyms: { en: ["southwest", "sw"], pt-br: ["sudoeste", "so"] }
   east:
-    synonyms: { en: ["east", "e", "right"], pt-br: ["leste", "e", "direita"] }
+    synonyms: { en: ["east", "e", "right"], pt-br: ["leste", "l", "direita"] }
   west:
     synonyms: { en: ["west", "w", "left"], pt-br: ["oeste", "o", "esquerda"] }
   up:
