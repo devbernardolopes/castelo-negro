@@ -978,13 +978,15 @@ function _initMapControls() {
   let touches = [];
   let lastTouchDist = 0;
   let lastTapTime = 0;
+  let _pinchActive = false;
 
   vp.addEventListener('touchstart', (e) => {
     touches = Array.from(e.touches);
     if (touches.length === 1) {
       startX = e.touches[0].clientX - _mapPanX;
       startY = e.touches[0].clientY - _mapPanY;
-    } else if (touches.length === 2) {
+    } else if (touches.length >= 2) {
+      _pinchActive = true;
       lastTouchDist = Math.hypot(
         touches[0].clientX - touches[1].clientX,
         touches[0].clientY - touches[1].clientY
@@ -1010,13 +1012,21 @@ function _initMapControls() {
     }
   }, { passive: true });
 
-  vp.addEventListener('touchend', () => {
-    const now = Date.now();
-    if (now - lastTapTime < 300 && lastTapTime > 0) {
-      _centerMapOnCurrentLocation();
+  vp.addEventListener('touchend', (e) => {
+    if (e.touches.length === 0 && _pinchActive) {
+      _pinchActive = false;
+      lastTouchDist = 0;
       lastTapTime = 0;
-    } else {
-      lastTapTime = now;
+      return;
+    }
+    if (e.touches.length === 0) {
+      const now = Date.now();
+      if (now - lastTapTime < 300 && lastTapTime > 0) {
+        _centerMapOnCurrentLocation();
+        lastTapTime = 0;
+      } else {
+        lastTapTime = now;
+      }
     }
     lastTouchDist = 0;
   }, { passive: true });
