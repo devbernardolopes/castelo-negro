@@ -8,7 +8,7 @@ verbs:
   give:
     synonyms: { en: ["give", "feed", "hand"], pt-br: ["dar", "alimentar"] }
   examine:
-    synonyms: { en: ["examine", "look at", "inspect", "look", "l"], pt-br: ["examinar", "olhar", "e"] }
+    synonyms: { en: ["examine", "look at", "inspect", "look", "l"], pt-br: ["examinar", "olhar", "inspecionar", "e"] }
   drop:
     synonyms: { en: ["drop", "put down"], pt-br: ["soltar", "colocar"] }
   use:
