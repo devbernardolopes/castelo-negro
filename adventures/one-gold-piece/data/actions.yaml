@@ -604,9 +604,9 @@ actions:
       - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
         message:
           en: |
-            There's no {object_name} here.
+            There's no [b]{object_name}[/b] here.
           pt-br: |
-            Não há {object_name} aqui.
+            Não há [b]{object_name}[/b] aqui.
 
   drop:
     pattern:

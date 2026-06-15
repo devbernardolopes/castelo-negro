@@ -166,8 +166,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Update system tab label from metadata
+    const sysTabDef = tabs.system;
+    if (sysTabDef && sysBtn) {
+      sysBtn.textContent = engine._pickLang(sysTabDef) || 'System';
+    }
+
     // Reorder metadata tab buttons after system
-    const sysBtn = document.getElementById('tab-system');
     for (const tabName of Object.keys(tabs)) {
       if (tabName === 'system') continue;
       const btn = document.getElementById(`tab-${tabName}`);
