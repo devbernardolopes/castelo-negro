@@ -3,6 +3,8 @@ actors:
     name:
       en: |
         Aldric
+      pt-br: |
+        Aldric
     playable: true
     images:
       portrait: "images/actors/aldric/aldric.png"
@@ -17,3 +19,5 @@ actors:
     description:
       en: |
         It's you, Aldric.
+      pt-br: |
+        É você, Aldric.

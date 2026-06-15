@@ -9,16 +9,25 @@ locations:
     name:
       en: |
         Aldric's Cottage - Doorstep
+      pt-br: |
+        Chalé de Aldric - Entrada
     map_name:
       en: |
         Cottage Doorstep
+      pt-br: |
+        Entrada do Chalé
     synonyms:
       en: ["doorstep", "cottage", "home", "house", "porch"]
+      pt-br: ["entrada", "chalé", "lar", "casa", "varanda"]
     description:
       en: |
-        Youur cottage — a modest structure that has never been accused of architectural ambition. The door behind you hangs slightly crooked, a problem you have been meaning to fix for three years.
+        Your cottage — a modest structure that has never been accused of architectural ambition. The door behind you hangs slightly crooked, a problem you have been meaning to fix for three years.
 
         The road north leads out of the village toward the hills.
+      pt-br: |
+        Sua casa — uma estrutura modesta que nunca foi acusada de ambição arquitetônica. A porta atrás de você está ligeiramente torta, um problema que você está pretendendo resolver há três anos.
+        
+        A estrada para norte sai da aldeia em direção às colinas.
     contents: [cottage_door, cottage_window, neighbor_gerald, aldrics_vegetable_patch, aldrics_well, cottage_village_view]
     exits:
       north: old_crossroads
@@ -310,7 +319,6 @@ locations:
       south: cottage_doorstep
       north: hillside_path
     images: ["images/locations/old_crossroads_return.png"]
-
 
 groups:
   village_outskirts:
