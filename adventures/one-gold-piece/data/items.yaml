@@ -519,6 +519,10 @@ items:
         Reading Chair
     synonyms:
       en: ["chair", "reading chair", "armchair", "velvet chair", "oversized chair", "big chair"]
+    sittable: true
+    sleepable: true
+    actor_capacity: 1
+    container_capacity: 4
     description:
       en: |
         An armchair the size of a modest outbuilding, upholstered in red velvet that has developed, over the years, the specific texture of velvet that has been sat in by something enormous and warm for a very long time. The arms are worn smooth. The back has a faint imprint of scale-pattern pressed into the fabric. It looks, in the way of very large furniture, almost cozy. You could sleep in this chair. You could raise a family in this chair.
