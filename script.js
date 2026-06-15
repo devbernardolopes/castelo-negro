@@ -167,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Update system tab label from metadata
+    const sysBtn = document.getElementById('tab-system');
     const sysTabDef = tabs.system;
     if (sysTabDef && sysBtn) {
       sysBtn.textContent = engine._pickLang(sysTabDef) || 'System';
