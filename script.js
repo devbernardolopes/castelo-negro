@@ -57,8 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
     textDisplayEl.setAttribute('data-font-size', FONT_SIZE_MAP[parseInt(savedFontSize)] || 'regular');
   }
 
-  _updateMobileLayout();
-
   // Sidebar tabs wiring.
   function setSidebarTab(tabName) {
     document.querySelectorAll('.tab-panel').forEach(panel => {
@@ -201,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
       _handleTabBtnClick(btn, tab);
     });
   });
+  _updateMobileLayout();
   setSidebarTab('system');
 
   renderCommandBuilder();
