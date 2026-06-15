@@ -176,6 +176,10 @@ body {
   cursor: not-allowed;
 }
 
+#tab-panel-system .menu-btn:disabled {
+  display: none;
+}
+
 .menu-btn {
   flex: 1;
   padding: 4px 0;

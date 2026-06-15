@@ -15,8 +15,8 @@
 metadata:
   title: One Gold Piece
   author: Author
-  version: 1.7
-  languages: [en]
+  version: 1.8
+  languages: [en, pt-br]
   default_language: en
   assets_path: "assets/"
   data_path: "data/"
