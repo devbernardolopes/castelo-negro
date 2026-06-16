@@ -1,3 +1,26 @@
+# Items can be almost anything, that is, any object. They're not limited to being "items". For instance, a sword is an item that can be picked up. But also, the morning sun is an "item", albeit not takeable or similar. The morning sun is an "item" in this context because items are everything that the player can interact with via an action (look, examine, touch, feel, take, get, talk, open, attack, unlock, and so on) so it must be an "item" for the game to output a description (if any), allow interactions, etc.
+
+# `short_name` is the string that will be used in the text output
+
+# `synonyms` are any strings that when used in a prompt will work as a reference for the item (case-insensitive, the `name` doesn't need to be in `synonyms`, it is automatically accepted as a reference to the item in the user's prompt). Different items can have the same `name`, `short_name`, and `synonyms`, even in the same location at the same time, because the engine has an "intelligence" to identify ambiguities in the user prompt and deal with it gracefully
+
+# `container_capacity` is what determines if the item is a container or not. If this `container_capacity` is not present, then the item is NOT a container
+
+# `size` determines how much "space" (that is, `container_capacity`) the item will use when contained by another items that is a container. For example: a book item with `size` 2, if put inside a bag item with `container_capacity` = 10, will use 2 "spaces", thus the bag item will now have 8 as `container_capacity` remaining, unless the book item is removed from the bag. `size` isn't being considered when talking about an actor's inventory `max_capacity`, that is, for example, an actor with `max_capacity` = 2 can have any two items of with any `size` value in the inventory
+
+# `container_type` affects the sentences (grammar) and what kinds of interactions can be done with the item regarding its containing capabilities. Possible values are: in, on, attached, hanging. 
+
+# `sittable` determines if an actor can sit on the item
+# `sleepable` determines if an actor can sleep on/in the item
+# `actor_capacity` determines the maximum amount of actors the item can accommodate
+# NOTE: `sittable`, `sleepable`, and `actor_capacity` have NO relation if an item is a container or not and also have no relation/regard with the item's `size` value. They're independent. For example: an item can accommodate actors and not be a container (no item can be put/attached/etc.) as well as an item can receive actors and contain items.
+
+# `owner` when present must also have an existing `actors` for value. It sets the owner of said item. For now this only has cosmetic effects (text output)
+
+# `readable` must ALWAYS have a key from `strings.yaml` as value, if present. When `readable` is present this means that the player can "read" the item (useful for books, notes, signs, etc.). When the player reads an item, the text content from `strings.yaml` of the respective value are outputted and the player can navigate the text content (pages, etc.).
+
+# TODO: `on_ground_messages` description
+
 items:
 
   # ─────────────────────────────────────────────
@@ -21,7 +44,6 @@ items:
         A well-worn leather satchel with a brass buckle that no longer quite closes properly. It has the look of something that has been everywhere and remembered none of it.
     takeable: true
     wearable: true
-    # is_container: true
     container_type: in
     container_capacity: 10
     size: 10
@@ -43,8 +65,8 @@ items:
     takeable: true
     owner: aldric
     size: 25
-    on_ground_messages:
-      - condition: "false"
+    # on_ground_messages:
+    #   - condition: "false"
     images: ["images/items/aldrics_sword.png"]
 
   # ─────────────────────────────────────────────
@@ -92,7 +114,6 @@ items:
     description:
       en: |
         Gerald is your neighbor. He is tending his vegetable patch with the focused contentment of a man who has never, not once, made a bet he regretted. He waves when he sees you looking. He has waved at you every morning for eleven years. You have never had a conversation that lasted more than four sentences. This has suited both of you fine.
-    is_actor: true
 
   aldrics_vegetable_patch:
     name:
@@ -476,7 +497,6 @@ items:
         Vermithrax is old, enormous, and red in the specific shade of red that has decided it does not need to justify itself. He is curled in the center of the chamber with the settled authority of a geographical feature. His scales catch the light in ways that suggest they have been doing this for centuries and have no intention of stopping. One eye — copper-colored, cartwheel-sized — is currently directed at you with an expression that manages, across a significant species barrier, to communicate something in the vicinity of mild administrative inconvenience.
 
         He has not eaten you. This continues to be notable.
-    is_actor: true
 
   appointment_book:
     name:

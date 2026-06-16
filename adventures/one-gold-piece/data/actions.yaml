@@ -159,7 +159,7 @@ actions:
       - "talk_dog_count += 1" # TODO: Not being used yet
     message:
       en: |
-        "Woof woof?"
+        [pulse]"Woof woof?"[/pulse]
 
   # TODO: Same TODO comment as above
   pet_dog:
@@ -172,7 +172,7 @@ actions:
       - "pet_dog_count += 1" # TODO: Not being used yet
     message:
       en: |
-        "[wiggle]Arf, arf![/wiggle]"
+        [wiggle]"Arf, arf!"[/wiggle]
 
   # TODO: Think about different results/messages/effects for this action
   # Never allow the player to actually harm the dog
