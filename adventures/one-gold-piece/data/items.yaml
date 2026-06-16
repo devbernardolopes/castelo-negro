@@ -21,6 +21,9 @@
 
 # TODO: `on_ground_messages` description
 
+# `visible` set to false means the item will not print its description for the "examine" action
+# `smellable` set to true means the item will print its description for the "smell" action
+
 items:
 
   # ─────────────────────────────────────────────
