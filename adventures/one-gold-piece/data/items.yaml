@@ -19,7 +19,7 @@ items:
         A well-worn leather satchel with a brass buckle that no longer quite closes properly. It has the look of something that has been everywhere and remembered none of it.
     takeable: true
     wearable: true
-    is_container: true
+    # is_container: true
     container_type: in
     container_capacity: 10
     size: 10
@@ -174,6 +174,8 @@ items:
     takeable: true
     # is_readable: true
     size: 2
+    on_ground_messages:
+      - condition: "false"
     images: ["images/items/adventurers_journal.png"]
 
   hillside_sheep:
@@ -517,12 +519,15 @@ items:
     name:
       en: |
         Reading Chair
+    short_name:
+      en: |
+        chair
     synonyms:
       en: ["chair", "reading chair", "armchair", "velvet chair", "oversized chair", "big chair"]
     sittable: true
     sleepable: true
-    actor_capacity: 1
-    container_capacity: 4
+    actor_capacity: 2
+    container_capacity: 10
     description:
       en: |
         An armchair the size of a modest outbuilding, upholstered in red velvet that has developed, over the years, the specific texture of velvet that has been sat in by something enormous and warm for a very long time. The arms are worn smooth. The back has a faint imprint of scale-pattern pressed into the fabric. It looks, in the way of very large furniture, almost cozy. You could sleep in this chair. You could raise a family in this chair.
@@ -531,6 +536,9 @@ items:
     name:
       en: |
         Scroll Shelf
+    short_name:
+      en: |
+        shelf
     synonyms:
       en: ["shelf", "scroll shelf", "shelves", "scrolls", "book shelf", "stone shelf"]
     description:
