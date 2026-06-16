@@ -2141,7 +2141,8 @@ class GameEngine {
     const loc = this.getFullLocationData(locationId);
     if (!loc) return '';
     const contents = Array.isArray(loc.contents) ? loc.contents : [];
-    const lines = [];
+    const customLines = [];
+    const commonNames = [];
     for (const itemId of contents) {
       const item = this.definition.items?.[itemId];
       if (!item) continue;
@@ -2152,15 +2153,37 @@ class GameEngine {
         for (const msgDef of groundMsgs) {
           if (this.evaluateCondition(String(msgDef.condition || 'true'))) {
             const msg = this._pickLang(msgDef.message);
-            if (msg) { lines.push(msg); break; }
+            if (msg) { customLines.push(msg); break; }
           }
         }
       } else {
         const name = this._getItemDisplayShortName(itemId) || this._getItemDisplayName(itemId) || itemId;
-        lines.push(`\n\nThere is a ${name} here.`);
+        const article = this._pickLang(item.article);
+        const prefix = article != null ? article : this._defaultArticle(name);
+        commonNames.push(prefix ? `${prefix} ${name}` : name);
       }
     }
-    return lines.join('\n');
+    if (commonNames.length > 0) {
+      const tplKey = commonNames.length === 1 ? 'singular' : 'plural';
+      const template = this.definition.metadata?.on_ground_messages?.[tplKey];
+      const tpl = this._pickLang(template);
+      if (tpl) {
+        customLines.push('\n\n' + tpl.replace('{items}', this._formatList(commonNames)));
+      } else {
+        for (const name of commonNames) {
+          customLines.push(`\n\nThere is a ${name} here.`);
+        }
+      }
+    }
+    return customLines.join('\n');
+  }
+
+  _defaultArticle(name) {
+    if (this.language === 'en') {
+      const first = String(name || '').trim().charAt(0).toLowerCase();
+      return 'aeiou'.includes(first) ? 'an' : 'a';
+    }
+    return '';
   }
 
   async renderCurrentLocation() {

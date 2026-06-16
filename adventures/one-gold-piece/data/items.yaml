@@ -12,6 +12,8 @@ items:
     short_name:
       en: |
         leather satchel
+    article:
+      en: "a"
     synonyms:
       en: ["satchel", "backpack", "bag", "pack", "leather bag", "leather satchel"]
     description:
@@ -307,6 +309,8 @@ items:
     short_name:
       en: |
         clipboard
+    article:
+      en: "a"
     synonyms:
       en: ["clipboard", "schedule", "appointments", "papers", "document", "sheet"]
     description:
@@ -416,6 +420,8 @@ items:
     short_name:
       en: |
         quill pen
+    article:
+      en: "a"
     synonyms:
       en: ["quill", "pen", "quill pen", "feather pen", "writing quill"]
     description:
@@ -565,6 +571,8 @@ items:
     short_name:
       en: |
         crown
+    article:
+      en: "a"
     synonyms:
       en: ["crown", "paperweight", "small crown", "little crown", "golden crown"]
     description:
@@ -617,6 +625,8 @@ items:
     short_name:
       en: |
         promissory note
+    article:
+      en: "a"
     synonyms:
       en: ["promissory note", "note", "document", "parchment", "letter of credit", "gold note", "certificate"]
     description:
@@ -645,6 +655,8 @@ items:
     short_name:
       en: |
         small note
+    article:
+      en: "a"
     synonyms:
       en: ["small note", "note", "message", "little note", "card"]
     description:

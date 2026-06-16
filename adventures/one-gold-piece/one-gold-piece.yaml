@@ -34,11 +34,11 @@ metadata:
   show_location_image_inline: true
   on_ground_messages:
     singular:
-      en: "There is a XXX here."
-      pt-br: "Aqui há XXX."
+      en: "There is {items} here."
+      pt-br: "Aqui há {items}."
     plural:
-      en: "There are a XXX, YYY, and ZZZ here."
-      pt-br: "Aqui há XXX, YYY e ZZZ."
+      en: "There are {items} here."
+      pt-br: "Aqui há {items}."
   tabs:
     system:
       en: "System"
