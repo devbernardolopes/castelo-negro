@@ -1050,14 +1050,18 @@ actions:
       object:
         en: "Smell what?"
     conditions:
+      - "getActorProp(current_player_actor, 'can_smell') == true"
       - "'{object}' != ''"
       - "here.has('{object}') or inventory.has('{object}')"
       - "items.getProp('{object}', 'smellable') != null"
     effect: []
     message:
       en: |
-        You smell it.
+        {location_or_object_description}
     conditional_messages:
+      - condition: "getActorProp(current_player_actor, 'can_smell') != true"
+        message:
+          en: "You're unable to smell anything."
       - condition: "'{object}' == ''"
         message:
           en: "Smell what?"
@@ -1067,7 +1071,6 @@ actions:
       - condition: "items.getProp('{object}', 'smellable') == null"
         message:
           en: "No particular odor is discernible."
-
 
   fallback_generic:
     message_pool:
