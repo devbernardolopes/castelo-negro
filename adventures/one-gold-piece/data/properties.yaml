@@ -26,6 +26,14 @@ properties:
     type: bool
     default: true
 
+  can_drop_all:
+    type: bool
+    default: false
+
+  can_remove_all:
+    type: bool
+    default: false
+
 #   age:
 #     type: int
 #     min_value: 0

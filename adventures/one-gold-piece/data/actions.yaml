@@ -350,6 +350,31 @@ actions:
   # -------------------------------
   # General actions - All general, not game-specific actions, that can be used universally, must go here.
   # -------------------------------  
+  examine:
+    pattern:
+      - verb: ["examine"]
+      - object: ["*"]
+        optional: true
+    conditions:
+      - "'{object}' == '' or (here.has('{object}') or inventory.has('{object}')) and items.visible('{object}') and getActorProp(current_player_actor, 'can_see')"
+    effect: []
+    message:
+      en: |
+        {location_or_object_description}
+    conditional_messages:
+      - condition: "!getActorProp(current_player_actor, 'can_see')"
+        message:
+          en: |
+            Currently you can't see.
+          pt-br: |
+            No momento você não pode ver.
+      - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
+        message:
+          en: |
+            There's no [b]{object_name}[/b] here.
+          pt-br: |
+            Não há [b]{object_name}[/b] aqui.
+
   give:
     patterns:
       obj_then_target:
@@ -583,31 +608,6 @@ actions:
           en: |
             {actor_name} isn't here.
 
-  examine:
-    pattern:
-      - verb: ["examine"]
-      - object: ["*"]
-        optional: true
-    conditions:
-      - "'{object}' == '' or (here.has('{object}') or inventory.has('{object}')) and items.visible('{object}') and getActorProp(current_player_actor, 'can_see')"
-    effect: []
-    message:
-      en: |
-        {location_or_object_description}
-    conditional_messages:
-      - condition: "!getActorProp(current_player_actor, 'can_see')"
-        message:
-          en: |
-            Currently you can't see.
-          pt-br: |
-            No momento você não pode ver.
-      - condition: "'{object}' != '' and !here.has('{object}') and !inventory.has('{object}')"
-        message:
-          en: |
-            There's no [b]{object_name}[/b] here.
-          pt-br: |
-            Não há [b]{object_name}[/b] aqui.
-
   drop:
     pattern:
       - verb: ["drop"]
@@ -635,6 +635,34 @@ actions:
           en: |
             You can't drop the {object_name}.
 
+  remove:
+    patterns:
+      from_actor:
+        - verb: ["remove", "take off"]
+        - object: ["*"]
+        - actor: ["*"]
+      own:
+        - verb: ["remove", "take off"]
+        - object: ["*"]
+          optional: true
+    follow_up:
+      object:
+        en: "Remove what?"
+    conditions:
+      - "'{object}' != ''"
+      - "'{actor}' == '' or (getActor('{actor}') != null and getActor('{actor}').current_location == current_location)"
+    effect:
+      - "removeWornItem('{actor}', '{object}')"
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: |
+            Remove what?
+      - condition: "'{actor}' != '' and (getActor('{actor}') == null or getActor('{actor}').current_location != current_location)"
+        message:
+          en: |
+            There's no one like that here.
+            
   wear:
     patterns:
       to_actor:
@@ -961,34 +989,6 @@ actions:
         message:
           en: |
             You're not inside anything.
-
-  remove:
-    patterns:
-      from_actor:
-        - verb: ["remove", "take off"]
-        - object: ["*"]
-        - actor: ["*"]
-      own:
-        - verb: ["remove", "take off"]
-        - object: ["*"]
-          optional: true
-    follow_up:
-      object:
-        en: "Remove what?"
-    conditions:
-      - "'{object}' != ''"
-      - "'{actor}' == '' or (getActor('{actor}') != null and getActor('{actor}').current_location == current_location)"
-    effect:
-      - "removeWornItem('{actor}', '{object}')"
-    conditional_messages:
-      - condition: "'{object}' == ''"
-        message:
-          en: |
-            Remove what?
-      - condition: "'{actor}' != '' and (getActor('{actor}') == null or getActor('{actor}').current_location != current_location)"
-        message:
-          en: |
-            There's no one like that here.
 
   read:
     pattern:

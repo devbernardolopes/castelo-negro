@@ -16,6 +16,8 @@ actors:
     properties:
       can_see: true
       can_smell: true
+      can_drop_all: true
+      # can_remove_all: true
     description:
       en: |
         It's you, Aldric.

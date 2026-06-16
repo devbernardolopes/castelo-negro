@@ -190,6 +190,14 @@ open_state:
     pt-br: |
       fechado
 
+drop_all:
+  en: ["all", "everything", "inventory", "inv", "items"]
+  pt-br: ["tudo", "inventário", "inv", "itens"]
+
+remove_all:
+  en: ["all", "everything"]
+  pt-br: ["tudo"]
+
 commands:
   inventory:
     synonyms: { en: ["inventory", "inv"], pt-br: ["inventário", "inv"] }
