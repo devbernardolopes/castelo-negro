@@ -2,37 +2,43 @@
 # conditional_messages only runs on action failure
 # progressive_messages are evaluated after effects
 
-# effect: "setImageFilter('brightness', 0)"               # complete darkness
-# effect: "setImageFilter('brightness', 0.3)" followed by "setImageFilter('blur', 2)"  # severe impairment
-# effect: "setImageFilter('opacity', 0.5)"              # partial transparency
-# effect: "setImageFilter('none')"                       # restore normal vision
+# effect: "setImageFilter('brightness', 0)"                                           # complete darkness
+# effect: "setImageFilter('brightness', 0.3)" followed by "setImageFilter('blur', 2)" # severe impairment
+# effect: "setImageFilter('opacity', 0.5)"                                            # partial transparency
+# effect: "setImageFilter('none')"                                                    # restore normal vision
 
 # Usage examples
+#
 # # Setting filter components in effects
 # effect: "setImageFilter('brightness', 0.3)"
 # effect: "setImageFilter('blur', 4)"
 # effect: "setImageFilter('opacity', 0.5)"
+#
 # # Using variables as values
 # effect: "setImageFilter('brightness', brightness_step)"
 # effect: "setImageFilter('brightness', getImageFilter('brightness') - brightness_step)"
+#
 # # Resetting all filters
 # effect: "setImageFilter('none')"
+#
 # # Checking filters in conditions
 # conditions:
 #   - "getImageFilter('brightness') < 0.5"
 #   - "getImageFilter('blur') >= 2"
+#
 # # Using the raw object in conditions (alternative form)
 # conditions:
 #   - "image_filter.brightness < 0.5"
+#
 # # Float variable
 # variables:
 #   blindness_level:
 #     type: float
 #     value: 0.0
+#
 # # Using float in conditions
 # conditions:
 #   - "blindness_level > 0.5"
-
 
 actions:
   # -------------------------------
@@ -75,6 +81,7 @@ actions:
       en: |
         City? You mean village, right? Because cities are densely populated centers with over 100,000 residents, often numbering in the millions.
 
+  # TODO: Instead of having one condition for every increment until the threshold of blindness, it should use `brightness_step` (like, `setImageFilter('brightness', getImageFilter('brightness') + brightness_step)`) which is a variable in `variables.yaml`
   look_at_the_sun:
     pattern:
       - verb: ["look"]
@@ -128,9 +135,10 @@ actions:
           en: |
             Oh, great! Now you're [wiggle]blind![/wiggle]
 
-  talk_to_gerald:
+  # TODO: Make the message more funny/interesting
+  talk__wave_nod_to_at_gerald:
     pattern:
-      - verb: ["talk", "greet"]
+      - verb: ["talk", "greet", "wave", "nod"]
       - object: [neighbor_gerald]
     conditions:
       - "here.has('{object}')"
@@ -138,6 +146,7 @@ actions:
       en: |
         You really don't want to do that.
 
+  # TODO: Create more messages, maybe some easter egg? Maybe a puzzle? Like, the player can get blind looking at the sun so the "examine" actions will never again display the location messages, so the dog, if befriended, can become a helper/assistant dog and guide the player?
   talk_to_dog:
     pattern:
       - verb: ["talk"]
@@ -150,6 +159,8 @@ actions:
       en: |
         "Woof woof?"
 
+  # TODO: Think about different results/messages/effects for this action
+  # Never allow the player to actually harm the dog
   eat_dog:
     pattern:
       - verb: ["eat"]
@@ -162,6 +173,8 @@ actions:
       en: |
         You can't be serious.
 
+  # TODO: Think about different results/messages/effects for this action
+  # Never allow the player to actually harm the dog
   kick_dog:
     pattern:
       - verb: ["kick"]
@@ -174,6 +187,7 @@ actions:
       en: |
         You kick the dog.
 
+  # TODO: Think about different results/messages/effects for this action
   pet_dragon:
     pattern:
       - verb: ["pet"]
@@ -348,7 +362,7 @@ actions:
             You open the {object_name}.
 
   # -------------------------------
-  # General actions - All general, not game-specific actions, that can be used universally, must go here.
+  # General actions - All general, not game-specific actions, that can be used universally in any game, must go here (it doesn't mean this game makes use of them all necessarily).
   # -------------------------------  
   examine:
     pattern:

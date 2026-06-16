@@ -1,3 +1,7 @@
+# `debug_variable` set to true shows the variable and its value in the DEBUG tab in-game
+# `type` can be bool, int, float, object, list, string
+# `description` is just a description of what the variable do or its use (currently it isn't being used)
+
 variables:
   # -------------------------------
   # Specific variables - All variables that are specific to this game must go here.
@@ -46,7 +50,7 @@ variables:
     value: 0.1
 
   # -------------------------------
-  # General variables - All general, not game-specific variables, that can be used universally, must go here.
+  # General variables - All general, not game-specific variables, that can be used universally in any game, must go here (it doesn't mean this game makes use of them all necessarily).
   # -------------------------------  
   game_turn:
     type: int
@@ -55,6 +59,7 @@ variables:
   invalid_attempt_count:
     type: int
     value: 0
+    description: "Number of consecutive invalid actions. Resets to 0 on valid action."
 
   current_player_actor:
     type: object

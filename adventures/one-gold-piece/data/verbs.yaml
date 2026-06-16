@@ -90,12 +90,12 @@ verbs:
   hug:
     synonyms: { en: ["hug"], pt-br: ["abraçar"] }
   wave:
-    synonyms: { en: ["wave"], pt-br: ["acenar"] }
+    synonyms: { en: ["wave"], pt-br: ["acenar", "abanar"] }
   nod:
     synonyms: { en: ["nod"], pt-br: ["acenar com a cabeça"] }
   shake:
     synonyms: { en: ["shake"], pt-br: ["sacudir"] }
-  gift:
+  gift: # This action changes ownership of an item (`items.*.owner`)
     synonyms: { en: ["gift", "donate"], pt-br: ["presentear", "doar"] }
   remove:
     synonyms: { en: ["remove", "take off"], pt-br: ["remover", "tirar"] }
