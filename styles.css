@@ -134,10 +134,10 @@ body {
   background: var(--body-bg);
   color: var(--text-primary);
   font-family: 'Courier New', Courier, monospace;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   overflow: hidden;
 }
 
@@ -871,6 +871,7 @@ body {
   gap: 4px;
   flex: 0 1 auto;
   position: relative;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 #input-area {
@@ -1250,6 +1251,7 @@ body {
   #input-row {
     flex-direction: row;
     gap: 8px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   #input-area {
@@ -1357,7 +1359,8 @@ body {
     flex-direction: row;
     gap: 4px;
     flex: 0 1 auto;
-    padding-bottom: 16px;
+    /* padding-bottom: 16px; */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .directional-buttons {
