@@ -184,6 +184,7 @@ items:
   # HILLSIDE PATH
   # ─────────────────────────────────────────────
 
+  # TODO: Make this item readable? I think so. `strings.book_adventurers_journal` is already there. In this case, trim lots of this description
   adventurers_journal:
     name:
       en: |
@@ -197,10 +198,8 @@ items:
       en: |
         A small leather journal, scorched along one edge as though something with a high internal temperature once breathed near it. The cover reads, in faded ink: FIELD NOTES — PERSONAL. Inside are roughly forty pages of entries covering a span of what appears to be several months: mundane observations, a recipe for traveling bread, notes on local geography, a running argument with a person referred to only as "T." about the correct way to pack a bedroll. The final entry is brief. It reads: "Found cave. Going in. Probably fine." The ink of that last entry is slightly scorched, as though written in proximity to something warm. There are no subsequent entries.
     takeable: true
-    # is_readable: true
+    readable: book_adventurers_journal
     size: 2
-    on_ground_messages:
-      - condition: "false"
     images: ["images/items/adventurers_journal.png"]
 
   hillside_sheep:
@@ -276,7 +275,6 @@ items:
     description:
       en: |
         A small wooden sign on a short stake beside the cave entrance. It reads, in neat block letters: [wiggle][i]"LAIR — NO SOLICITING"[/i][/wiggle]. Beneath that, in smaller and more cramped handwriting, a secondary annotation: [i]"This means you, Gerald"[/i]. You examine the back of the sign. It also reads: [i]"This means you, Gerald"[/i]. Whoever Gerald is, the matter was apparently worth being thorough about.
-    # is_readable: true
 
   sulfur_smell:
     name:
@@ -303,6 +301,7 @@ items:
   # NARROW PASSAGE
   # ─────────────────────────────────────────────
 
+  # TODO: Make it very interactable because it is obvious that players will try everything with this item? I think so, this has comedy potential, like: create complex interactions in `actions.yaml`, maybe multi-layered ones, but none of them will result in anything that will make the player progress (meaning: no puzzle is solved). 
   torch_sconce:
     name:
       en: |
@@ -313,6 +312,7 @@ items:
       en: |
         An iron torch sconce bolted to the cave wall at about head height, currently empty. The sconce itself is finely made — decorative scrollwork along the bracket, a small flame motif engraved at the base. Someone put craftsmanship into this sconce. Someone cared. That someone is, based on the available evidence in this passage, no longer in a position to appreciate it.
 
+  # TODO: Add new items referring to the skeleton's outfit (for flavor)?
   appointments_skeleton:
     name:
       en: |
@@ -323,6 +323,7 @@ items:
       en: |
         A complete skeleton in the remains of what was once a practical outfit — leather armor (cracked), a belt (intact but empty), boots (still on, still fastened, which says something about their quality). The skeleton is seated upright against the wall with a posture that suggests, even in death, a person who took their work seriously. The clipboard is in its lap. The expression is, of course, neutral. Skeletons are good at that.
 
+  # TODO: Make this readable?
   appointments_clipboard:
     name:
       en: |
@@ -338,7 +339,6 @@ items:
       en: |
         A wooden clipboard with a spring clamp, holding several sheets of parchment. The top sheet is headed [b][i]APPOINTMENTS — WEEK OF THE HARVEST MOON[/i][/b] and contains a neatly organized schedule in small, careful handwriting: time slots, names, brief notes ([i]"bring identification," "no weapons in treasury," "wipe feet"[/i]). Every entry has been crossed out. In a different hand — much larger, and applied with what appears to have been a single stroke — someone has written across the whole page: [b][i]"CANCELLED (ALL OF THEM)"[/i][/b]. There is a certain finality to it.
     takeable: true
-    # is_readable: true
     size: 2
     images: ["images/items/appointments_clipboard.png"]
 
@@ -365,7 +365,6 @@ items:
     description:
       en: |
         A cork board mounted on the wall with a masonry spike, bearing several pinned items. A detailed weekly schedule, color-coded by category (red for [color=#FF0000][i]"adventurer visits,"[/i][/color] blue for [color=#0000FF][i]"administrative,"[/i][/color] green for [color=#00FF00][i]"personal"[/i][/color]). A hand-lettered list of rules headed [b][i]DO NOT[/i][/b], covering: taking gold without written authorization, touching the scrolls, entering the study without knocking, feeding the stalagmites (this one has an asterisk; the footnote reads [i]"they are not pets"[/i]). A hand-drawn map of the cave system with extensive annotations. And a small card at the bottom that reads: [i]Hours: By appointment only. Walk-ins will be assessed on a case by case basis. Most cases are unfavorable.[/i]
-    # is_readable: true
 
   adventurers_trophy_shelf:
     name:
@@ -396,7 +395,6 @@ items:
     description:
       en: |
         The rules list is pinned to the notice board. It is headed [b][i]DO NOT[i][/b] in large letters and covers: taking gold without written authorization, touching the scrolls without gloves, entering the study, feeding the stalagmites, bringing livestock into the lair, asking about [i]"the incident of 1243,"[/i] using the word [i]"hoard"[/i] in a derogatory sense, and leaving without signing the visitor log. You look around for a visitor log. There is no visitor log visible. This may be the point.
-    # is_readable: true
 
   cave_map_pinned:
     name:
@@ -407,7 +405,6 @@ items:
     description:
       en: |
         A hand-drawn map of the cave system, rendered in ink on a piece of parchment pinned to the notice board. It is accurate and detailed — every passage, every chamber, every alcove. The main chamber is labeled [b][i]HERE BE ME (OBVIOUSLY)[/b][/i]. The treasury is labeled [b][i]PRIVATE — THIS MEANS EVERYONE[/b][/i]. The study is labeled [b][i]ABSOLUTELY NOT[/b][/i]. The back passage behind the main chamber is labeled on the map, but the label has been carefully scratched out and replaced with a small drawing of a cloud.
-    # is_readable: true
 
   # ─────────────────────────────────────────────
   # TREASURY
@@ -423,6 +420,7 @@ items:
       en: |
         The gold fills the chamber wall to wall, taller than you in places — an almost geological accumulation of coins, ingots, medallions, goblets, rings, chains, and objects whose original purpose has been entirely subsumed by the act of being valuable. The ambient glow of the cave catches it and scatters across the ceiling in warm, complicated patterns. It is extraordinarily beautiful. It is also, per the ledger, completely itemized. You could not take seventeen gold pieces from this room. You could not take one. You could not take a single button off a single forgotten coat without it being noted.
 
+  # TODO: Make this readable
   treasury_ledger:
     name:
       en: |
@@ -432,7 +430,6 @@ items:
     description:
       en: |
         An enormous leather-bound ledger, the size of a small table, resting open on the stone lectern. Its pages are dense with columns of figures in a cramped, precise hand: item descriptions, acquisition dates, estimated values, current locations within the hoard, condition notes, and a column headed LAST VERIFIED, which contains today's date for every entry. The most recent entry at the top of the open page reads: "1x Short Sword (secondhand, fair condition, previous owner: unknown) — acquired this morning, visitor intake, entrance gallery." You look at the shelf in the antechamber. You look back at the ledger. The dragon has accounted for everything.
-    # is_readable: true
 
   treasury_quill:
     name:
@@ -498,6 +495,7 @@ items:
 
         He has not eaten you. This continues to be notable.
 
+  # TODO: Make this readable?
   appointment_book:
     name:
       en: |
@@ -507,7 +505,6 @@ items:
     description:
       en: |
         A leather-bound appointment book, open to today's date. The pages are organized by hour, in small, precise handwriting. Most of today's slots are either empty or marked [b][i]ADMINISTRATIVE[/b][/i]. The noon slot reads, in slightly larger text: [b][i]A VILLAGER (DEBT-RELATED, PROBABLY)[/b][/i]. It is underlined. Twice. A notation beside it in the margin reads: [i]"allocate 15 mins max; refer to standard resolution options if cooperative".[/i] You are not sure whether to be offended that he only allocated fifteen minutes or reassured that there is a standard resolution.
-    # is_readable: true
 
   dragon_firepit:
     name:
@@ -573,6 +570,7 @@ items:
       en: |
         A shelf carved directly into the cave wall, lined with scrolls. They are organized by a system that is not immediately apparent — not alphabetically, not by size, not by apparent age. Several are labeled in a script you don't recognize. A few bear small colored wax seals. One scroll, on the end, has a tag that reads: DO NOT READ (THIS MEANS YOU). The prohibition is helpfully bilingual; the second language is one you have never seen before.
 
+  # TODO: Make this readable?
   letter_to_mum:
     name:
       en: |
@@ -582,7 +580,6 @@ items:
     description:
       en: |
         A piece of parchment on the stone desk, partially written and extensively revised. The salutation reads: [i]Dear Mum[/i]. The following lines have been crossed out in sequence, with increasing force: first attempt illegible under the crossing-out; second attempt: Things are much the same; third attempt: I have been thinking about what you said about the lair; fourth attempt, partially preserved: I am well. The cave is fine. The mortals keep coming. You were right about the filing system. This line stands uncrossed. Beneath it, after a gap, a postscript has been started and abandoned: [i]Give my regards to[/i] — Nothing follows. The quill has been set down mid-sentence.
-    # is_readable: true
 
   small_crown_paperweight:
     name:
