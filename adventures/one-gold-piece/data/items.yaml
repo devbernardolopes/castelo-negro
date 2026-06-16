@@ -41,7 +41,9 @@ items:
     takeable: true
     owner: aldric
     size: 25
-    images: ["images/items/aldrics_sword.png"]
+    on_ground_messages:
+      - condition: "false"
+images: ["images/items/aldrics_sword.png"]
 
   # ─────────────────────────────────────────────
   # COTTAGE DOORSTEP

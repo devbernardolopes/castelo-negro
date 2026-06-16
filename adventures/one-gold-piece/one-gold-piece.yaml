@@ -32,6 +32,13 @@ metadata:
       [glow][i]\[Pressione qualquer tecla para continuar...\][/i][/glow]
   directional_navigation: false
   show_location_image_inline: true
+  on_ground_messages:
+    singular:
+      en: "There is a XXX here."
+      pt-br: "Aqui há XXX."
+    plural:
+      en: "There are a XXX, YYY, and ZZZ here."
+      pt-br: "Aqui há XXX, YYY e ZZZ."
   tabs:
     system:
       en: "System"
