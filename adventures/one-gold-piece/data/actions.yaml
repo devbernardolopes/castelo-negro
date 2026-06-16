@@ -44,6 +44,19 @@ actions:
   # -------------------------------
   # Specific actions - All actions that are specific to this game must go here.
   # -------------------------------
+  examine_while_blind_with_dog:
+    pattern:
+      - verb: ["examine"]
+      - object: ["*"]
+        optional: true
+    conditions:
+      - "getActorProp(current_player_actor, 'can_see') != true"
+      - "pet_dog_count + talk_dog_count >= dog_friendship_threshold"  # threshold for "befriended"
+    message:
+      en: |
+        You can't see anything, but the dog nudges your hand toward the {object_name}.
+        You get a rough tactile impression. It doesn't help much.
+
   examine_while_blind:
     pattern:
       - verb: ["examine"]
@@ -81,9 +94,6 @@ actions:
       en: |
         City? You mean village, right? Because cities are densely populated centers with over 100,000 residents, often numbering in the millions.
 
-  # TODO: Instead of having one condition for every increment until the threshold of blindness, it should use `brightness_step` (like, `setImageFilter('brightness', getImageFilter('brightness') + brightness_step)`) which is a variable in `variables.yaml`
-  # The end result of this action will be the player going blind, that is, the actor property `can_see` will be false, thus making any action that depends on sight, like "examine", to not work, and for that the "examine" action must be "captured" before the regular one (which is being done with the action `examine_while_blind` above)
-  # Besides the above information, this action will have also the end result of the UI progressively displaying the location/room images blurrier and brightier, until reaching the threshold, making then all locations/rooms images hidden/black (simulating blindness)
   look_at_the_sun:
     pattern:
       - verb: ["look"]
@@ -93,62 +103,47 @@ actions:
       - "current_location in ['cottage_doorstep', 'old_crossroads', 'hillside_path']"
     effect:
       - "look_at_the_sun_count += 1"
-    conditional_messages:
-      - condition: "look_at_the_sun_count > look_at_the_sun_threshold"
-        message:
-          en: |
-            You're [wiggle]blind![/wiggle] You can't see anything.
+      - "setImageFilter('brightness', 1.0 + look_at_the_sun_count * brightness_step)"
+      - "setImageFilter('blur', 2)"
     progressive_messages:
-      - condition: "look_at_the_sun_count == 1"
-        effect:
-          - "setImageFilter('brightness', 1.1)"
-          - "setImageFilter('blur', 2)"
-      - condition: "look_at_the_sun_count == 2"
-        effect:
-          - "setImageFilter('brightness', 1.2)"
-          - "setImageFilter('blur', 2)"
-      - condition: "look_at_the_sun_count == 3"
-        effect:
-          - "setImageFilter('brightness', 1.3)"
-          - "setImageFilter('blur', 2)"
-      - condition: "look_at_the_sun_count == 4"
-        effect:
-          - "setImageFilter('brightness', 1.4)"
-          - "setImageFilter('blur', 2)"
-      - condition: "look_at_the_sun_count == 5"
-        effect:
-          - "setImageFilter('brightness', 1.5)"
-          - "setImageFilter('blur', 2)"
-      - condition: "look_at_the_sun_count == 6"
-        effect:
-          - "setImageFilter('brightness', 1.6)"
-          - "setImageFilter('blur', 2)"
       - condition: "look_at_the_sun_count < look_at_the_sun_threshold"
         message:
           en: |
-            You look at the morning sun.
+            You look at the morning sun. Your eyes [wiggle]protest[/wiggle].
       - condition: "look_at_the_sun_count == look_at_the_sun_threshold"
         effect:
-          - "look_at_the_sun_count += 1"
           - "setImageFilter('brightness', 0)"
-          - "setImageFilter('blur', 2)"
           - "setActorProp(current_player_actor, 'can_see', false)"
         message:
           en: |
-            Oh, great! Now you're [wiggle]blind![/wiggle]
+            Oh, great. Now you're [wiggle]blind[/wiggle].
 
-  # TODO: Make the message more funny/interesting. Maybe more messages?
-  talk__wave_nod_to_at_gerald:
+  talk_wave_nod_to_at_gerald:
     pattern:
       - verb: ["talk", "greet", "wave", "nod"]
       - object: [neighbor_gerald]
     conditions:
       - "here.has('{object}')"
-    message:
-      en: |
-        You really don't want to do that.
+    effect:
+      - "talk_gerald_count += 1"
+    progressive_messages:
+      - condition: "talk_gerald_count == 1"
+        message:
+          en: |
+            You wave at Gerald. Gerald waves back. Gerald always waves back.
+      - condition: "talk_gerald_count == 2"
+        message:
+          en: |
+            You wave again. Gerald waves again. He seems genuinely pleased about this.
+      - condition: "talk_gerald_count == 3"
+        message:
+          en: |
+            Gerald waves with both hands this time. You're not sure when this escalated.
+      - condition: "talk_gerald_count >= 4"
+        message:
+          en: |
+            Gerald waves. You wave. This is your relationship and it will never be anything else.
 
-  # TODO: Create more messages, maybe some easter egg? Maybe a puzzle? Like, the player can get blind looking at the sun so the "examine" actions will never again display the location messages, so the dog, if befriended, can become a helper/assistant dog and guide the player? Maybe this could be a puzzle and also be associated with the "pet dog" action?
   talk_to_dog:
     pattern:
       - verb: ["talk"]
@@ -156,12 +151,20 @@ actions:
     conditions:
       - "here.has('{object}')"
     effect:
-      - "talk_dog_count += 1" # TODO: Not being used yet
+      - "talk_dog_count += 1"
+    progressive_messages:
+      - condition: "pet_dog_count + talk_dog_count < dog_friendship_threshold"
+        message:
+          en: |
+            [pulse]"Woof woof?"[/pulse]
+      - condition: "pet_dog_count + talk_dog_count >= dog_friendship_threshold"
+        message:
+          en: |
+            [pulse][wiggle]"Yip, yap ♥."[/wiggle][/pulse]
+
     message:
       en: |
-        [pulse]"Woof woof?"[/pulse]
 
-  # TODO: Same TODO comment as above
   pet_dog:
     pattern:
       - verb: ["pet"]
@@ -169,13 +172,17 @@ actions:
     conditions:
       - "here.has('{object}')"
     effect:
-      - "pet_dog_count += 1" # TODO: Not being used yet
-    message:
-      en: |
-        [wiggle]"Arf, arf!"[/wiggle]
+      - "pet_dog_count += 1"
+    progressive_messages:
+      - condition: "pet_dog_count + talk_dog_count < dog_friendship_threshold"
+        message:
+          en: |
+            [wiggle]"Arf, arf!"[/wiggle]
+      - condition: "pet_dog_count + talk_dog_count >= dog_friendship_threshold"
+        message:
+          en: |
+            [pulse][wiggle]"Yap, yip ♥."[/wiggle][/pulse]
 
-  # TODO: Think about different results/messages/effects for this action
-  # Never allow the player to actually harm the dog
   eat_dog:
     pattern:
       - verb: ["eat"]
@@ -184,10 +191,8 @@ actions:
       - "here.has('{object}')"
     message:
       en: |
-        You can't be serious.
+        The dog looks at you. You look at the dog. The dog continues to look at you with the patient, unblinking confidence of a creature that knows this isn't going to happen. It isn't going to happen.
 
-  # TODO: Think about different results/messages/effects for this action
-  # Never allow the player to actually harm the dog
   kick_dog:
     pattern:
       - verb: ["kick"]
@@ -197,6 +202,7 @@ actions:
     message:
       en: |
         You [b]DON'T[/b] kick the dog.
+        The narrator has strong feelings about this and will not elaborate further.
 
   # TODO: Think about different results/messages/effects for this action
   pet_dragon:

@@ -47,7 +47,7 @@ metadata:
     debug:
       en: "Debug"
       pt-br: "Debug"
-      visible: false
+      visible: true
     room:
       en: "Room"
       pt-br: "Local"

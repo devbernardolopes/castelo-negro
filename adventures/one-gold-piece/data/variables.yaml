@@ -29,25 +29,39 @@ variables:
     type: int
     value: 10
 
+  talk_gerald_count:
+    type: int
+    value: 0
+    debug_variable: true
+
   look_at_the_town_count:
     type: int
     value: 0
+    debug_variable: true
 
   look_at_the_city_count:
     type: int
     value: 0
+    debug_variable: true
   
   pet_dog_count:
     type: int
     value: 0
+    debug_variable: true
 
   talk_dog_count:
     type: int
     value: 0
+    debug_variable: true
+
+  dog_friendship_threshold:
+    type: int
+    value: 5
 
   brightness_step:
     type: float
     value: 0.1
+    debug_variable: true
 
   # -------------------------------
   # General variables - All general, not game-specific variables, that can be used universally in any game, must go here (it doesn't mean this game makes use of them all necessarily).
