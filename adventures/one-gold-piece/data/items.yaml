@@ -43,7 +43,7 @@ items:
     size: 25
     on_ground_messages:
       - condition: "false"
-images: ["images/items/aldrics_sword.png"]
+    images: ["images/items/aldrics_sword.png"]
 
   # ─────────────────────────────────────────────
   # COTTAGE DOORSTEP

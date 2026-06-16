@@ -614,12 +614,12 @@ actions:
       - object: ["*"]
         match_mode: "drop_all"
     conditions:
-      - "getActorProp(current_player_actor, 'can_drop_all') == true"
       - "'{object}' == '__drop_all__'"
+      - "getActorProp(current_player_actor, 'can_drop_all') == true"
     effect:
       - "dropAllInventoryItems()"
     conditional_messages:
-      - condition: "getActorProp(current_player_actor, 'can_drop_all') != true"
+      - condition: "'{object}' == '__drop_all__' and getActorProp(current_player_actor, 'can_drop_all') != true"
         message:
           en: |
             You can't drop everything at once.
@@ -657,12 +657,12 @@ actions:
       - object: ["*"]
         match_mode: "remove_all"
     conditions:
-      - "getActorProp(current_player_actor, 'can_remove_all') == true"
       - "'{object}' == '__remove_all__'"
+      - "getActorProp(current_player_actor, 'can_remove_all') == true"
     effect:
       - "removeAllWornItems()"
     conditional_messages:
-      - condition: "getActorProp(current_player_actor, 'can_remove_all') != true"
+      - condition: "'{object}' == '__remove_all__' and getActorProp(current_player_actor, 'can_remove_all') != true"
         message:
           en: |
             You can't remove everything at once.
