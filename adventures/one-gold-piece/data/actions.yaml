@@ -1041,6 +1041,34 @@ actions:
         message:
           en: "You can't read that."
 
+  smell:
+    pattern:
+      - verb: ["smell"]
+      - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Smell what?"
+    conditions:
+      - "'{object}' != ''"
+      - "here.has('{object}') or inventory.has('{object}')"
+      - "items.getProp('{object}', 'smellable') != null"
+    effect: []
+    message:
+      en: |
+        You smell it.
+    conditional_messages:
+      - condition: "'{object}' == ''"
+        message:
+          en: "Smell what?"
+      - condition: "!here.has('{object}') and !inventory.has('{object}')"
+        message:
+          en: "There's no {object_name} here."
+      - condition: "items.getProp('{object}', 'smellable') == null"
+        message:
+          en: "No particular odor is discernible."
+
+
   fallback_generic:
     message_pool:
       en:

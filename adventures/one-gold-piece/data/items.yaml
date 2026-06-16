@@ -286,7 +286,9 @@ items:
       en: |
         The smell is not overpowering, but it is present and consistent — the particular sharp, mineral quality of sulfur that one associates with volcanic activity, certain types of unpleasant magic, and dragons. It hangs in the air around the cave entrance like a final advisory. There is nothing to take. There is nothing to interact with. It is simply a smell, doing its job.
     visible: false
+    smellable: true
 
+  # TODO: Add new items referring to the items in this description (for flavor/red herring)?
   cave_mouth_rubble:
     name:
       en: |
