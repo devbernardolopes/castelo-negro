@@ -1500,8 +1500,10 @@ function handleActorExamineImage(actorId, imagePath) {
   img.className = 'actor-examine-thumbnail';
   img.alt = '';
   img.style.display = 'none';
+  const actorDef = engine?.definition?.actors?.[actorId];
+  const actorName = actorDef ? (engine._pickLang(actorDef.name) || actorId) : actorId;
   img.addEventListener('click', () => {
-    if (window.showImageModal) window.showImageModal(img.src);
+    if (window.showImageModal) window.showImageModal(img.src, actorName);
   });
   img.onload = () => {
     img.style.display = 'block';
@@ -1529,8 +1531,10 @@ function renderLocationImageInline(url, filter = 'none') {
   img.alt = '';
   img.style.filter = filter;
   img.style.display = 'none';
+  const locId = engine?.gameState?.current_location;
+  const locName = locId ? (engine._pickLang(engine.definition.locations?.[locId]?.name) || locId) : '';
   img.addEventListener('click', () => {
-    if (window.showImageModal) window.showImageModal(img.src);
+    if (window.showImageModal) window.showImageModal(img.src, locName);
   });
   img.onload = () => {
     img.style.display = 'block';
