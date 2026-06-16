@@ -608,6 +608,22 @@ actions:
           en: |
             {actor_name} isn't here.
 
+  drop_all:
+    pattern:
+      - verb: ["drop"]
+      - object: ["*"]
+        match_mode: "drop_all"
+    conditions:
+      - "getActorProp(current_player_actor, 'can_drop_all') == true"
+      - "'{object}' == '__drop_all__'"
+    effect:
+      - "dropAllInventoryItems()"
+    conditional_messages:
+      - condition: "getActorProp(current_player_actor, 'can_drop_all') != true"
+        message:
+          en: |
+            You can't drop everything at once.
+
   drop:
     pattern:
       - verb: ["drop"]
@@ -634,6 +650,22 @@ actions:
         message:
           en: |
             You can't drop the {object_name}.
+
+  remove_all:
+    pattern:
+      - verb: ["remove", "take off"]
+      - object: ["*"]
+        match_mode: "remove_all"
+    conditions:
+      - "getActorProp(current_player_actor, 'can_remove_all') == true"
+      - "'{object}' == '__remove_all__'"
+    effect:
+      - "removeAllWornItems()"
+    conditional_messages:
+      - condition: "getActorProp(current_player_actor, 'can_remove_all') != true"
+        message:
+          en: |
+            You can't remove everything at once.
 
   remove:
     patterns:

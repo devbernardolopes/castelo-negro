@@ -1158,6 +1158,68 @@ class GameEngine {
         continue;
       }
 
+      // dropAllInventoryItems() — drop all non-worn inventory items to current location
+      const dropAllMatch = line.match(/^dropAllInventoryItems\(\)\s*$/);
+      if (dropAllMatch) {
+        const playerId = this._getPlayerActorId();
+        const data = this.gameState.actors_data?.[playerId];
+        if (!data || !Array.isArray(data.inventory) || data.inventory.length === 0) {
+          this.hooks.onOutput?.("You're not carrying anything.");
+          continue;
+        }
+        const worn = new Set(Array.isArray(data.wearing) ? data.wearing : []);
+        const toDrop = data.inventory.filter(id => {
+          if (worn.has(id)) return false;
+          const def = this.definition.items?.[String(id)];
+          if (def?.droppable !== undefined) return Boolean(def.droppable);
+          return def?.takeable === true;
+        });
+        if (toDrop.length === 0) {
+          this.hooks.onOutput?.("You have nothing to drop.");
+          continue;
+        }
+        const loc = this.getFullLocationData(this.gameState.current_location);
+        if (!Array.isArray(loc.contents)) loc.contents = [];
+        const dropped = [];
+        for (const itemId of toDrop) {
+          this.inventory.remove(itemId);
+          loc.contents.push(itemId);
+          const item = this.definition.items?.[itemId];
+          if (item?.on_drop?.effect) this.applyEffect(item.on_drop.effect);
+          dropped.push(itemId);
+        }
+        this.hooks.onOutput?.(`You drop ${dropped.length === 1 ? 'one item' : dropped.length + ' items'}.`);
+        continue;
+      }
+
+      // removeAllWornItems() — remove all worn items from self to inventory/location
+      const removeAllMatch = line.match(/^removeAllWornItems\(\)\s*$/);
+      if (removeAllMatch) {
+        const playerId = this._getPlayerActorId();
+        const data = this.gameState.actors_data?.[playerId];
+        if (!data || !Array.isArray(data.wearing) || data.wearing.length === 0) {
+          this.hooks.onOutput?.("You're not wearing anything.");
+          continue;
+        }
+        const items = [...data.wearing];
+        data.wearing = [];
+        const playerData = this.gameState.actors_data?.[playerId];
+        const maxCap = Number(this.definition.actors?.[playerId]?.max_capacity ?? 9999);
+        const loc = this.getFullLocationData(this.gameState.current_location);
+        for (const itemId of items) {
+          this._removeItemFromWorld(itemId);
+          const itemName = this._getItemDisplayShortName(itemId) || this._getItemDisplayName(itemId) || itemId;
+          if (playerData && playerData.inventory.length < maxCap) {
+            playerData.inventory.push(itemId);
+          } else if (loc) {
+            if (!Array.isArray(loc.contents)) loc.contents = [];
+            loc.contents.push(itemId);
+          }
+        }
+        this.hooks.onOutput?.(`You remove everything you were wearing.`);
+        continue;
+      }
+
       // startConversation('actorId') or startConversation(actorId)
       const startConvMatch = line.match(/^startConversation\(\s*(.+)\s*\)\s*$/);
       if (startConvMatch) {

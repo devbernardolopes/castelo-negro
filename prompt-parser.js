@@ -549,6 +549,24 @@ GameEngine.prototype._matchPatternAgainstPrompt = function(pattern, cmd) {
     if (slotName === 'object' || slotName === 'target') {
       const itemMatch = this._matchItemSlotAt(tokens, i, slotDef);
       if (!itemMatch) {
+        // Try keyword-based matching (e.g. "all" keywords for drop_all/remove_all)
+        if (slotEntry.match_mode) {
+          const keywordList = this.definition[slotEntry.match_mode]?.[this.language];
+          if (Array.isArray(keywordList) && keywordList.length > 0) {
+            const remaining = tokens.slice(i).filter(t => !stopwords.has(t));
+            if (remaining.length > 0) {
+              const phrase = remaining.join(' ');
+              if (keywordList.includes(phrase)) {
+                const sentinel = '__' + slotEntry.match_mode + '__';
+                out[slotName] = sentinel;
+                out[`${slotName}_name`] = phrase;
+                out[`_${slotName}_phrase`] = phrase;
+                i = tokens.length;
+                continue;
+              }
+            }
+          }
+        }
         if (isOptional) {
           // Player typed something for this slot but it didn't match any item.
           // Inject the raw text as the slot value so conditions can fail and
