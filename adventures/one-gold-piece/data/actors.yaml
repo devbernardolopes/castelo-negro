@@ -5,19 +5,26 @@ actors:
         Aldric
       pt-br: |
         Aldric
+    # If true the player can switch to this actor in-game via the "switch" prompt
     playable: true
     images:
       portrait: "images/actors/aldric/aldric.png"
     starting_location: cottage_doorstep
+    # The locations this respective actor starts knowing (it is used in the MAP tab)
     known_locations: [cottage_doorstep, old_crossroads]
     inventory: [aldrics_sword]
+    # `max_capacity` refers always to the amount of items this actor can have in their inventory (not related to worn items)
+    max_capacity: 2 # The value 2 here is being used to simulate the left and right hand of this actor, meaning they can only hold two items at once (wearables don't count)
+    # What this actor starts wearing (wearable items)
     wearing: [leather_satchel]
-    max_capacity: 2
+    # Any property here must exit in `properties.yaml`, but not all properties in `properties.yaml` must be here, if they aren't then their respective default value will be assumed if required
     properties:
       can_see: true
       can_smell: true
       can_drop_all: true
       # can_remove_all: true
+    # Used for when the player "examines" themself
+    # TODO: (maybe it is used when the player examines other actors too, I don't remember)
     description:
       en: |
         It's you, Aldric.

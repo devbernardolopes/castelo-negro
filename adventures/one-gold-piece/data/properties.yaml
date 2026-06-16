@@ -1,35 +1,32 @@
-# # Usage examples
-# # Conditions:
-# # - health < 50 — current player's health (spread into eval context)
-# # - mood == "sad" — current player's mood
-# # - getActorProp('sabine', 'health') > 0 — any actor's property
-# # - getRelationship('sabine', 'affinity') >= 50 — affinity toward Sabine
-# # - getRelationshipBetween('protagonist', 'sabine', 'affinity') >= 50
-# # Effects (actor-neutral — explicit actorId required):
-# # - setActorProp(current_player_actor, 'health', 90) — clamp to global constraints
-# # - setActorProp('protagonist', 'health', 90) — literal actor ID
-# # - setActorProp('sabine', 'mood', 'happy') — any actor's property
-# # - setRelationship(current_player_actor, 'sabine', 'affinity', 20)
-# # - setRelationship('protagonist', 'sabine', 'affinity', 20)
-# # - setPlayerActor('sabine') — switch who you control mid-game
-# # Messages:
-# # - Your health is {health}.
-# # - Sabine looks {actor_sabine_mood}.
-# # - Relationship affinity: {relationship_sabine_affinity}%
+# Properties are like variables that can be assigned on a per-actor basis
+# An actor doesn't need to have all (or any) property assigned to them
 
 properties:
+  # -------------------------------
+  # Specific properties - All properties that are specific to this game must go here.
+  # -------------------------------  
+  
+  # -------------------------------
+  # General properties - All general, not game-specific properties, that can be used universally in any game, must go here (it doesn't mean this game makes use of them all necessarily).
+  # -------------------------------  
+  
+  # if true the "examine" action will return the regular message, otherwise it won't (used to simulate blindness)
   can_see:
     type: bool
     default: true
 
+  # TODO: This is not implemented yet
+  # if true the "smell" action will return the regular message, otherwise it won't (used to simulate anosmia)
   can_smell:
     type: bool
     default: true
 
+  # if true the "drop all" prompt will be enabled allowing the respective actor to drop all items from their inventory in one turn/prompt (not applicable to worn items)
   can_drop_all:
     type: bool
     default: false
 
+  # if true the "remove all" prompt will be enabled allowing the respective actor to remove all worn items from themselves in one turn/prompt (not applicable to ivnentory items)
   can_remove_all:
     type: bool
     default: false
@@ -125,3 +122,23 @@ properties:
 #     possible_values: ["North American", "Moroccan", "Brazilian", "Japanese", "Nigerian", "Indian", "Chinese", "Russian", "Lebanese", "Egyptian", "Turkish", "French", "German", "Italian", "Spanish", "Korean", "Vietnamese", "Filipino", "Indonesian", "Pakistani", "Bangladeshi", "Other"]
 #     default: "North American"
 #     show_in_relationships: true
+
+
+# # Usage examples
+# # Conditions:
+# # - health < 50 — current player's health (spread into eval context)
+# # - mood == "sad" — current player's mood
+# # - getActorProp('sabine', 'health') > 0 — any actor's property
+# # - getRelationship('sabine', 'affinity') >= 50 — affinity toward Sabine
+# # - getRelationshipBetween('protagonist', 'sabine', 'affinity') >= 50
+# # Effects (actor-neutral — explicit actorId required):
+# # - setActorProp(current_player_actor, 'health', 90) — clamp to global constraints
+# # - setActorProp('protagonist', 'health', 90) — literal actor ID
+# # - setActorProp('sabine', 'mood', 'happy') — any actor's property
+# # - setRelationship(current_player_actor, 'sabine', 'affinity', 20)
+# # - setRelationship('protagonist', 'sabine', 'affinity', 20)
+# # - setPlayerActor('sabine') — switch who you control mid-game
+# # Messages:
+# # - Your health is {health}.
+# # - Sabine looks {actor_sabine_mood}.
+# # - Relationship affinity: {relationship_sabine_affinity}%

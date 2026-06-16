@@ -82,6 +82,8 @@ actions:
         City? You mean village, right? Because cities are densely populated centers with over 100,000 residents, often numbering in the millions.
 
   # TODO: Instead of having one condition for every increment until the threshold of blindness, it should use `brightness_step` (like, `setImageFilter('brightness', getImageFilter('brightness') + brightness_step)`) which is a variable in `variables.yaml`
+  # The end result of this action will be the player going blind, that is, the actor property `can_see` will be false, thus making any action that depends on sight, like "examine", to not work, and for that the "examine" action must be "captured" before the regular one (which is being done with the action `examine_while_blind` above)
+  # Besides the above information, this action will have also the end result of the UI progressively displaying the location/room images blurrier and brightier, until reaching the threshold, making then all locations/rooms images hidden/black (simulating blindness)
   look_at_the_sun:
     pattern:
       - verb: ["look"]
@@ -135,7 +137,7 @@ actions:
           en: |
             Oh, great! Now you're [wiggle]blind![/wiggle]
 
-  # TODO: Make the message more funny/interesting
+  # TODO: Make the message more funny/interesting. Maybe more messages?
   talk__wave_nod_to_at_gerald:
     pattern:
       - verb: ["talk", "greet", "wave", "nod"]
@@ -146,7 +148,7 @@ actions:
       en: |
         You really don't want to do that.
 
-  # TODO: Create more messages, maybe some easter egg? Maybe a puzzle? Like, the player can get blind looking at the sun so the "examine" actions will never again display the location messages, so the dog, if befriended, can become a helper/assistant dog and guide the player?
+  # TODO: Create more messages, maybe some easter egg? Maybe a puzzle? Like, the player can get blind looking at the sun so the "examine" actions will never again display the location messages, so the dog, if befriended, can become a helper/assistant dog and guide the player? Maybe this could be a puzzle and also be associated with the "pet dog" action?
   talk_to_dog:
     pattern:
       - verb: ["talk"]
@@ -154,10 +156,23 @@ actions:
     conditions:
       - "here.has('{object}')"
     effect:
-      - "talk_dog_count += 1"
+      - "talk_dog_count += 1" # TODO: Not being used yet
     message:
       en: |
         "Woof woof?"
+
+  # TODO: Same TODO comment as above
+  pet_dog:
+    pattern:
+      - verb: ["pet"]
+      - object: [stray_dog]
+    conditions:
+      - "here.has('{object}')"
+    effect:
+      - "pet_dog_count += 1" # TODO: Not being used yet
+    message:
+      en: |
+        "[wiggle]Arf, arf![/wiggle]"
 
   # TODO: Think about different results/messages/effects for this action
   # Never allow the player to actually harm the dog
@@ -167,8 +182,6 @@ actions:
       - object: [stray_dog]
     conditions:
       - "here.has('{object}')"
-    # effect:
-    #   - "pet_dog_count += 1"
     message:
       en: |
         You can't be serious.
@@ -181,11 +194,9 @@ actions:
       - object: [stray_dog]
     conditions:
       - "here.has('{object}')"
-    # effect:
-    #   - "pet_dog_count += 1"
     message:
       en: |
-        You kick the dog.
+        You [b]DON'T[/b] kick the dog.
 
   # TODO: Think about different results/messages/effects for this action
   pet_dragon:
@@ -197,39 +208,6 @@ actions:
     message:
       en: |
         You pet the dragon. The dragon's reaction is impossible to describe.
-
-  # attack_gerald_dog_sheep_dragon:
-  #   pattern:
-  #     - verb: ["attack"]
-  #     - object: ["*"]
-  #       optional: true
-  #   follow_up:
-  #     actor:
-  #       en: "Attack whom or what?"
-  #   confirmation:
-  #     en: "Are you sure you want to attack {actor_name}?"
-  #   conditions:
-  #     - "'{actor}' != '' and getActor('{actor}') != null"
-  #     - "getActor('{actor}').current_location == current_location"
-  #     - "'{actor}' != current_player_actor"
-  #   effect: ""
-  #   message:
-  #     en: |
-  #       You attack {actor_name}!
-  #   conditional_messages:
-  #     - condition: "'{actor}' == '' or getActor('{actor}') == null"
-  #       message:
-  #         en: |
-  #           There's no one here by that name.
-  #     - condition: "getActor('{actor}').current_location != current_location"
-  #       message:
-  #         en: |
-  #           {actor_name} isn't here.
-  #     - condition: "'{actor}' == current_player_actor"
-  #       message:
-  #         en: |
-  #           You can't attack yourself.
-
 
   move_loose_rock:
     pattern:

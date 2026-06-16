@@ -141,6 +141,8 @@ verbs:
     synonyms: { en: ["kick"], pt-br: ["chutar"] }
   punch:
     synonyms: { en: ["punch"], pt-br: ["socar", "dar um soco", "dar soco"] }
+  wield:
+    synonyms: { en: ["wield"], pt-br: ["empunhar"] }
 
 directions:
   north:
