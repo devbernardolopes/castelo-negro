@@ -1074,12 +1074,12 @@ actions:
       - condition: "'{target}' == ''"
         message:
           en: "Smell what?"
-      - condition: "!here.has('{target}') and !inventory.has('{target}')"
-        message:
-          en: "There's no {target_name} here."
       - condition: "items.getProp('{target}', 'smellable') == null"
         message:
           en: "No particular odor is discernible."
+      - condition: "!here.has('{target}') and !inventory.has('{target}')"
+        message:
+          en: "There's no {target_name} here."
 
   fallback_generic:
     message_pool:
