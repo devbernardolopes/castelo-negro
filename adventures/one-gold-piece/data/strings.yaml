@@ -15,17 +15,33 @@ strings:
 
       The road north leads out of the village toward the hills. You are wearing your leather satchel and carrying a sword. You bought the sword secondhand. The previous owner sold it because it was, and this is a direct quote, [i]"not very good."[/i]
 
-  # TODO: Add some cool/funny content here
   book_adventurers_journal:
     en: |
       [grow][b]FIELD NOTES — PERSONAL[/b][/grow]
+      By Edvard Crestmore, Adventurer (Freelance)
       ---page---
-      TODO: mundane observations
+      Day 1. Set out from Millhaven at dawn. Weather: adequate. Packed: sword, rations,
+      this journal, a lucky coin I found in the gutter which T. insists is not lucky.
+      T. is not coming on this expedition. T. cited "basic survival instincts" as the reason.
       ---page---
-      TODO: a recipe for traveling bread
+      Day 3. Passed through Aldenmere. Bought bread. The baker asked where I was headed.
+      I said "the hills." He said "which hills." I said "the ones with the dragon."
+      He gave me the bread for free. I chose to interpret this as respect.
       ---page---
-      TODO: notes on local geography
+      Day 4. Traveling bread recipe (from baker, who I now believe was being kind):
+      Mix flour, water, salt. No yeast — it won't keep. Bake flat on a hot stone.
+      Result: edible. Barely. T. would say this describes my cooking generally.
+      T. is not here.
       ---page---
-      TODO: a running argument with a person referred to only as "T." about the correct way to pack a bedroll
+      Day 5. Long argument with T. (by letter, which I sent from Aldenmere and received
+      a reply to already, which says something about T.'s feelings on the matter)
+      re: bedroll packing. T. maintains the roll goes outside the pack, for ventilation.
+      I maintain it goes inside, for protection. We are at an impasse. We have been at
+      this impasse for three years.
+      ---page---
+      Day 6. Found the cave. The sign says NO SOLICITING.
+      I am not soliciting. I am retrieving.
+      There is a difference. I am fairly confident there is a difference.
+      Going in. Probably fine.
       ---page---
       [blink][i]"Found cave. Going in. Probably fine."[/i][/blink]
