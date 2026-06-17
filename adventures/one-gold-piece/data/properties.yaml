@@ -31,6 +31,10 @@ properties:
     type: bool
     default: false
 
+  can_read:
+    type: bool
+    default: true
+
 #   age:
 #     type: int
 #     min_value: 0

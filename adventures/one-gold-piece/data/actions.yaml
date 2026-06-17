@@ -1121,11 +1121,18 @@ actions:
       - "'{object}' != ''"
       - "here.has('{object}') or inventory.has('{object}')"
       - "items.getProp('{object}', 'readable') != null"
-    effect: []
+      - "getActorProp(current_player_actor, 'can_see') == true"
+      - "getActorProp(current_player_actor, 'can_read') == true"
     message:
       en: |
         {readable_text}
     conditional_messages:
+      - condition: "getActorProp(current_player_actor, 'can_read') != true"
+        message:
+          en: "You can't read anything."
+      - condition: "getActorProp(current_player_actor, 'can_see') != true"
+        message:
+          en: "You can't see anything."
       - condition: "'{object}' == ''"
         message:
           en: "Read what?"
