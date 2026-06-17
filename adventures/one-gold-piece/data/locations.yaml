@@ -47,8 +47,18 @@ locations:
         A weathered wooden signpost stands at the junction where the village road meets the hill path. Someone, at some point, put considerable effort into this signpost. That effort has not aged gracefully.
 
         One arm reads VILLAGE (with an arrow pointing south), though the paint is peeling badly and the "E" has fallen off, making it VILLAG. A second arm points north and reads THE HILLS (PROBABLY FINE), which was added more recently, judging by the handwriting — optimistic, slightly unhinged. A third arm points directly at you. It reads CERTAIN DOOM. You examine it more closely. It does not appear to be referring to the road.
+      conditions:
+        - if: "!dog_is_following"
+          message:
+            en: |
 
-        A stray dog is sitting nearby, regarding you with the quiet, appraising look of a creature evaluating whether you are worth following. The hills are visible to the north, purple and unhelpfully large against the morning sky.
+              A stray dog is sitting nearby, regarding you with the quiet, appraising look of a creature evaluating whether you are worth following. The hills are visible to the north, purple and unhelpfully large against the morning sky.
+        - if: "dog_is_following"
+          message:
+            en: |
+            
+              The hills are visible to the north, purple and unhelpfully large against the morning sky.
+
     contents: [signpost, stray_dog, hilltop_view]
     exits:
       south: cottage_doorstep

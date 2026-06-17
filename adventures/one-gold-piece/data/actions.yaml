@@ -114,6 +114,7 @@ actions:
         effect:
           - "setImageFilter('brightness', 0)"
           - "setActorProp(current_player_actor, 'can_see', false)"
+          - "show_location_image_inline = false"
         message:
           en: |
             Oh, great. Now you're [wiggle]blind[/wiggle].
