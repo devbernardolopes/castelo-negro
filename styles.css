@@ -1138,8 +1138,10 @@ body {
   #game {
     width: 900px;
     max-width: 95vw;
-    height: 700px;
-    max-height: 95dvh;
+    /* height: 700px; */
+    height: 95dvh;
+    /* max-height: 95dvh; */
+    /* min-height: 500px; */
     gap: 8px;
     border: 1px solid var(--border-color);
     padding: 12px;
