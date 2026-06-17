@@ -93,3 +93,7 @@ variables:
   current_player_actor:
     type: object
     value: aldric
+
+  show_location_image_inline:
+    type: bool
+    value: true
