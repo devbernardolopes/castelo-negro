@@ -1055,17 +1055,15 @@ actions:
   smell:
     pattern:
       - verb: ["smell"]
-      - object: ["*"]
+      - target: ["*"]
         optional: true
     follow_up:
-      object:
+      target:
         en: "Smell what?"
     conditions:
       - "getActorProp(current_player_actor, 'can_smell') == true"
-      - "'{object}' != ''"
-      - "here.has('{object}') or inventory.has('{object}')"
-      - "items.getProp('{object}', 'smellable') != null"
-    effect: []
+      - "'{target}' == '__location__' or ((here.has('{target}') or inventory.has('{target}')) and items.getProp('{object}', 'smellable') != null)"
+      - "'{target}' != ''"
     message:
       en: |
         {location_or_object_description}
@@ -1073,13 +1071,13 @@ actions:
       - condition: "getActorProp(current_player_actor, 'can_smell') != true"
         message:
           en: "You're unable to smell anything."
-      - condition: "'{object}' == ''"
+      - condition: "'{target}' == ''"
         message:
           en: "Smell what?"
-      - condition: "!here.has('{object}') and !inventory.has('{object}')"
+      - condition: "!here.has('{target}') and !inventory.has('{target}')"
         message:
-          en: "There's no {object_name} here."
-      - condition: "items.getProp('{object}', 'smellable') == null"
+          en: "There's no {target_name} here."
+      - condition: "items.getProp('{target}', 'smellable') == null"
         message:
           en: "No particular odor is discernible."
 
