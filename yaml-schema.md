@@ -1,4 +1,4 @@
-# Penthouse YAML Schema Guide
+# YAML Schema Guide
 
 ## NOTE
 
