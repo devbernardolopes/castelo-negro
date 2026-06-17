@@ -1,9 +1,10 @@
 events:
   - id: dog_following_player_actor
     type: location_enter
-    # location: "cottage_porch"
-    conditions: ["pet_dog_count + talk_dog_count >= dog_friendship_threshold"]
-    effect: "reached_cottage_porch = true"
+    conditions: ["dog_is_following == true"]
+    effect:
+      - "removeItemFromAllLocations('stray_dog')"
+      - "here.add('stray_dog')"
 
 
 

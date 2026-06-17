@@ -58,6 +58,11 @@ variables:
     type: int
     value: 5
 
+  dog_is_following:
+    type: bool
+    value: false
+    debug_variable: true
+
   brightness_step:
     type: float
     value: 0.1

@@ -1220,6 +1220,13 @@ class GameEngine {
         continue;
       }
 
+      // removeItemFromAllLocations('itemId')
+      const removeFromAllMatch = line.match(/^removeItemFromAllLocations\(\s*(['"])(.+?)\1\s*\)\s*$/);
+      if (removeFromAllMatch) {
+        this._removeItemFromAllLocations(removeFromAllMatch[2]);
+        continue;
+      }
+
       // startConversation('actorId') or startConversation(actorId)
       const startConvMatch = line.match(/^startConversation\(\s*(.+)\s*\)\s*$/);
       if (startConvMatch) {
@@ -1344,6 +1351,21 @@ class GameEngine {
     for (const contents of Object.values(this.gameState.container_contents || {})) {
       const idx = contents.indexOf(id);
       if (idx !== -1) { contents.splice(idx, 1); return; }
+    }
+  }
+
+  _removeItemFromAllLocations(itemId) {
+    const id = String(itemId);
+    for (const locId of Object.keys(this.definition.locations || {})) {
+      const loc = this.getFullLocationData(locId);
+      if (loc && Array.isArray(loc.contents)) {
+        const idx = loc.contents.indexOf(id);
+        if (idx !== -1) loc.contents.splice(idx, 1);
+      }
+    }
+    for (const contents of Object.values(this.gameState.container_contents || {})) {
+      const idx = contents.indexOf(id);
+      if (idx !== -1) contents.splice(idx, 1);
     }
   }
 
@@ -2318,7 +2340,7 @@ class GameEngine {
       }
       if (ev.type === 'location_enter') {
         const targetLoc = action?.location || this.gameState.current_location;
-        const entered = String(ev.location) === targetLoc;
+        const entered = !ev.location || String(ev.location) === targetLoc;
         if (action?.kind === 'move' && entered) {
           console.log('[events] location_enter triggered:', ev.id, 'at', targetLoc);
           this._executeEvent(ev);
@@ -2461,13 +2483,14 @@ class GameEngine {
       this.gameState.game_turn += 1;
     }
 
-    // Render first so event messages appear after the location description
+    // Location-enter + recurring + time-based (run before render so events
+    // can modify the current location's contents before the description)
+    this._runEventsForAction(action);
+    this._checkEndConditions();
+
+    // Render after events so event effects are reflected in the description
     if (!options.skipLocationRender) {
       this.renderCurrentLocation();
     }
-
-    // Location-enter + recurring + time-based
-    this._runEventsForAction(action);
-    this._checkEndConditions();
   }
 }

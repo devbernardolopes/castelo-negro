@@ -158,6 +158,10 @@ actions:
           en: |
             [pulse]"Woof woof?"[/pulse]
       - condition: "pet_dog_count + talk_dog_count >= dog_friendship_threshold"
+        effect:
+          - "dog_is_following = true"
+          - "removeItemFromAllLocations('stray_dog')"
+          - "here.add('stray_dog')"
         message:
           en: |
             [pulse][wiggle]"Yip, yap ♥."[/wiggle][/pulse]
@@ -179,6 +183,10 @@ actions:
           en: |
             [wiggle]"Arf, arf!"[/wiggle]
       - condition: "pet_dog_count + talk_dog_count >= dog_friendship_threshold"
+        effect:
+          - "dog_is_following = true"
+          - "removeItemFromAllLocations('stray_dog')"
+          - "here.add('stray_dog')"
         message:
           en: |
             [pulse][wiggle]"Yap, yip ♥."[/wiggle][/pulse]
