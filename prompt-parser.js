@@ -1237,7 +1237,7 @@ GameEngine.prototype._expandTemplate = function(str, match) {
       if (loc) {
         const nameText = this._pickLang(loc.name);
         if (nameText) this.hooks.onLocationNameRender?.(nameText);
-        if (this.definition.metadata?.show_location_image_inline) {
+        if (this.gameState.variables?.show_location_image_inline?.value) {
           const images = Array.isArray(loc.images) ? loc.images : [];
           if (images.length) {
             const filterStr = this._composeImageFilter();

@@ -2230,7 +2230,7 @@ class GameEngine {
     if (images.length) {
       const url = await this.resolveAssetUrl(images[0]);
       this.hooks.onRoomImageRender?.(url || null, filterStr);
-      if (isNewLocation && this.definition.metadata?.show_location_image_inline && url) {
+      if (isNewLocation && this.gameState.variables?.show_location_image_inline?.value && url) {
         this.hooks.onLocationImageInlineRender?.(url, filterStr);
       }
     } else {
