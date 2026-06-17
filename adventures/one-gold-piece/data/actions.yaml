@@ -80,7 +80,7 @@ actions:
       - "look_at_the_town_count += 1"
     message:
       en: |
-        Town? You mean village, right? Because towns are intermediate settlements, usually housing 5,000 to 100,000 people, serving as regional hubs
+        Town? You mean [i]village[/i], surely. A town houses five thousand to a hundred thousand people and serves as a regional hub. This place has a tavern, a well, and Gerald. It is a village.
 
   look_at_the_city:
     pattern:
@@ -209,16 +209,27 @@ actions:
         You [b]DON'T[/b] kick the dog.
         The narrator has strong feelings about this and will not elaborate further.
 
-  # TODO: Think about different results/messages/effects for this action
   pet_dragon:
     pattern:
       - verb: ["pet"]
       - object: [vermithrax]
     conditions:
       - "here.has('{object}')"
-    message:
-      en: |
-        You pet the dragon. The dragon's reaction is impossible to describe.
+    effect:
+      - "pet_dragon_count += 1"
+    progressive_messages:
+      - condition: "pet_dragon_count == 1"
+        message:
+          en: |
+            You reach out and pat Vermithrax on the snout. There is a long pause. "That," he says, "was a choice."
+      - condition: "pet_dragon_count == 2"
+        message:
+          en: |
+            You do it again. Vermithrax closes his eye slowly, then opens it again. "I'm adding this to the appointment notes," he says. "Under [i]miscellaneous.[/i]"
+      - condition: "pet_dragon_count >= 3"
+        message:
+          en: |
+            Vermithrax says nothing this time. He simply looks at you. The look contains multitudes.
 
   move_loose_rock:
     pattern:
@@ -231,12 +242,8 @@ actions:
       - "loose_rock_moved = true"
     message:
       en: |
-        You move the loose rock. It opens up a small passage.
+        You lean into the rock and push. It grinds sideways with a sound like the mountain clearing its throat, revealing a narrow passage behind it. Vermithrax does not react. Either he didn't notice, or he noticed and is choosing not to address it. Both options are somewhat worse than the other.
     conditional_messages:
-      - condition: "'{object}' != '' and !here.has('{object}')"
-        message:
-          en: |
-            There's no {object_name} here.
       - condition: "loose_rock_moved"
         message:
           en: |
@@ -349,6 +356,82 @@ actions:
         message:
           en: |
             You open the {object_name}.
+
+  # ─────────────────────────────────────────────
+  # TORCH SCONCE — Narrow Passage (red herrings)
+  # ─────────────────────────────────────────────
+
+  push_torch_sconce:
+    pattern:
+      - verb: ["push"]
+      - object: [torch_sconce]
+    conditions:
+      - "here.has('{object}')"
+    message:
+      en: |
+        You push the sconce. It is bolted firmly to the wall and does not move, rotate, click, or otherwise behave like a lever. It is, in every meaningful sense, just a sconce.
+
+  pull_torch_sconce:
+    pattern:
+      - verb: ["pull"]
+      - object: [torch_sconce]
+    conditions:
+      - "here.has('{object}')"
+    message:
+      en: |
+        You pull on the sconce, fully expecting a distant grinding sound and the reveal of a hidden door. Nothing grinds. Nothing reveals. The sconce remains exactly as bolted as it was a moment ago.
+
+  turn_torch_sconce:
+    pattern:
+      - verb: ["roll"]
+      - object: [torch_sconce]
+    conditions:
+      - "here.has('{object}')"
+    message:
+      en: |
+        You attempt to turn the sconce like a dial. It does not turn like a dial, because it is not a dial. It is a sconce. You knew this before you tried. You tried anyway.
+
+  take_torch_sconce:
+    pattern:
+      - verb: ["take"]
+      - object: [torch_sconce]
+    conditions:
+      - "here.has('{object}')"
+    message:
+      en: |
+        It's bolted to the wall. You're a villager who owns a secondhand sword, not a master mason. The sconce stays exactly where it is.
+
+  light_torch_sconce:
+    pattern:
+      - verb: ["light"]
+      - object: [torch_sconce]
+    conditions:
+      - "here.has('{object}')"
+    message:
+      en: |
+        You'd need a torch to put in it first, and you don't have one. Even if you did, the cave walls are already glowing faintly on their own, which raises questions about whether this sconce has ever actually been necessary.
+
+  examine_torch_sconce_closely:
+    pattern:
+      - verb: ["touch", "feel"]
+      - object: [torch_sconce]
+    conditions:
+      - "here.has('{object}')"
+    effect:
+      - "examine_sconce_count += 1"
+    progressive_messages:
+      - condition: "examine_sconce_count == 1"
+        message:
+          en: |
+            You run your hand along the ironwork, checking for hidden mechanisms, secret switches, or a suspiciously loose rivet. You find none of these things. You find a sconce.
+      - condition: "examine_sconce_count == 2"
+        message:
+          en: |
+            You check again, just to be thorough. The sconce has not changed. It remains, against all narrative convention, completely unremarkable.
+      - condition: "examine_sconce_count >= 3"
+        message:
+          en: |
+            You are now just touching a sconce repeatedly in a cave. The skeleton's empty eye sockets seem to be judging you. This may be projection.
 
   # -------------------------------
   # General actions - All general, not game-specific actions, that can be used universally in any game, must go here (it doesn't mean this game makes use of them all necessarily).

@@ -63,6 +63,16 @@ variables:
     value: false
     debug_variable: true
 
+  pet_dragon_count:
+    type: int
+    value: 0
+    debug_variable: true
+
+  examine_sconce_count:
+    type: int
+    value: 0
+    debug_variable: true
+
   brightness_step:
     type: float
     value: 0.1

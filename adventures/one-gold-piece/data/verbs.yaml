@@ -211,3 +211,7 @@ commands:
     synonyms: { en: ["save"], pt-br: ["salvar"] }
   load: # Load means to load a new adventure game file (not to be confused with restoring a previously saved game session)
     synonyms: { en: ["load"], pt-br: ["carregar"] }
+  help:
+    synonyms: { en: ["help"], pt-br: ["ajuda"] }
+  about:
+    synonyms: { en: ["about"], pt-br: ["sobre"] }
