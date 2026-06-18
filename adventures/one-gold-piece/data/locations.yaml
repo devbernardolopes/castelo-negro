@@ -34,7 +34,7 @@ locations:
             en: |
               
               It seems that your new dog friend is pointing at the vegetable patch.
-            en: |
+            pt-br: |
               
               Parece que seu novo amigo canino está apontando para a horta.
     contents: [cottage_door, cottage_window, neighbor_gerald, aldrics_vegetable_patch, aldrics_well, cottage_village_view]
