@@ -6,15 +6,13 @@ events:
       - "removeItemFromAllLocations('stray_dog')"
       - "here.add('stray_dog')"
 
-
-
-#   - id: newborn_daughter_crying
-#     type: recurring
-#     interval: 1
-#     conditions:
-#       - "here.has('newborn_daughter')"
-#       - "!inventory.has(newborn_daughter)"
-#       - "newborn_daughter_health > 0"
-#     message:
-#       en: |
-#         You can hear your baby crying desperately.
+  - id: actor_has_bladder_full
+    type: recurring
+    interval: 1
+    conditions:
+      - "here.has('newborn_daughter')"
+      - "!inventory.has(newborn_daughter)"
+      - "newborn_daughter_health > 0"
+    message:
+      en: |
+        You can hear your baby crying desperately.

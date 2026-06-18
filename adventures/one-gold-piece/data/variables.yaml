@@ -93,7 +93,23 @@ variables:
   current_player_actor:
     type: object
     value: aldric
+    description: "Points to the current actor the player is playing with."
 
   show_location_image_inline:
     type: bool
     value: true
+    description: "Shows the current location image, if any, in the text output."
+
+  # highlight_items:
+  #   type: bool
+  #   value: true
+  #   description: "If true, then Highlights Shows the current location image, if any, in the text output."
+
+  # highlight_items_emphasis:
+  #   type: string
+  #   value: "none"
+  #   possible_values: ["none", "bold", "italic", "shake", "blink", "glow", "pulse", "wiggle", "grow", "shrink"]
+
+  # highlight_items_color:
+  #   type: string
+  #   value: ""

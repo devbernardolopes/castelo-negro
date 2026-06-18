@@ -5,7 +5,18 @@ properties:
   # -------------------------------
   # Specific properties - All properties that are specific to this game must go here.
   # -------------------------------  
-  
+  must_pee:
+    type: bool
+    default: false
+
+  bladder_level:
+    type: int
+    default: 0
+
+  bladder_maximum_level:
+    type: int
+    default: 10
+
   # -------------------------------
   # General properties - All general, not game-specific properties, that can be used universally in any game, must go here (it doesn't mean this game makes use of them all necessarily).
   # -------------------------------  
@@ -34,6 +45,10 @@ properties:
   can_read:
     type: bool
     default: true
+
+  can_drink:
+    type: bool
+    default: false
 
 #   age:
 #     type: int

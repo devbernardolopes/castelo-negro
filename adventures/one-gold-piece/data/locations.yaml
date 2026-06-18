@@ -28,6 +28,15 @@ locations:
         Sua casa — uma estrutura modesta que nunca foi acusada de ambição arquitetônica. A porta atrás de você está ligeiramente torta, um problema que você está pretendendo resolver há três anos.
         
         A estrada para norte sai da aldeia em direção às colinas.
+      conditions:
+        - if: "dog_is_following"
+          message:
+            en: |
+              
+              It seems that your new dog friend is pointing at the vegetable patch.
+            en: |
+              
+              Parece que seu novo amigo canino está apontando para a horta.
     contents: [cottage_door, cottage_window, neighbor_gerald, aldrics_vegetable_patch, aldrics_well, cottage_village_view]
     exits:
       north: old_crossroads

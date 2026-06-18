@@ -24,6 +24,7 @@ actors:
       can_drop_all: true
       # can_remove_all: true
       can_read: true
+      can_drink: true
     # Used for when the player "examines" themself
     # TODO: (maybe it is used when the player examines other actors too, I don't remember)
     description:

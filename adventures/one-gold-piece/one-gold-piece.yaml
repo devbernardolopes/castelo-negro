@@ -17,7 +17,7 @@ metadata:
   author: Author
   version: 1.8
   languages: [en, pt-br]
-  default_language: en
+  default_language: pt-br
   assets_path: "assets/"
   data_path: "data/"
   data_files: ["items.yaml", "locations.yaml", "actions.yaml", "actors.yaml", "strings.yaml", "variables.yaml", "verbs.yaml", "properties.yaml", "end_conditions.yaml", "events.yaml"]

@@ -1172,6 +1172,38 @@ actions:
         message:
           en: "There's no {target_name} here."
 
+  drink:
+    pattern:
+      - verb: ["drink"]
+      - object: ["*"]
+        optional: true
+    follow_up:
+      object:
+        en: "Drink what?"
+    conditions:
+      - "'{object}' != ''"
+      - "here.has('{object}') or inventory.has('{object}')"
+      - "items.getProp('{object}', 'drinkable') != null"
+      - "getActorProp(current_player_actor, 'can_drink') == true"
+    # effect:
+    #   - "setActorProp(current_player_actor, 'can_see', false)"
+    message:
+      en: |
+        You drink the {object_name}.
+    conditional_messages:
+      - condition: "getActorProp(current_player_actor, 'can_drink') != true"
+        message:
+          en: "You can't drink."
+      - condition: "'{object}' == ''"
+        message:
+          en: "Drink what?"
+      - condition: "!here.has('{object}') and !inventory.has('{object}')"
+        message:
+          en: "There's no {object_name} here."
+      - condition: "items.getProp('{object}', 'drinkable') == null"
+        message:
+          en: "You can't drink that."
+
   fallback_generic:
     message_pool:
       en:

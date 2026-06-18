@@ -35,9 +35,13 @@ items:
     name:
       en: |
         Leather Satchel
+      pt-br: |
+        Bolsa de Couro
     short_name:
       en: |
         leather satchel
+      pt-br: |
+        bolsa de couro
     article:
       en: "a"
     synonyms:
@@ -53,18 +57,24 @@ items:
     images: ["images/items/leather_satchel.png"]
     # Currently worn across your shoulder. It is, at this moment, empty.
 
+  # synonyms: { en: ["belt", "husband's belt"], pt-br: ["cinto", "cinto do marido"] }
   aldrics_sword:
     name:
       en: |
         Sword
+      pt-br: |
+        Espada
     short_name:
       en: |
         {owner}'s sword
-    synonyms:
-      en: ["sword", "blade", "weapon", "old sword", "secondhand sword"]
+      pt-br: |
+        espada
+    synonyms: { en: ["sword", "blade", "weapon", "old sword", "secondhand sword"], pt-br: ["espada", "lâmina", "arma", "espada velha", "espada de segunda mão"] }
     description:
       en: |
-        A short sword of unremarkable provenance. The blade is serviceable if not inspiring, the grip wrapped in leather that has seen better decades, and there is a small nick near the crossguard that the previous owner described, unhelpfully, as [i]"character."[/i] You paid three silver for it. You may have overpaid.
+        A short sword of unremarkable provenance. The blade is serviceable if not inspiring, the grip wrapped in leather that has seen better decades, and there is a small nick near the crossguard that the previous owner described, unhelpfully, as [i]"character"[/i]. You paid three silver for it. You may have overpaid.
+      pt-br: |
+        Uma espada curta de procedência comum. A lâmina é funcional, embora não seja inspiradora, o cabo é revestido em couro que já viu décadas melhores, e há um pequeno entalhe perto da guarda que o antigo dono descreveu, sem muita utilidade, como [i]"caráter"[/i]. Você pagou três pratas por ela. Talvez tenha pago caro demais.
     takeable: true
     owner: aldric
     size: 25
