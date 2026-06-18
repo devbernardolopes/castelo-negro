@@ -303,11 +303,11 @@ class GameEngine {
     const index = new Map();
     const verbs = this.definition.verbs && typeof this.definition.verbs === 'object' ? this.definition.verbs : {};
     for (const [canonical, def] of Object.entries(verbs)) {
-      index.set(String(canonical).toLowerCase(), String(canonical).toLowerCase());
+      index.set(this._stripAccents(String(canonical).toLowerCase()), String(canonical).toLowerCase());
       const syn = def?.synonyms?.[this.language];
       if (Array.isArray(syn)) {
         for (const w of syn) {
-          index.set(String(w).toLowerCase(), String(canonical).toLowerCase());
+          index.set(this._stripAccents(String(w).toLowerCase()), String(canonical).toLowerCase());
         }
       }
     }
@@ -318,11 +318,11 @@ class GameEngine {
     const index = new Map();
     const commands = this.definition.commands && typeof this.definition.commands === 'object' ? this.definition.commands : {};
     for (const [canonical, def] of Object.entries(commands)) {
-      index.set(String(canonical).toLowerCase(), String(canonical).toLowerCase());
+      index.set(this._stripAccents(String(canonical).toLowerCase()), String(canonical).toLowerCase());
       const syn = def?.synonyms?.[this.language];
       if (Array.isArray(syn)) {
         for (const w of syn) {
-          index.set(String(w).toLowerCase(), String(canonical).toLowerCase());
+          index.set(this._stripAccents(String(w).toLowerCase()), String(canonical).toLowerCase());
         }
       }
     }
@@ -330,15 +330,20 @@ class GameEngine {
   }
 
   _canonicalVerb(word) {
-    const w = String(word || '').trim().toLowerCase();
+    const w = this._stripAccents(String(word || '').trim().toLowerCase());
     if (!w) return '';
     return this._verbsIndex.get(w) || w;
   }
 
   _canonicalCommand(word) {
-    const w = String(word || '').trim().toLowerCase();
+    const w = this._stripAccents(String(word || '').trim().toLowerCase());
     if (!w) return '';
     return this._commandsIndex.get(w) || '';
+  }
+
+  /** Strip diacritics/accents from a string for comparison purposes. */
+  _stripAccents(str) {
+    return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
   _createInitialState() {
@@ -565,13 +570,14 @@ class GameEngine {
   _resolveDirection(input) {
     const lower = String(input || '').trim().toLowerCase();
     if (!lower) return null;
+    const nl = this._stripAccents(lower);
 
     const dirs = this.definition.directions;
     if (dirs && typeof dirs === 'object') {
       for (const [dirId, dirDef] of Object.entries(dirs)) {
-        if (dirId.toLowerCase() === lower) return dirId;
+        if (this._stripAccents(dirId.toLowerCase()) === nl) return dirId;
         const langSyns = dirDef?.synonyms?.[this.language];
-        if (Array.isArray(langSyns) && langSyns.some(s => String(s).toLowerCase() === lower)) {
+        if (Array.isArray(langSyns) && langSyns.some(s => this._stripAccents(String(s).toLowerCase()) === nl)) {
           return dirId;
         }
       }
@@ -579,7 +585,7 @@ class GameEngine {
 
     const legacy = { north: ['n', 'north'], south: ['s', 'south'], east: ['e', 'east'], west: ['w', 'west'] };
     for (const [dir, aliases] of Object.entries(legacy)) {
-      if (dir === lower || aliases.includes(lower)) return dir;
+      if (this._stripAccents(dir) === nl || aliases.some(a => this._stripAccents(a) === nl)) return dir;
     }
 
     return null;
@@ -587,13 +593,13 @@ class GameEngine {
 
   /** If input starts with a go-verb synonym, return the matched verb prefix */
   _matchGoVerb(input) {
-    const lower = String(input || '').trim().toLowerCase();
+    const lower = this._stripAccents(String(input || '').trim().toLowerCase());
     if (!lower) return null;
 
     const verbs = new Set(['go']);
     const syns = this.definition.verbs?.go?.synonyms?.[this.language];
     if (Array.isArray(syns)) {
-      syns.forEach(s => verbs.add(String(s).toLowerCase()));
+      syns.forEach(s => verbs.add(this._stripAccents(String(s).toLowerCase())));
     }
 
     for (const verb of verbs) {

@@ -735,14 +735,14 @@ GameEngine.prototype._buildActorIndex = function() {
   const index = new Map();
   if (!this.definition.actors) return index;
   for (const [actorId, actorDef] of Object.entries(this.definition.actors)) {
-    index.set(actorId.toLowerCase(), actorId);
+    index.set(this._stripAccents(actorId.toLowerCase()), actorId);
     const name = this._pickLang(actorDef.name);
-    if (name) index.set(String(name).trim().toLowerCase(), actorId);
+    if (name) index.set(this._stripAccents(String(name).trim().toLowerCase()), actorId);
     const syn = actorDef.synonyms;
     if (syn && typeof syn === 'object') {
       const list = syn[this.language];
       if (Array.isArray(list)) {
-        for (const s of list) index.set(String(s).trim().toLowerCase(), actorId);
+        for (const s of list) index.set(this._stripAccents(String(s).trim().toLowerCase()), actorId);
       }
     }
   }
@@ -766,20 +766,21 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
     const phrase = tokens.slice(idx, idx + len).join(' ');
     let p = String(phrase).trim().toLowerCase();
     p = this._stripPossessive(p);
+    p = this._stripAccents(p);
     if (!p) continue;
 
     const matched = [];
     for (const actorId of candidates) {
       if (opts.matchMode !== 'alias_only') {
-        if (p === actorId.toLowerCase()) { matched.push(actorId); continue; }
-        if (p === actorId.replace(/_/g, ' ').toLowerCase()) { matched.push(actorId); continue; }
+        if (p === this._stripAccents(actorId.toLowerCase())) { matched.push(actorId); continue; }
+        if (p === this._stripAccents(actorId.replace(/_/g, ' ').toLowerCase())) { matched.push(actorId); continue; }
       }
 
       const actorDef = this.definition.actors?.[actorId];
       if (!actorDef) continue;
       if (opts.matchMode !== 'alias_only') {
         const name = this._pickLang(actorDef.name);
-        if (name && p === String(name).trim().toLowerCase()) { matched.push(actorId); continue; }
+        if (name && p === this._stripAccents(String(name).trim().toLowerCase())) { matched.push(actorId); continue; }
       }
 
       if (opts.matchMode !== 'name_only') {
@@ -788,7 +789,7 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
           const langList = syn[this.language];
           if (Array.isArray(langList)) {
             for (const s of langList) {
-              if (p === String(s).trim().toLowerCase()) { matched.push(actorId); break; }
+              if (p === this._stripAccents(String(s).trim().toLowerCase())) { matched.push(actorId); break; }
             }
           }
         }
@@ -805,14 +806,14 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
       const selfWords = this.definition?.self?.[this.language] || [];
       if (selfWords.includes(p)) {
         matched.push(playerId);
-      } else if (p === playerId.toLowerCase() || p === playerId.replace(/_/g, ' ').toLowerCase()) {
+      } else if (p === this._stripAccents(playerId.toLowerCase()) || p === this._stripAccents(playerId.replace(/_/g, ' ').toLowerCase())) {
         matched.push(playerId);
       } else {
         const playerDef = this.definition.actors?.[playerId];
         if (playerDef) {
           if (opts.matchMode !== 'alias_only') {
             const playerName = this._pickLang(playerDef.name);
-            if (playerName && p === String(playerName).trim().toLowerCase()) {
+            if (playerName && p === this._stripAccents(String(playerName).trim().toLowerCase())) {
               matched.push(playerId);
             }
           }
@@ -822,7 +823,7 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
               const langList = syn[this.language];
               if (Array.isArray(langList)) {
                 for (const s of langList) {
-                  if (p === String(s).trim().toLowerCase()) { matched.push(playerId); break; }
+                  if (p === this._stripAccents(String(s).trim().toLowerCase())) { matched.push(playerId); break; }
                 }
               }
             }
@@ -855,12 +856,15 @@ GameEngine.prototype._matchActorSlotAt = function(tokens, idx, slotDef, opts = {
     const phrase = tokens.slice(idx, idx + len).join(' ');
     let p = String(phrase).trim().toLowerCase();
     p = this._stripPossessive(p);
+    p = this._stripAccents(p);
     if (!p) continue;
 
     const matched = [];
     for (const actorId of candidates) {
       const descriptors = this._getActorVisualDescriptors(actorId);
-      if (descriptors.has(p)) matched.push(actorId);
+      for (const d of descriptors) {
+        if (p === this._stripAccents(d)) { matched.push(actorId); break; }
+      }
     }
 
     if (matched.length > 1) {
@@ -886,12 +890,12 @@ GameEngine.prototype._getActorAliasPhrases = function(actorId) {
   if (syn && typeof syn === 'object') {
     const list = syn[this.language];
     if (Array.isArray(list)) {
-      for (const s of list) aliases.add(String(s).trim().toLowerCase());
+      for (const s of list) aliases.add(this._stripAccents(String(s).trim().toLowerCase()));
     }
   }
 
   for (const descriptor of this._getActorVisualDescriptors(actorId)) {
-    aliases.add(String(descriptor).trim().toLowerCase());
+    aliases.add(this._stripAccents(String(descriptor).trim().toLowerCase()));
   }
 
   return aliases;
@@ -903,6 +907,7 @@ GameEngine.prototype._tryDialogueInput = function(input) {
 
   const cmd = String(input || '').trim().toLowerCase();
   if (!cmd) return false;
+  const ncmd = this._stripAccents(cmd);
 
   const actorDef = this.definition.actors?.[conv.actorId];
   const node = actorDef?.dialogue?.nodes?.[conv.nodeId];
@@ -929,8 +934,8 @@ GameEngine.prototype._tryDialogueInput = function(input) {
   for (let i = 0; i < visibleOptions.length; i++) {
     const optText = this._pickLang(visibleOptions[i].text);
     if (optText) {
-      const normalized = String(optText).trim().toLowerCase().replace(/[.!?]+$/, '');
-      if (cmd === normalized) matching.push(i);
+      const normalized = this._stripAccents(String(optText).trim().toLowerCase().replace(/[.!?]+$/, ''));
+      if (ncmd === normalized) matching.push(i);
     }
   }
   if (matching.length === 1) {
@@ -939,13 +944,13 @@ GameEngine.prototype._tryDialogueInput = function(input) {
   }
 
   // Try partial text match (input is a substring of exactly one option)
-  if (cmd.length >= 2) {
+  if (ncmd.length >= 2) {
     const partialMatches = [];
     for (let i = 0; i < visibleOptions.length; i++) {
       const optText = this._pickLang(visibleOptions[i].text);
       if (optText) {
-        const normalized = String(optText).trim().toLowerCase().replace(/[.!?]+$/, '');
-        if (normalized.includes(cmd)) partialMatches.push(i);
+        const normalized = this._stripAccents(String(optText).trim().toLowerCase().replace(/[.!?]+$/, ''));
+        if (normalized.includes(ncmd)) partialMatches.push(i);
       }
     }
     if (partialMatches.length === 1) {
@@ -965,6 +970,7 @@ GameEngine.prototype._tryReadingInput = function(input) {
 
   const cmd = String(input || '').trim().toLowerCase();
   if (!cmd) return false;
+  const ncmd = this._stripAccents(cmd);
 
   const isFirst = reading.currentChunk === 0;
   const isLast = reading.currentChunk === reading.totalChunks - 1;
@@ -987,19 +993,25 @@ GameEngine.prototype._tryReadingInput = function(input) {
   const nextWords = ['next', 'n', 'continue', 'c'];
   const prevWords = ['back', 'b', 'prev', 'p', 'previous'];
   const closeWords = ['exit', 'e', 'close', 'quit', 'stop', 'end'];
+  const nextWordsN = nextWords.map(w => this._stripAccents(w));
+  const prevWordsN = prevWords.map(w => this._stripAccents(w));
+  const closeWordsN = closeWords.map(w => this._stripAccents(w));
 
-  if (nextWords.includes(cmd) && !isLast) {
+  if (nextWordsN.includes(ncmd) && !isLast) {
     this._nextReadingPage();
     return true;
   }
-  if (prevWords.includes(cmd) && !isFirst) {
+  if (prevWordsN.includes(ncmd) && !isFirst) {
     this._prevReadingPage();
     return true;
   }
-  if (closeWords.includes(cmd)) {
+  if (closeWordsN.includes(ncmd)) {
     this._endReading();
     return true;
   }
+
+  // Try "page N" or "go N" or "go to N" syntax
+  const pageMatch = ncmd.match(/^(?:page|go(?:\s+to)?)\s+(\d+)$/);
 
   // Try "page N" or "go N" or "go to N" syntax
   const pageMatch = cmd.match(/^(?:page|go(?:\s+to)?)\s+(\d+)$/);
@@ -1050,10 +1062,11 @@ GameEngine.prototype._matchVerbAt = function(tokens, idx, verbIds) {
   const maxLen = Math.min(3, tokens.length - idx);
   for (let len = maxLen; len >= 1; len--) {
     const phrase = tokens.slice(idx, idx + len).join(' ');
-    const canonical = this._canonicalVerb(phrase);
+    const nphrase = this._stripAccents(phrase);
+    const canonical = this._canonicalVerb(nphrase);
     if (!canonical) continue;
     const allowedCanonicals = verbIds.filter(v => v !== '*').map(v => this._canonicalVerb(v));
-    const isKnownVerbPhrase = this._verbsIndex.has(phrase) || this._verbsIndex.has(canonical);
+    const isKnownVerbPhrase = this._verbsIndex.has(nphrase) || this._verbsIndex.has(canonical);
     if (!isKnownVerbPhrase) continue;
     if (verbIds.length === 0 || wantsAny || allowedCanonicals.includes(canonical)) return { canonical, len };
   }
@@ -1152,22 +1165,23 @@ GameEngine.prototype._matchSpecificItemAt = function(tokens, idx, itemIds) {
 GameEngine.prototype._phraseMatchesItemId = function(phrase, itemId) {
   let p = String(phrase || '').trim().toLowerCase();
   p = this._stripPossessive(p);
+  p = this._stripAccents(p);
   const id = String(itemId || '').trim();
   if (!p || !id) return false;
-  if (p === id.toLowerCase()) return true;
-  if (p === id.replace(/_/g, ' ').toLowerCase()) return true;
+  if (p === this._stripAccents(id.toLowerCase())) return true;
+  if (p === this._stripAccents(id.replace(/_/g, ' ').toLowerCase())) return true;
 
   const item = this.definition.items?.[id];
   const name = this._pickLang(item?.name);
-  if (name && p === String(name).trim().toLowerCase()) return true;
+  if (name && p === this._stripAccents(String(name).trim().toLowerCase())) return true;
 
   const shortName = this._pickLang(item?.short_name);
-  if (shortName && p === String(shortName).trim().toLowerCase()) return true;
+  if (shortName && p === this._stripAccents(String(shortName).trim().toLowerCase())) return true;
 
   const resolvedName = this._getItemResolvedName(id);
   if (resolvedName) {
-    const resolvedLower = String(resolvedName).trim().toLowerCase();
-    if (p === resolvedLower || this._stripPossessive(resolvedLower) === p) return true;
+    const resolvedLower = this._stripAccents(String(resolvedName).trim().toLowerCase());
+    if (p === resolvedLower || p === this._stripAccents(this._stripPossessive(resolvedLower))) return true;
   }
 
   const syn = item?.synonyms;
@@ -1175,7 +1189,7 @@ GameEngine.prototype._phraseMatchesItemId = function(phrase, itemId) {
     const langList = syn?.[this.language];
     if (Array.isArray(langList)) {
       for (const s of langList) {
-        if (p === String(s).trim().toLowerCase()) return true;
+        if (p === this._stripAccents(String(s).trim().toLowerCase())) return true;
       }
     }
   }
@@ -1195,21 +1209,22 @@ GameEngine.prototype._matchLocationSlotAt = function(tokens, idx, locationIds) {
 GameEngine.prototype._phraseMatchesLocationId = function(phrase, locId) {
   let p = String(phrase || '').trim().toLowerCase();
   p = this._stripPossessive(p);
+  p = this._stripAccents(p);
   const id = String(locId || '').trim();
   if (!p || !id) return false;
-  if (p === id.toLowerCase()) return true;
-  if (p === id.replace(/_/g, ' ').toLowerCase()) return true;
+  if (p === this._stripAccents(id.toLowerCase())) return true;
+  if (p === this._stripAccents(id.replace(/_/g, ' ').toLowerCase())) return true;
 
   const loc = this.definition.locations?.[id];
   const name = this._pickLang(loc?.name);
-  if (name && p === String(name).trim().toLowerCase()) return true;
+  if (name && p === this._stripAccents(String(name).trim().toLowerCase())) return true;
 
   const syn = loc?.synonyms;
   if (syn && typeof syn === 'object') {
     const langList = syn?.[this.language];
     if (Array.isArray(langList)) {
       for (const s of langList) {
-        if (p === String(s).trim().toLowerCase()) return true;
+        if (p === this._stripAccents(String(s).trim().toLowerCase())) return true;
       }
     }
   }
@@ -1339,16 +1354,17 @@ GameEngine.prototype._applyActionEffects = function(effect, match) {
 GameEngine.prototype._findItemIdByName = function(query) {
   let q = String(query || '').trim().toLowerCase();
   q = this._stripPossessive(q);
+  q = this._stripAccents(q);
   if (!q) return null;
-  // Allow direct id
+  // Allow direct id (item IDs are simple ASCII identifiers)
   if (this.definition.items?.[q]) return q;
   for (const [id, item] of Object.entries(this.definition.items || {})) {
-    const n = this._pickLang(item?.name).toLowerCase();
+    const n = this._stripAccents(this._pickLang(item?.name).toLowerCase());
     if (n === q) return id;
     const resolved = this._getItemResolvedName(id);
     if (resolved) {
-      const resolvedLower = String(resolved).trim().toLowerCase();
-      if (resolvedLower === q || this._stripPossessive(resolvedLower) === q) return id;
+      const resolvedLower = this._stripAccents(String(resolved).trim().toLowerCase());
+      if (resolvedLower === q || this._stripAccents(this._stripPossessive(resolvedLower)) === q) return id;
     }
   }
   return null;
@@ -1357,6 +1373,7 @@ GameEngine.prototype._findItemIdByName = function(query) {
 GameEngine.prototype._findItemIdByNameOrSynonym = function(query) {
   let q = String(query || '').trim().toLowerCase();
   q = this._stripPossessive(q);
+  q = this._stripAccents(q);
   if (!q) return null;
   // Allow direct id / id-as-phrase
   if (this.definition.items?.[q]) return q;
@@ -1365,23 +1382,23 @@ GameEngine.prototype._findItemIdByNameOrSynonym = function(query) {
 
   for (const [id, item] of Object.entries(this.definition.items || {})) {
     const n = this._pickLang(item?.name);
-    if (n && String(n).trim().toLowerCase() === q) return id;
+    if (n && this._stripAccents(String(n).trim().toLowerCase()) === q) return id;
 
     const resolved = this._getItemResolvedName(id);
     if (resolved) {
-      const resolvedLower = String(resolved).trim().toLowerCase();
-      if (resolvedLower === q || this._stripPossessive(resolvedLower) === q) return id;
+      const resolvedLower = this._stripAccents(String(resolved).trim().toLowerCase());
+      if (resolvedLower === q || this._stripAccents(this._stripPossessive(resolvedLower)) === q) return id;
     }
 
     const sn = this._pickLang(item?.short_name);
-    if (sn && String(sn).trim().toLowerCase() === q) return id;
+    if (sn && this._stripAccents(String(sn).trim().toLowerCase()) === q) return id;
 
     const syn = item?.synonyms;
     if (syn && typeof syn === 'object') {
       const langList = syn?.[this.language];
       if (Array.isArray(langList)) {
         for (const s of langList) {
-          if (String(s).trim().toLowerCase() === q) return id;
+          if (this._stripAccents(String(s).trim().toLowerCase()) === q) return id;
         }
       }
     }
@@ -1392,6 +1409,7 @@ GameEngine.prototype._findItemIdByNameOrSynonym = function(query) {
 GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
   let q = String(query || '').trim().toLowerCase();
   q = this._stripPossessive(q);
+  q = this._stripAccents(q);
   if (!q) return [];
   const results = [];
   if (this.definition.items?.[q]) results.push(q);
@@ -1401,20 +1419,20 @@ GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
   for (const [id, item] of Object.entries(this.definition.items || {})) {
     if (results.includes(id)) continue;
     const n = this._pickLang(item?.name);
-    if (n && String(n).trim().toLowerCase() === q) {
+    if (n && this._stripAccents(String(n).trim().toLowerCase()) === q) {
       results.push(id);
       continue;
     }
     const resolved = this._getItemResolvedName(id);
     if (resolved) {
-      const resolvedLower = String(resolved).trim().toLowerCase();
-      if (resolvedLower === q || this._stripPossessive(resolvedLower) === q) {
+      const resolvedLower = this._stripAccents(String(resolved).trim().toLowerCase());
+      if (resolvedLower === q || this._stripAccents(this._stripPossessive(resolvedLower)) === q) {
         results.push(id);
         continue;
       }
     }
     const sn = this._pickLang(item?.short_name);
-    if (sn && String(sn).trim().toLowerCase() === q) {
+    if (sn && this._stripAccents(String(sn).trim().toLowerCase()) === q) {
       results.push(id);
       continue;
     }
@@ -1423,8 +1441,8 @@ GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
       const langList = syn?.[this.language];
       if (Array.isArray(langList)) {
         for (const s of langList) {
-          const sClean = String(s).trim().toLowerCase();
-          if (sClean === q || this._stripPossessive(sClean) === q) {
+          const sClean = this._stripAccents(String(s).trim().toLowerCase());
+          if (sClean === q || this._stripAccents(this._stripPossessive(sClean)) === q) {
             if (!results.includes(id)) results.push(id);
             break;
           }
@@ -1453,19 +1471,20 @@ GameEngine.prototype._findAllItemIdsByNameOrSynonym = function(query) {
 GameEngine.prototype._findLocationIdByNameOrSynonym = function(query) {
   let q = String(query || '').trim().toLowerCase();
   q = this._stripPossessive(q);
+  q = this._stripAccents(q);
   if (!q) return null;
   if (this.definition.locations?.[q]) return q;
   const asId = q.replace(/\s+/g, '_');
   if (this.definition.locations?.[asId]) return asId;
   for (const [id, loc] of Object.entries(this.definition.locations || {})) {
     const n = this._pickLang(loc?.name);
-    if (n && String(n).trim().toLowerCase() === q) return id;
+    if (n && this._stripAccents(String(n).trim().toLowerCase()) === q) return id;
     const syn = loc?.synonyms;
     if (syn && typeof syn === 'object') {
       const langList = syn?.[this.language];
       if (Array.isArray(langList)) {
         for (const s of langList) {
-          if (String(s).trim().toLowerCase() === q) return id;
+          if (this._stripAccents(String(s).trim().toLowerCase()) === q) return id;
         }
       }
     }
@@ -1572,6 +1591,7 @@ GameEngine.prototype._verbItemByName = function(verb, query) {
 GameEngine.prototype._resolveAmbiguity = function(input) {
   let q = String(input || '').trim().toLowerCase();
   q = this._stripPossessive(q);
+  q = this._stripAccents(q);
   if (!q || !this._pendingAmbiguity) return null;
   const { candidates } = this._pendingAmbiguity;
 
@@ -1595,12 +1615,12 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
     const actorDef = this.definition.actors?.[candidateId];
     if (!actorDef) continue;
     const actorName = this._pickLang(actorDef.name);
-    if (actorName && q === String(actorName).trim().toLowerCase()) {
+    if (actorName && q === this._stripAccents(String(actorName).trim().toLowerCase())) {
       return { itemId: candidateId, phrase: this._resolveAmbiguityChoicePhrase(candidateId) };
     }
     const syns = actorDef.synonyms?.[this.language] || [];
     for (const s of syns) {
-      if (q === String(s).trim().toLowerCase()) {
+      if (q === this._stripAccents(String(s).trim().toLowerCase())) {
         return { itemId: candidateId, phrase: this._resolveAmbiguityChoicePhrase(candidateId) };
       }
     }
@@ -1625,7 +1645,7 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
   // Handle "my {word}" — match player-owned items matching the keyword
   const myMatch = rawInput.match(/^my\s+(.+)$/);
   if (myMatch) {
-    const keyword = myMatch[1].trim().toLowerCase();
+    const keyword = this._stripAccents(myMatch[1].trim().toLowerCase());
     const myMatches = candidates.filter(id => {
       if (this._getItemOwner(id) !== playerId) return false;
       const item = this.definition.items?.[id];
@@ -1633,7 +1653,7 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
       const name = this._pickLang(item.name) || '';
       const sn = this._pickLang(item.short_name) || '';
       const syns = item.synonyms?.[this.language] || [];
-      const allTerms = [name.toLowerCase(), sn.toLowerCase(), ...syns.map(s => s.toLowerCase()), id.replace(/_/g, ' ')];
+      const allTerms = [this._stripAccents(name.toLowerCase()), this._stripAccents(sn.toLowerCase()), ...syns.map(s => this._stripAccents(s.toLowerCase())), this._stripAccents(id.replace(/_/g, ' '))];
       return allTerms.some(t => t.includes(keyword));
     });
     if (myMatches.length === 1) {
@@ -1665,9 +1685,9 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
         const name = this._pickLang(item.name) || '';
         const syns = item.synonyms?.[this.language] || [];
         const allTerms = [
-          candidateId.replace(/_/g, ' '),
-          name.toLowerCase(),
-          ...syns.map(s => s.toLowerCase())
+          this._stripAccents(candidateId.replace(/_/g, ' ')),
+          this._stripAccents(name.toLowerCase()),
+          ...syns.map(s => this._stripAccents(s.toLowerCase()))
         ];
         for (const term of allTerms) {
           if (term.split(/\s+/).includes(singleWord)) {
@@ -1682,9 +1702,9 @@ GameEngine.prototype._resolveAmbiguity = function(input) {
         const name = this._pickLang(actor.name) || '';
         const syns = actor.synonyms?.[this.language] || [];
         const allTerms = [
-          candidateId.replace(/_/g, ' '),
-          name.toLowerCase(),
-          ...syns.map(s => s.toLowerCase())
+          this._stripAccents(candidateId.replace(/_/g, ' ')),
+          this._stripAccents(name.toLowerCase()),
+          ...syns.map(s => this._stripAccents(s.toLowerCase()))
         ];
         for (const term of allTerms) {
           if (term.split(/\s+/).includes(singleWord)) {
@@ -1851,18 +1871,19 @@ GameEngine.prototype._resolveSlotPrompt = function(slotName, slotDef, input, act
 GameEngine.prototype._resolveBinaryAnswer = function(input) {
   const q = String(input || '').trim().toLowerCase();
   if (!q) return null;
+  const nq = this._stripAccents(q);
   const binary = this.definition?.binary?.[this.language];
   if (binary) {
-    if (Array.isArray(binary.yes) && binary.yes.includes(q)) return 'yes';
-    if (Array.isArray(binary.no) && binary.no.includes(q)) return 'no';
+    if (Array.isArray(binary.yes) && binary.yes.some(v => this._stripAccents(v) === nq)) return 'yes';
+    if (Array.isArray(binary.no) && binary.no.some(v => this._stripAccents(v) === nq)) return 'no';
   }
   // Fallback: use default language's binary values
   const defaultLang = this.definition.metadata?.default_language;
   if (defaultLang && defaultLang !== this.language) {
     const fallback = this.definition?.binary?.[defaultLang];
     if (fallback) {
-      if (Array.isArray(fallback.yes) && fallback.yes.includes(q)) return 'yes';
-      if (Array.isArray(fallback.no) && fallback.no.includes(q)) return 'no';
+      if (Array.isArray(fallback.yes) && fallback.yes.some(v => this._stripAccents(v) === nq)) return 'yes';
+      if (Array.isArray(fallback.no) && fallback.no.some(v => this._stripAccents(v) === nq)) return 'no';
     }
   }
   return null;
