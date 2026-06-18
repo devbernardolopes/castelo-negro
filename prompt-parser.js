@@ -1012,9 +1012,6 @@ GameEngine.prototype._tryReadingInput = function(input) {
 
   // Try "page N" or "go N" or "go to N" syntax
   const pageMatch = ncmd.match(/^(?:page|go(?:\s+to)?)\s+(\d+)$/);
-
-  // Try "page N" or "go N" or "go to N" syntax
-  const pageMatch = cmd.match(/^(?:page|go(?:\s+to)?)\s+(\d+)$/);
   if (pageMatch) {
     const pageNum = parseInt(pageMatch[1], 10);
     if (pageNum >= 1 && pageNum <= reading.totalChunks) {
