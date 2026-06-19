@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Mono:wght@400;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
