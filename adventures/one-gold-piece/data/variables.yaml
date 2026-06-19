@@ -117,5 +117,5 @@ variables:
 
   highlight_items_color:
     type: string
-    value: ""
+    value: "--accent"
     description: "Value can be empty so it uses the current text color, a CSS custom property like `--accent-text`, or a CSS hex color like `#000000`"
