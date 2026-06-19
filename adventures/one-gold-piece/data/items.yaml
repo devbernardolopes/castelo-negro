@@ -205,6 +205,8 @@ items:
     short_name:
       en: |
         battered journal
+    article:
+      en: "a"
     synonyms:
       en: ["journal", "battered journal", "leather journal", "diary", "notebook", "book"]
     description:

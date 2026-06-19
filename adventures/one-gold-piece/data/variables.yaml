@@ -1,6 +1,7 @@
 # `debug_variable` set to true shows the variable and its value in the DEBUG tab in-game
 # `type` can be bool, int, float, object, list, string
 # `description` is just a description of what the variable do or its use (currently it isn't being used)
+# `min_value` and `max_value` are self-explanatory (they're for int types)
 
 variables:
   # -------------------------------
@@ -9,7 +10,6 @@ variables:
   open_cottage_door_count:
     type: int
     value: 0
-    # debug_variable: true
 
   open_cottage_door_threshold:
     type: int
@@ -44,19 +44,21 @@ variables:
     value: 0
     debug_variable: true
   
+  dog_friendship_threshold:
+    type: int
+    value: 5
+
   pet_dog_count:
     type: int
     value: 0
+    min_value: 0
+    max_value: 5
     debug_variable: true
 
   talk_dog_count:
     type: int
     value: 0
     debug_variable: true
-
-  dog_friendship_threshold:
-    type: int
-    value: 5
 
   dog_is_following:
     type: bool
@@ -84,32 +86,36 @@ variables:
   game_turn:
     type: int
     value: 0
+    debug_variable: true
 
   invalid_attempt_count:
     type: int
     value: 0
     description: "Number of consecutive invalid actions. Resets to 0 on valid action."
+    debug_variable: true
 
   current_player_actor:
     type: object
     value: aldric
     description: "Points to the current actor the player is playing with."
+    debug_variable: true
 
   show_location_image_inline:
     type: bool
     value: true
     description: "Shows the current location image, if any, in the text output."
+    debug_variable: true
 
-  # highlight_items:
-  #   type: bool
-  #   value: true
-  #   description: "If true, then Highlights Shows the current location image, if any, in the text output."
+  highlight_items:
+    type: bool
+    value: true
 
-  # highlight_items_emphasis:
-  #   type: string
-  #   value: "none"
-  #   possible_values: ["none", "bold", "italic", "shake", "blink", "glow", "pulse", "wiggle", "grow", "shrink"]
+  highlight_items_emphasis:
+    type: string
+    value: "bold"
+    possible_values: ["bold", "italic", "shake", "blink", "glow", "pulse", "wiggle", "grow", "shrink"]
 
-  # highlight_items_color:
-  #   type: string
-  #   value: ""
+  highlight_items_color:
+    type: string
+    value: ""
+    description: "Value can be empty so it uses the current text color, a CSS custom property like `--accent-text`, or a CSS hex color like `#000000`"
