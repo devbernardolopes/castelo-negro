@@ -142,14 +142,34 @@ class GameEngine {
   _getItemDisplayName(itemId) {
     const item = this.definition.items?.[itemId];
     if (!item) return '';
-    return this._expandItemText(itemId, this._pickLang(item.name));
+    const name = this._expandItemText(itemId, this._pickLang(item.name));
+    return this._applyItemHighlight(name);
   }
 
   _getItemDisplayShortName(itemId) {
     const item = this.definition.items?.[itemId];
     if (!item) return '';
     const sn = item.short_name;
-    return sn ? this._expandItemText(itemId, this._pickLang(sn)) : '';
+    const name = sn ? this._expandItemText(itemId, this._pickLang(sn)) : '';
+    return this._applyItemHighlight(name);
+  }
+
+  _applyItemHighlight(name) {
+    if (!name) return name;
+    const highlight = this.gameState.variables.highlight_items?.value;
+    if (!highlight) return name;
+    const emphasis = this.gameState.variables.highlight_items_emphasis?.value;
+    const color = this.gameState.variables.highlight_items_color?.value;
+    let result = name;
+    const EMPHASIS_MAP = { bold: 'b', italic: 'i' };
+    if (emphasis) {
+      const tag = EMPHASIS_MAP[emphasis] || emphasis;
+      result = `[${tag}]${result}[/${tag}]`;
+    }
+    if (color) {
+      result = `[color=${color}]${result}[/color]`;
+    }
+    return result;
   }
 
   _getItemDescription(itemId) {

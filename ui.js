@@ -697,7 +697,7 @@ function renderInventoryList() {
     }
 
     const span = document.createElement('span');
-    let name = item ? engine._getItemDisplayName(itemId) : itemId;
+    let name = item ? engine._expandItemText(itemId, engine._pickLang(item.name)) : itemId;
     if (wearing.includes(itemId)) {
       name += ' (wearing)';
     } else {
@@ -795,7 +795,7 @@ function renderInventoryToTextDisplay() {
         name += ` (${tag})`;
       }
     }
-    span.textContent = name;
+    span.innerHTML = formatMarkupToHtml(name);
     row.appendChild(span);
 
     container.appendChild(row);
